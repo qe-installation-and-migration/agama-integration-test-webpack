@@ -1,0 +1,18 @@
+{
+  "name": "agama-webpack-test",
+  "version": "0.0.1",
+  "description": "Experimental bundling the Agama integration tests",
+  "main": "index.js",
+  "type": "module",
+  "private": true,
+  "license": "GPLv2",
+  "devDependencies": {
+    "webpack": "^5.93.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "chai": "^5.1.1",
+    "mocha": "^10.7.0",
+    "puppeteer-core": "22.13.0"
+  }
+}
