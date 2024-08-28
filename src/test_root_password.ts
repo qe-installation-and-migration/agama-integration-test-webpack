@@ -5,7 +5,7 @@
 import puppeteer from "puppeteer-core";
 
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
-import { describe, it, before, after, afterEach } from "node:test";
+import { describe, it, before, after, afterEach, skip } from "node:test";
 // see https://nodejs.org/docs/latest-v20.x/api/assert.html
 import assert from "node:assert/strict";
 
@@ -16,7 +16,7 @@ import assert from "node:assert/strict";
 // For more details about customization see the README.md file.
 
 // helper function for converting String to Boolean
-function booleanEnv(name, default_value) {
+function booleanEnv(name: string, default_value: boolean) {
   const env = process.env[name];
   if (env === undefined) {
     return default_value;
@@ -39,8 +39,13 @@ function booleanEnv(name, default_value) {
   }
 }
 
+interface BrowserSettings {
+  product: puppeteer.Product;
+  executablePath: string;
+}
+
 // helper function for configuring the browser
-function browserSettings(name) {
+function browserSettings(name: string): BrowserSettings {
   switch (name.toLowerCase()) {
     case "firefox":
       return {
@@ -72,8 +77,8 @@ const slowMo = parseInt(process.env.AGAMA_SLOWMO || "0");
 const headless = booleanEnv("AGAMA_HEADLESS", true);
 
 describe("Agama test", function () {
-  let page;
-  let browser;
+  let page: puppeteer.Page;
+  let browser: puppeteer.Browser;
 
   before(async function () {
     browser = await puppeteer.launch({
@@ -133,9 +138,9 @@ describe("Agama test", function () {
     // the product selection page.
     let productSelectionDisplayed = await Promise.any([
       page.waitForSelector("a[href='#/storage']")
-        .then(s => {s.dispose(); return false}),
+        .then(s => {s!.dispose(); return false}),
       page.waitForSelector("button[form='productSelectionForm']")
-        .then(s => {s.dispose(); return true})
+        .then(s => {s!.dispose(); return true})
     ]);
 
     if (productSelectionDisplayed) {
@@ -148,7 +153,7 @@ describe("Agama test", function () {
       await page.locator("h3::-p-text('Overview')").setTimeout(60000).wait();
     } else {
       // no product selection displayed, mark the test as skipped
-      this.skip();
+      skip();
     }
   });
   
@@ -159,15 +164,16 @@ describe("Agama test", function () {
   it("should allow setting the root password", async function () {
     await page.locator("a[href='#/users']").click();
 
-    let button = await Promise.any([
+    let button: any = await Promise.any([
       page.waitForSelector("button::-p-text(Set a password)"),
       page.waitForSelector("button#actions-for-root-password")
     ]);
 
-    await button.click();
-    const id = await button.evaluate(x => x.id);
+    await button!.click();
+
+    const id = await button!.evaluate((x: { id: any; }) => x.id);
     // drop the handler to avoid memory leaks
-    button.dispose();
+    button!.dispose();
 
     // if the menu button was clicked we need to additionally press the "Change" menu item
     if (id === "actions-for-root-password") {

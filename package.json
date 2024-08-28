@@ -6,12 +6,14 @@
   "private": true,
   "license": "GPLv2",
   "devDependencies": {
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.5.4",
     "webpack": "^5.93.0",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "puppeteer-core": "22.13.0",
     "bufferutil": "^4.0.8",
+    "puppeteer-core": "22.13.0",
     "utf-8-validate": "^6.0.4"
   }
 }

@@ -3,7 +3,7 @@ const fs = require("fs");
 const webpack = require('webpack');
 
 module.exports = {
-  entry: "./src/test_root_password.js",
+  entry: "./src/test_root_password.ts",
   output: {
     filename: "test_root_password.cjs",
     path: path.resolve(__dirname, "dist"),
@@ -13,6 +13,18 @@ module.exports = {
   // devtool: "source-map",
   target: "node",
   mode: process.env.NODE_ENV || "production",
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+  },
   plugins: [
     // do not split the code into several files, generate a single output file
     new webpack.optimize.LimitChunkCountPlugin({
