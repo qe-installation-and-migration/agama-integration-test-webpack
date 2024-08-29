@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const webpack = require('webpack');
+const webpack = require("webpack");
 
 module.exports = {
   entry: "./src/test_root_password.ts",
@@ -9,21 +9,21 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     clean: true
   },
-  // TODO: do we want to have the source maps?
-  // devtool: "source-map",
+  // the source map is generated only in the development mode
+  devtool: "inline-source-map",
   target: "node",
   mode: process.env.NODE_ENV || "production",
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: "ts-loader",
         exclude: /node_modules/,
       },
     ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: [".tsx", ".ts", ".js"],
   },
   plugins: [
     // do not split the code into several files, generate a single output file

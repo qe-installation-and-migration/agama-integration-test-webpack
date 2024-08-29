@@ -11,7 +11,7 @@ with all dependencies bundled.
   on the Live ISO content
 - The used Puppeteer version is not bound to the Live ISO (it only needs to be
   compatible with the included Firefox browser), the version update is simple
-- The builtin nodeJS test runner supports the [Test Anything
+- The builtin Node.js test runner supports the [Test Anything
   Protocol](https://en.wikipedia.org/wiki/Test_Anything_Protocol) (TAP),
   already supported by openQA
 
@@ -34,6 +34,13 @@ To compile the source test file run:
 
 This generates the new files into the `dist` subdirectory.
 
+To generate the target file with source map and without optimizations set the
+`development` mode:
+
+    NODE_ENV=development npx webpack
+
+In this mode the generated file is significantly bigger.
+
 ## Executing the Test
 
 The generated test is executable, simply run it (this connects to the locally
@@ -41,7 +48,7 @@ running Agama instance, to use a remote one see the options below):
 
     ./dist/test_root_password.cjs
 
-To use the TAP output format, use the `--test-reporter` nodeJS option:
+To use the TAP output format, use the `--test-reporter` Node.js option:
 
     node --test-reporter=tap --test-timeout=60000 ./dist/test_root_password.cjs
 
@@ -55,6 +62,12 @@ in headed mode and connecting to a remote Agama instance:
     LC_ALL=en_US.UTF-8 AGAMA_BROWSER=chrome AGAMA_HEADLESS=false \
     AGAMA_SERVER=https://agama.local node --test-timeout=60000 \
     dist/test_root_password.cjs
+
+## Notes
+
+- It uses the Node.js built-in test framework and the runner instead of Mocha.js
+  which needs a special test runner that cannot be bundled into the generated file
+  by Webpack.
 
 ## TODO
 
