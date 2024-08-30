@@ -3,9 +3,9 @@ const fs = require("fs");
 const webpack = require("webpack");
 
 module.exports = {
-  entry: "./src/test_root_password.ts",
+  entry: "./src/default_installation.ts",
   output: {
-    filename: "test_root_password.cjs",
+    filename: "default_installation.cjs",
     path: path.resolve(__dirname, "dist"),
     clean: true
   },
@@ -33,7 +33,7 @@ module.exports = {
     // prepend a hashbang at the beginning of the generated file
     new webpack.BannerPlugin({ banner: "#! /usr/bin/env -S node --test-timeout=60000", raw: true }),
     // make the file JS files executable
-    function() {
+    function () {
       this.hooks.done.tap("Change permissions", (data) => {
         Object.keys(data.compilation.assets).forEach((file) => {
           if (file.match(/\.cjs$/)) {

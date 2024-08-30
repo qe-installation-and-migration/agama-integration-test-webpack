@@ -2,7 +2,7 @@
 // import fs from "fs";
 // import path from "path";
 
-import puppeteer from "puppeteer-core";
+import puppeteer, { Puppeteer, type Browser, type Locator, type Page, type Product } from "puppeteer-core";
 
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 import { describe, it, before, after, afterEach, skip } from "node:test";
@@ -40,7 +40,7 @@ function booleanEnv(name: string, default_value: boolean) {
 }
 
 interface BrowserSettings {
-  product: puppeteer.Product;
+  product: Product;
   executablePath: string;
 }
 
@@ -71,23 +71,27 @@ function browserSettings(name: string): BrowserSettings {
 // TODO: use the https://github.com/tj/commander.js library and
 // implement a standard command line option parsing?
 const agamaServer = process.env.AGAMA_SERVER || "http://localhost";
-const agamaPassword = process.env.AGAMA_PASSWORD || "linux";
+const agamaPassword = process.env.AGAMA_PASSWORD || "nots3cr3t";
 const agamaBrowser = process.env.AGAMA_BROWSER || "firefox";
-const slowMo = parseInt(process.env.AGAMA_SLOWMO || "0");
-const headless = booleanEnv("AGAMA_HEADLESS", true);
+const agamaSlowMo = parseInt(process.env.AGAMA_SLOWMO || "0");
+const agamaHeadless = booleanEnv("AGAMA_HEADLESS", true);
+const agamaInstall = booleanEnv("AGAMA_INSTALL", false);
+
+const agamaUser = "bernhard";
+const agamaUserFullName = "Bernhard M. Wiedemann";
 
 describe("Agama test", function () {
-  let page: puppeteer.Page;
-  let browser: puppeteer.Browser;
+  let page: Page;
+  let browser: Browser;
 
   before(async function () {
     browser = await puppeteer.launch({
       // "webDriverBiDi" does not work with old FireFox, comment it out if needed
       protocol: "webDriverBiDi",
-      headless,
+      headless: agamaHeadless,
       ignoreHTTPSErrors: true,
       timeout: 30000,
-      slowMo,
+      slowMo: agamaSlowMo,
       defaultViewport: {
         width: 1280,
         height: 768
@@ -118,7 +122,7 @@ describe("Agama test", function () {
   //     // base file name for the dumps
   //     const name = path.join(dir, this.currentTest.title.replace(/[^a-zA-Z0-9]/g, "_"));
   //     await page.screenshot({ path: name + ".png" });
-  //     const html = await page.content();
+  //     const html = await page.content()LC_ALL=en_US.UTF-8 \
   //     fs.writeFileSync(name + ".html", html);
   //   }
   // });
@@ -134,31 +138,33 @@ describe("Agama test", function () {
   });
 
   it("should optionally display the product selection dialog", async function () {
+    let timeout = 2 * 60 * 1000;
     // Either the main page is displayed (with the storage link) or there is
     // the product selection page.
     let productSelectionDisplayed = await Promise.any([
       page.waitForSelector("a[href='#/storage']")
-        .then(s => {s!.dispose(); return false}),
+        .then(s => { s!.dispose(); return false }),
       page.waitForSelector("button[form='productSelectionForm']")
-        .then(s => {s!.dispose(); return true})
+        .then(s => { s!.dispose(); return true })
     ]);
 
     if (productSelectionDisplayed) {
       await page.locator("::-p-text('openSUSE Tumbleweed')").click();
-      await page.locator("button[form='productSelectionForm']")
-        // wait until the button is enabled
-        .setWaitForEnabled(true)
-        .click();
+      await page.locator("button[form='productSelectionForm']").click();
+
+      // Check if configuration procedure is progressing
+      await page.locator("::-p-text(Configuring the product)").wait();
+
       // refreshing the repositories might take long time
-      await page.locator("h3::-p-text('Overview')").setTimeout(60000).wait();
+      await page.locator("h3::-p-text('Overview')").setTimeout(timeout).wait();
     } else {
       // no product selection displayed, mark the test as skipped
       skip();
     }
   });
-  
-  it("should display overview card", async function () {
-    await page.waitForSelector("h3::-p-text('Overview')");
+
+  it("should display overview section", async function () {
+    await page.locator("h3::-p-text('Overview')").wait();
   });
 
   it("should allow setting the root password", async function () {
@@ -180,10 +186,59 @@ describe("Agama test", function () {
       await page.locator("button[role='menuitem']::-p-text('Change')").click();
     }
 
-    const newPassword = "test";
-    await page.type("input#password", newPassword);
-    await page.type("input#passwordConfirmation", newPassword);
-
+    await page.locator("input#password").fill(agamaPassword);
+    await page.locator("input#passwordConfirmation").fill(agamaPassword);
     await page.locator("button::-p-text(Confirm)").click();
   });
+
+  it("should be ready for installation", async function () {
+    await page.locator("a[href='#/overview']").click();
+    await page.locator("h4::-p-text('Ready for installation')").wait();
+  });
+
+  it("should create first user", async function () {
+    await page.locator("a[href='#/users']").click();
+
+    let button: any = await Promise.any([
+      page.waitForSelector("a[href='#/users/first']"),
+      page.waitForSelector("button#actions-for-" + agamaUser)
+    ]);
+
+    await button!.click();
+
+    const id = await button!.evaluate((x: { id: any; }) => x.id);
+    // drop the handler to avoid memory leaks
+    button!.dispose();
+
+    // if the menu button was clicked we need to additionally press the "Discard" menu item
+    if (id === "actions-for-" + agamaUser) {
+      await page.locator("button[role='menuitem']::-p-text('Discard')").click();
+      await page.locator("a[href='#/users/first']").click();
+    }
+
+    await page.locator("input#userFullName").fill(agamaUserFullName);
+    await page.locator("input#userName").fill(agamaUser);
+    await page.locator("input#password").fill(agamaPassword);
+    await page.locator("input#passwordConfirmation").fill(agamaPassword);
+    await page.locator("button[form='firstUserForm']").click();
+
+    await page.locator("a[href='#/overview']").click();
+  });
+
+  // For development will be useful to stop before starting installation
+  if (agamaInstall === true) {
+    it("should start installation", async function () {
+      await page.locator("button::-p-text('Install')").click();
+      await page.locator("button::-p-text('Continue')").click();
+      await page.locator("::-p-text(Installing the)").wait();
+    });
+
+    it("should finish installation", async function () {
+      let timeout = 15 * 60 * 1000;
+      await page
+        .locator("h2::-p-text('Congratulations!')")
+        .setTimeout(timeout)
+        .wait();
+    });
+  }
 });
