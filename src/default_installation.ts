@@ -75,7 +75,7 @@ const agamaPassword = process.env.AGAMA_PASSWORD || "nots3cr3t";
 const agamaBrowser = process.env.AGAMA_BROWSER || "firefox";
 const agamaSlowMo = parseInt(process.env.AGAMA_SLOWMO || "0");
 const agamaHeadless = booleanEnv("AGAMA_HEADLESS", true);
-const agamaInstall = booleanEnv("AGAMA_INSTALL", false);
+const agamaInstall = booleanEnv("AGAMA_INSTALL", true);
 
 const agamaUser = "bernhard";
 const agamaUserFullName = "Bernhard M. Wiedemann";
