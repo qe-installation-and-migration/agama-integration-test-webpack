@@ -163,6 +163,7 @@ describe("Agama test", function () {
       await page.locator("h3::-p-text('Overview')").setTimeout(timeout).wait();
     } else {
       // no product selection displayed, mark the test as skipped
+      await
       skip();
     }
   });
