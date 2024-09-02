@@ -191,11 +191,6 @@ describe("Agama test", function () {
     await page.locator("button::-p-text(Confirm)").click();
   });
 
-  it("should be ready for installation", async function () {
-    await page.locator("a[href='#/overview']").click();
-    await page.locator("h4::-p-text('Ready for installation')").wait();
-  });
-
   it("should create first user", async function () {
     await page.locator("a[href='#/users']").click();
 
@@ -223,6 +218,11 @@ describe("Agama test", function () {
     await page.locator("button[form='firstUserForm']").click();
 
     await page.locator("a[href='#/overview']").click();
+  });
+
+  it("should be ready for installation", async function () {
+    await page.locator("a[href='#/overview']").click();
+    await page.locator("h4::-p-text('Ready for installation')").wait();
   });
 
   // For development will be useful to stop before starting installation
