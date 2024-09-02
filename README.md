@@ -71,7 +71,8 @@ in headed mode and connecting to a remote Agama instance:
 
 ## TODO
 
-- [ ] Dump the HTML page and screenshot on test failure
+- [x] Dump the HTML page and screenshot on test failure
+- [ ] Split the test into small reusable parts
 - [ ] Use the [commander.js](https://github.com/tj/commander.js) library and
   implement a standard command line option parsing
 - [ ] Check why Puppeteer uses that `webpackIgnore` comments, is there a better

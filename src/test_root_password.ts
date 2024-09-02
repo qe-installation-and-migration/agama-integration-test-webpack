@@ -1,11 +1,11 @@
 // FIXME: for dumping the data when the test fails
-// import fs from "fs";
-// import path from "path";
+import fs from "fs";
+import path from "path";
 
 import puppeteer from "puppeteer-core";
 
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
-import { describe, it, before, after, afterEach, skip } from "node:test";
+import { describe, it as testIt, before, after, afterEach, skip } from "node:test";
 // see https://nodejs.org/docs/latest-v20.x/api/assert.html
 import assert from "node:assert/strict";
 
@@ -67,6 +67,33 @@ function browserSettings(name: string): BrowserSettings {
   }
 }
 
+let page: puppeteer.Page;
+let browser: puppeteer.Browser;
+
+// define it() as a wrapper which dumps the page on a failure
+async function it(label: string, test: () => Promise<void>) {
+  testIt(label, async () => {
+    try {
+      await test();
+    }
+    catch (error) {
+      if (page) {
+        // directory for storing the data
+        const dir = "log";
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
+        // base file name for the dumps
+        const name = path.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
+        await page.screenshot({ path: name + ".png" });
+        const html = await page.content();
+        fs.writeFileSync(name + ".html", html);
+      }
+
+      throw new Error("Test failed!", { cause: error });
+    }
+  });
+};
+
 // arguments are passed via environment
 // TODO: use the https://github.com/tj/commander.js library and
 // implement a standard command line option parsing?
@@ -77,9 +104,6 @@ const slowMo = parseInt(process.env.AGAMA_SLOWMO || "0");
 const headless = booleanEnv("AGAMA_HEADLESS", true);
 
 describe("Agama test", function () {
-  let page: puppeteer.Page;
-  let browser: puppeteer.Browser;
-
   before(async function () {
     browser = await puppeteer.launch({
       // "webDriverBiDi" does not work with old FireFox, comment it out if needed
@@ -103,25 +127,6 @@ describe("Agama test", function () {
     await page.close();
     await browser.close();
   })
-
-  // TODO FIXME:
-  // In contrast to mocha.js the node:test library does not allow to easily get
-  // the test result. This needs a different implementation... :-/
-
-  // automatically take a screenshot and dump the page content for failed tests
-  // afterEach(async function () {
-  //   if (this.currentTest.state === "failed") {
-  //     // directory for storing the data
-  //     const dir = "log";
-  //     if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-
-  //     // base file name for the dumps
-  //     const name = path.join(dir, this.currentTest.title.replace(/[^a-zA-Z0-9]/g, "_"));
-  //     await page.screenshot({ path: name + ".png" });
-  //     const html = await page.content();
-  //     fs.writeFileSync(name + ".html", html);
-  //   }
-  // });
 
   it("should have Agama page title", async function () {
     assert.deepEqual(await page.title(), "Agama");
@@ -156,7 +161,7 @@ describe("Agama test", function () {
       skip();
     }
   });
-  
+
   it("should display overview card", async function () {
     await page.waitForSelector("h3::-p-text('Overview')");
   });
