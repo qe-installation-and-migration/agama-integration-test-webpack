@@ -196,11 +196,9 @@ describe("Agama test", function () {
   });
 
   it("should create first user", async function () {
-    await page.locator("a[href='#/users']").click();
-
     let button: any = await Promise.any([
-      page.waitForSelector("a[href='#/users/first']"),
-      page.waitForSelector("button#actions-for-" + agamaUser)
+      page.locator("a[href='#/users/first']"),
+      page.locator("button#actions-for-" + agamaUser)
     ]);
 
     await button!.click();
