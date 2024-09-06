@@ -196,14 +196,10 @@ describe("Agama test", function () {
   });
 
   it("should create first user", async function () {
-    await page.locator("a[href='#/users']").click();
-
     let button: any = await Promise.any([
       page.waitForSelector("a[href='#/users/first']"),
       page.waitForSelector("button#actions-for-" + agamaUser)
     ]);
-
-    await button!.click();
 
     const id = await button!.evaluate((x: { id: any; }) => x.id);
     // drop the handler to avoid memory leaks
@@ -211,7 +207,13 @@ describe("Agama test", function () {
 
     // if the menu button was clicked we need to additionally press the "Discard" menu item
     if (id === "actions-for-" + agamaUser) {
+      // button clicked with locator because a message disappear which changes its position
+      await page.locator("button#actions-for-" + agamaUser).click();
       await page.locator("button[role='menuitem']::-p-text('Discard')").click();
+      await page.locator("a[href='#/users/first']").click();
+    }
+    else {
+      // button clicked with locator because a message disappear which changes its position
       await page.locator("a[href='#/users/first']").click();
     }
 
