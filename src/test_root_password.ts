@@ -3,6 +3,8 @@ import fs from "fs";
 import path from "path";
 
 import puppeteer from "puppeteer-core";
+import { program, Option } from "commander";
+import * as commander from "commander";
 
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 import { describe, it as testIt, before, after, afterEach, skip } from "node:test";
@@ -72,55 +74,81 @@ let browser: puppeteer.Browser;
 
 // define it() as a wrapper which dumps the page on a failure
 async function it(label: string, test: () => Promise<void>) {
-  testIt(label, async () => {
-    try {
-      await test();
-    }
-    catch (error) {
-      if (page) {
-        // directory for storing the data
-        const dir = "log";
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-
-        // base file name for the dumps
-        const name = path.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
-        await page.screenshot({ path: name + ".png" });
-        const html = await page.content();
-        fs.writeFileSync(name + ".html", html);
+  testIt(label,
+    // abort when the test takes more than one minute
+    { timeout: 60000 },
+    async () => {
+      try {
+        await test();
       }
+      catch (error) {
+        if (page) {
+          // directory for storing the data
+          const dir = "log";
+          if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 
-      throw new Error("Test failed!", { cause: error });
+          // base file name for the dumps
+          const name = path.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
+          await page.screenshot({ path: name + ".png" });
+          const html = await page.content();
+          fs.writeFileSync(name + ".html", html);
+        }
+
+        throw new Error("Test failed!", { cause: error });
+      }
     }
-  });
+  );
 };
 
-// arguments are passed via environment
-// TODO: use the https://github.com/tj/commander.js library and
-// implement a standard command line option parsing?
-const agamaServer = process.env.AGAMA_SERVER || "http://localhost";
-const agamaPassword = process.env.AGAMA_PASSWORD || "linux";
-const agamaBrowser = process.env.AGAMA_BROWSER || "firefox";
-const slowMo = parseInt(process.env.AGAMA_SLOWMO || "0");
-const headless = booleanEnv("AGAMA_HEADLESS", true);
+// parse command line argument as an integer
+function getInt(value: string) {
+  // parse the value as a decimal number (base 10)
+  const parsed = parseInt(value, 10);
+  if (isNaN(parsed)) {
+    throw new commander.InvalidArgumentError("Enter a valid number.");
+  }
+
+  return parsed;
+}
+
+// define the command line arguments and parse them
+// see https://github.com/tj/commander.js
+program
+  .description("Run a simple Agama integration test")
+  .option("-u, --url <url>", "Agama server URL", "http://localhost")
+  .option("-p, --password <pwd>", "Agama login password", "linux")
+  .addOption(new Option("-b, --browser <browser>", "Browser used for running the test")
+    .choices(["firefox", "chrome", "chromium"])
+    .default("firefox")
+  )
+  .option("-h, --headed", "Run the browser in headed mode with UI (the default is headless mode)")
+  .addOption(new Option("-d, --delay <miliseconds>", "Delay between the browser actions, useful in headed mode")
+    .argParser(getInt)
+    .default(0)
+  )
+  .parse(process.argv);
+
+// parse options from the command line
+const options = program.opts();
 
 describe("Agama test", function () {
   before(async function () {
     browser = await puppeteer.launch({
       // "webDriverBiDi" does not work with old FireFox, comment it out if needed
       protocol: "webDriverBiDi",
-      headless,
+      headless: !options.headed,
       ignoreHTTPSErrors: true,
       timeout: 30000,
-      slowMo,
+      slowMo: options.slow,
       defaultViewport: {
         width: 1280,
         height: 768
       },
-      ...browserSettings(agamaBrowser)
+      ...browserSettings(options.browser)
     });
     page = await browser.newPage();
     page.setDefaultTimeout(20000);
-    await page.goto(agamaServer, { timeout: 60000, waitUntil: "domcontentloaded" });
+    await page.goto(options.url, { timeout: 60000, waitUntil: "domcontentloaded" });
   });
 
   after(async function () {
@@ -134,7 +162,7 @@ describe("Agama test", function () {
 
   it("allows logging in", async function () {
     // await page.waitForSelector("input#password");
-    await page.type("input#password", agamaPassword);
+    await page.type("input#password", options.password);
     await page.click("button[type='submit']");
   });
 

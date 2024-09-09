@@ -50,30 +50,46 @@ running Agama instance, to use a remote one see the options below):
 
 To use the TAP output format, use the `--test-reporter` Node.js option:
 
-    node --test-reporter=tap --test-timeout=60000 ./dist/test_root_password.cjs
+    node --test-reporter=tap ./dist/test_root_password.cjs
 
 Alternatively it is possible to implement [own test reporter](
 https://www.nearform.com/insights/writing-a-node-js-test-reporter/).
 
-The test currently accepts the options only via the environment variables. Full
-example for running the browser using English locale, using local Chrome browser
-in headed mode and connecting to a remote Agama instance:
+The test currently accepts several optional arguments, run
+`./dist/test_root_password.cjs --help`:
 
-    LC_ALL=en_US.UTF-8 AGAMA_BROWSER=chrome AGAMA_HEADLESS=false \
-    AGAMA_SERVER=https://agama.local node --test-timeout=60000 \
-    dist/test_root_password.cjs
+    Usage: test_root_password [options]
+
+    Run a simple Agama integration test
+
+    Options:
+      -u, --url <url>            Agama server URL (default: "http://localhost")
+      -p, --password <pwd>       Agama login password (default: "linux")
+      -b, --browser <browser>    Browser used for running the test (choices:
+                                 "firefox", "chrome", "chromium", default:
+                                 "firefox")
+      -h, --headed               Run the browser in headed mode with UI (the
+                                 default is headless mode)
+      -d, --delay <miliseconds>  Delay between the browser actions, useful in
+                                 headed mode (default: 0)
+      --help                     display help for command
+
+Full example for running the browser in the English locale, using local Chrome
+browser in headed mode and connecting to a remote Agama instance:
+
+    LC_ALL=en_US.UTF-8 ./dist/test_root_password.cjs -h -b chrome -u https://agama.local
 
 ## Notes
 
 - It uses the Node.js built-in test framework and the runner instead of Mocha.js
-  which needs a special test runner that cannot be bundled into the generated file
-  by Webpack.
+  (or any similar framework) which needs a special test runner that cannot be
+  bundled into the generated file by Webpack.
 
 ## TODO
 
 - [x] Dump the HTML page and screenshot on test failure
 - [ ] Split the test into small reusable parts
-- [ ] Use the [commander.js](https://github.com/tj/commander.js) library and
+- [x] Use the [commander.js](https://github.com/tj/commander.js) library and
   implement a standard command line option parsing
 - [ ] Check why Puppeteer uses that `webpackIgnore` comments, is there a better
   way than patching the Puppeteer code?
