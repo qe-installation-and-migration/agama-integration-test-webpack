@@ -3,9 +3,12 @@ const fs = require("fs");
 const webpack = require("webpack");
 
 module.exports = {
-  entry: "./src/default_installation.ts",
+  entry: {
+    full_disk_encryption: "./src/tests/full_disk_encryption.ts",
+    default_installation: "./src/tests/default_installation.ts",
+  },
   output: {
-    filename: "default_installation.cjs",
+    filename: "[name].cjs",
     path: path.resolve(__dirname, "dist"),
     clean: true
   },
