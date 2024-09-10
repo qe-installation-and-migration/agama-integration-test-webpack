@@ -17,6 +17,27 @@ import assert from "node:assert/strict";
 // ./log/ subdirectory.
 // For more details about customization see the README.md file.
 
+// define the command line arguments and parse them
+// see https://github.com/tj/commander.js
+program
+  .description("Run a simple Agama integration test")
+  .option("-u, --url <url>", "Agama server URL", "http://localhost")
+  .option("-p, --password <password>", "Agama login password", "linux")
+  .addOption(new Option("-b, --browser <browser>", "Browser used for running the test")
+    .choices(["firefox", "chrome", "chromium"])
+    .default("firefox")
+  )
+  .option("-h, --headed", "Run the browser in headed mode with UI (the default is headless mode)")
+  .addOption(new Option("-d, --delay <miliseconds>", "Delay between the browser actions, useful in headed mode")
+    .argParser(getInt)
+    .default(0)
+  )
+  .option("-c, --continue", "Continue the test after a failure (the default is abort on error)")
+  .parse(process.argv);
+
+// parse options from the command line
+const options = program.opts();
+
 // helper function for converting String to Boolean
 function booleanEnv(name: string, default_value: boolean) {
   const env = process.env[name];
@@ -71,17 +92,22 @@ function browserSettings(name: string): BrowserSettings {
 
 let page: puppeteer.Page;
 let browser: puppeteer.Browser;
+let failed = false;
 
 // define it() as a wrapper which dumps the page on a failure
 async function it(label: string, test: () => Promise<void>) {
   testIt(label,
     // abort when the test takes more than one minute
     { timeout: 60000 },
-    async () => {
+    async (t) => {
       try {
-        await test();
+        if (failed)
+          t.skip()
+        else
+          await test();
       }
       catch (error) {
+        if (!options.continue) failed = true;
         if (page) {
           // directory for storing the data
           const dir = "log";
@@ -110,26 +136,6 @@ function getInt(value: string) {
 
   return parsed;
 }
-
-// define the command line arguments and parse them
-// see https://github.com/tj/commander.js
-program
-  .description("Run a simple Agama integration test")
-  .option("-u, --url <url>", "Agama server URL", "http://localhost")
-  .option("-p, --password <pwd>", "Agama login password", "linux")
-  .addOption(new Option("-b, --browser <browser>", "Browser used for running the test")
-    .choices(["firefox", "chrome", "chromium"])
-    .default("firefox")
-  )
-  .option("-h, --headed", "Run the browser in headed mode with UI (the default is headless mode)")
-  .addOption(new Option("-d, --delay <miliseconds>", "Delay between the browser actions, useful in headed mode")
-    .argParser(getInt)
-    .default(0)
-  )
-  .parse(process.argv);
-
-// parse options from the command line
-const options = program.opts();
 
 describe("Agama test", function () {
   before(async function () {

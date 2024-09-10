@@ -64,7 +64,7 @@ The test currently accepts several optional arguments, run
 
     Options:
       -u, --url <url>            Agama server URL (default: "http://localhost")
-      -p, --password <pwd>       Agama login password (default: "linux")
+      -p, --password <password>  Agama login password (default: "linux")
       -b, --browser <browser>    Browser used for running the test (choices:
                                  "firefox", "chrome", "chromium", default:
                                  "firefox")
@@ -72,6 +72,8 @@ The test currently accepts several optional arguments, run
                                  default is headless mode)
       -d, --delay <miliseconds>  Delay between the browser actions, useful in
                                  headed mode (default: 0)
+      -c, --continue             Continue the test after a failure (the default is
+                                 abort on error)
       --help                     display help for command
 
 Full example for running the browser in the English locale, using local Chrome
