@@ -73,10 +73,10 @@ let browser: Browser;
 let failed = false;
 
 // define it() as a wrapper which dumps the page on a failure
-async function it(label: string, test: () => Promise<void>) {
+async function it(label: string, test: () => Promise<void>, timeout?: number) {
   testIt(label,
     // abort when the test takes more than one minute
-    { timeout: 60000 },
+    { timeout: timeout || 60000 },
     async (t) => {
       try {
         if (failed)
@@ -273,11 +273,10 @@ describe("Agama test", function () {
     });
 
     it("should finish installation", async function () {
-      let timeout = 15 * 60 * 1000;
       await page
         .locator("h2::-p-text('Congratulations!')")
-        .setTimeout(timeout)
+        .setTimeout(15 * 60 * 1000)
         .wait();
-    });
+    }, 15 * 60 * 1000);
   }
 });
