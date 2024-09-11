@@ -119,7 +119,7 @@ function getInt(value: string) {
 program
   .description("Run a simple Agama integration test")
   .option("-u, --url <url>", "Agama server URL", "http://localhost")
-  .option("-p, --password <password>", "Agama login password", "linux")
+  .option("-p, --password <password>", "Agama login password", "nots3cr3t")
   .addOption(new Option("-b, --browser <browser>", "Browser used for running the test")
     .choices(["firefox", "chrome", "chromium"])
     .default("firefox")
