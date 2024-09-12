@@ -10,6 +10,8 @@ import { describe, it as testIt, before, after, afterEach, skip } from "node:tes
 // see https://nodejs.org/docs/latest-v20.x/api/assert.html
 import assert from "node:assert/strict";
 
+import { LoginAsRootPage } from "./pages/login-as-root-page";
+
 // This is an example file for running Agama integration tests using Puppeteer.
 //
 // If the test fails it saves the page screenshot and the HTML page dump to
@@ -169,9 +171,8 @@ describe("Agama test", function () {
   });
 
   it("allows logging in", async function () {
-    // await page.waitForSelector("input#password");
-    await page.type("input#password", options.password);
-    await page.click("button[type='submit']");
+    let loginAsRoot = new LoginAsRootPage(page);
+    loginAsRoot.logIn(options.password);
   });
 
   it("should optionally display the product selection dialog", async function () {
