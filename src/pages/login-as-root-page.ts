@@ -1,14 +1,12 @@
-import puppeteer, { type Locator, type Page } from "puppeteer-core";
+import puppeteer, { type Page } from "puppeteer-core";
 
 export class LoginAsRootPage {
     readonly page: Page;
-    readonly passwordInput;
-    readonly logInButton;
+    readonly passwordInput = () => this.page.locator("input#password");
+    readonly logInButton = () => this.page.locator("button[type='submit']");
 
     constructor(page: Page) {
         this.page = page;
-        this.passwordInput = () => page.locator("input#password");
-        this.logInButton = () => page.locator("button[type='submit']");
     }
 
     async logIn(password: string) {
