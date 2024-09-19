@@ -138,6 +138,7 @@ program
 const options = program.opts();
 
 const agamaInstall = booleanEnv("AGAMA_INSTALL", true);
+const configureDasd = booleanEnv("CONFIGURE_DASD", false);
 const agamaUser = "bernhard";
 const agamaUserFullName = "Bernhard M. Wiedemann";
 
@@ -230,6 +231,7 @@ describe("Agama test", function () {
   });
 
   it("should create first user", async function () {
+    await page.locator("a[href='#/users']").click();
     let button: any = await Promise.any([
       page.waitForSelector("a[href='#/users/first']"),
       page.waitForSelector("button#actions-for-" + agamaUser)
@@ -256,9 +258,30 @@ describe("Agama test", function () {
     await page.locator("input#password").fill(options.password);
     await page.locator("input#passwordConfirmation").fill(options.password);
     await page.locator("button[form='firstUserForm']").click();
-
-    await page.locator("a[href='#/overview']").click();
   });
+
+  if(configureDasd) {
+    it("should prepare storage", async function () {
+
+      // Workaround, sometimes the UI seems not responsive
+      await page.locator("a[href='#/storage']").click({delay: 1000});
+      await page.locator("a[href='#/storage']").click({delay: 1000});
+      await page.locator("a[href='#/storage/target-device']").click();
+      await page.locator("span::-p-text('storage techs')").click();
+      await page.locator("span::-p-text('DASD')").click({delay: 1000});
+
+      // Enabling DASD device, by default it is always disabled
+      await page.locator("input[name='checkrow0']").click({delay: 1000});
+      await page.locator("span::-p-text('Perform an action')").click({delay: 1000});
+      await page.locator("span::-p-text('Activate')").click();
+
+      // Selecting installation device
+      await page.locator("a[href='#/storage']").click();
+      await page.locator("a[href='#/storage/target-device']").click({delay: 1000});
+      await page.locator("input[aria-label='Select row 0']").click();
+      await page.locator("button[form='targetSelection']").click();
+    });
+  }
 
   it("should be ready for installation", async function () {
     await page.locator("a[href='#/overview']").click();
