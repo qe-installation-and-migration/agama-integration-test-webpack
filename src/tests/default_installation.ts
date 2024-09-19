@@ -11,6 +11,7 @@ import { describe, it as testIt, before, after, afterEach, skip } from "node:tes
 import assert from "node:assert/strict";
 
 import { LoginAsRootPage } from "../pages/login-as-root-page";
+import { ProductSelectionPage } from "../pages/product-selection-page";
 
 // This is an example file for running Agama integration tests using Puppeteer.
 //
@@ -188,8 +189,8 @@ describe("Agama test", function () {
     ]);
 
     if (productSelectionDisplayed) {
-      await page.locator("::-p-text('openSUSE Tumbleweed')").click();
-      await page.locator("button[form='productSelectionForm']").click();
+      const productselection = new ProductSelectionPage(page);
+      await productselection.selectTumbleweed();
 
       // Check if configuration procedure is progressing
       await page.locator("::-p-text(Configuring the product)").wait();
