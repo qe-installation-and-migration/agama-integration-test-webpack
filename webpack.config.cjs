@@ -3,7 +3,7 @@ const fs = require("fs");
 const webpack = require("webpack");
 
 module.exports = {
-  entry: "./src/default_installation.ts",
+  entry: "./src/tests/default_installation.ts",
   output: {
     filename: "default_installation.cjs",
     path: path.resolve(__dirname, "dist"),
