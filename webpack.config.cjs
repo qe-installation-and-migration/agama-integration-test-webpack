@@ -31,7 +31,7 @@ module.exports = {
       maxChunks: 1,
     }),
     // prepend a hashbang at the beginning of the generated file
-    new webpack.BannerPlugin({ banner: "#! /usr/bin/env -S node --test-timeout=60000", raw: true }),
+    new webpack.BannerPlugin({ banner: "#! /usr/bin/env -S node --enable-source-maps --test-timeout=60000", raw: true }),
     // make the file JS files executable
     function () {
       this.hooks.done.tap("Change permissions", (data) => {
