@@ -8,11 +8,13 @@ import assert from "node:assert/strict";
 
 import { booleanEnv, options, puppeteerLaunchOptions } from "../configuration";
 
+
 import { LoginAsRootPage } from "../pages/login-as-root-page";
 import { ProductSelectionPage } from "../pages/product-selection-page";
 import { SidebarPage } from "../pages/sidebar-page";
 import { UsersPage } from "../pages/users-page";
-import { SetARootPassword } from "../pages/root-password-page";
+import { SetARootPasswordPage } from "../pages/root-password-page";
+import { CreateFirstUserPage } from "../pages/create-user-page"
 
 let page: Page;
 let browser: Browser;
@@ -89,7 +91,6 @@ describe("Agama test", function () {
     else {
       await productselection.selectTumbleweed();
     }
-
     // Check if configuration procedure is progressing
     await page.locator("::-p-text(Configuring the product)").wait();
 
@@ -104,7 +105,7 @@ describe("Agama test", function () {
   it("should allow setting the root password", async function () {
     const sidebar = new SidebarPage(page);
     const users = new UsersPage(page);
-    const setARootPassword = new SetARootPassword(page);
+    const setARootPassword = new SetARootPasswordPage(page);
 
     await sidebar.goToUsers();
     await users.setAPassword();
@@ -114,33 +115,14 @@ describe("Agama test", function () {
   });
 
   it("should create first user", async function () {
-    await page.locator("a[href='#/users']").click();
-    let button: any = await Promise.any([
-      page.waitForSelector("a[href='#/users/first']"),
-      page.waitForSelector("button#actions-for-" + agamaUser)
-    ]);
-
-    const id = await button!.evaluate((x: { id: any; }) => x.id);
-    // drop the handler to avoid memory leaks
-    button!.dispose();
-
-    // if the menu button was clicked we need to additionally press the "Discard" menu item
-    if (id === "actions-for-" + agamaUser) {
-      // button clicked with locator because a message disappear which changes its position
-      await page.locator("button#actions-for-" + agamaUser).click();
-      await page.locator("button[role='menuitem']::-p-text('Discard')").click();
-      await page.locator("a[href='#/users/first']").click();
-    }
-    else {
-      // button clicked with locator because a message disappear which changes its position
-      await page.locator("a[href='#/users/first']").click();
-    }
-
-    await page.locator("input#userFullName").fill(agamaUserFullName);
-    await page.locator("input#userName").fill(agamaUser);
-    await page.locator("input#password").fill(options.password);
-    await page.locator("input#passwordConfirmation").fill(options.password);
-    await page.locator("button[form='firstUserForm']").click();
+    const users = new UsersPage(page);
+    const createFirstUser = new CreateFirstUserPage(page);
+    await users.defineAUserNow();
+    await createFirstUser.fillFullName(agamaUserFullName);
+    await createFirstUser.fillUserName(agamaUser);
+    await createFirstUser.fillPassword(options.password);
+    await createFirstUser.fillPasswordConfirmation(options.password);
+    await createFirstUser.accept();
   });
 
   if (agamaDasd) {
