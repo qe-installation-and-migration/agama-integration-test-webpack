@@ -10,6 +10,9 @@ import { booleanEnv, options, puppeteerLaunchOptions } from "../configuration";
 
 import { LoginAsRootPage } from "../pages/login-as-root-page";
 import { ProductSelectionPage } from "../pages/product-selection-page";
+import { SidebarPage } from "../pages/sidebar-page";
+import { UsersPage } from "../pages/users-page";
+import { SetARootPassword } from "../pages/root-password-page";
 
 let page: Page;
 let browser: Browser;
@@ -75,35 +78,23 @@ describe("Agama test", function () {
     await loginAsRoot.logIn(options.password);
   });
 
-  it("should optionally display the product selection dialog", async function () {
+  it("should display the product selection dialog", async function () {
+    const productselection = new ProductSelectionPage(page);
+
     let timeout = 2 * 60 * 1000;
-    // Either the main page is displayed (with the storage link) or there is
-    // the product selection page.
-    let productSelectionDisplayed = await Promise.any([
-      page.waitForSelector("a[href='#/storage']")
-        .then(s => { s!.dispose(); return false }),
-      page.waitForSelector("button[form='productSelectionForm']")
-        .then(s => { s!.dispose(); return true })
-    ]);
 
-    if (productSelectionDisplayed) {
-      const productselection = new ProductSelectionPage(page);
-      if (agamaProduct === "leap") {
-        await productselection.selectLeap();
-      }
-      else {
-        await productselection.selectTumbleweed();
-      }
-
-      // Check if configuration procedure is progressing
-      await page.locator("::-p-text(Configuring the product)").wait();
-
-      // refreshing the repositories might take long time
-      await page.locator("h3::-p-text('Overview')").setTimeout(timeout).wait();
-    } else {
-      // no product selection displayed, mark the test as skipped
-      skip();
+    if (agamaProduct === "leap") {
+      await productselection.selectLeap();
     }
+    else {
+      await productselection.selectTumbleweed();
+    }
+
+    // Check if configuration procedure is progressing
+    await page.locator("::-p-text(Configuring the product)").wait();
+
+    // refreshing the repositories might take long time
+    await page.locator("h3::-p-text('Overview')").setTimeout(timeout).wait();
   });
 
   it("should display overview section", async function () {
@@ -111,27 +102,15 @@ describe("Agama test", function () {
   });
 
   it("should allow setting the root password", async function () {
-    await page.locator("a[href='#/users']").click();
+    const sidebar = new SidebarPage(page);
+    const users = new UsersPage(page);
+    const setARootPassword = new SetARootPassword(page);
 
-    let button: any = await Promise.any([
-      page.waitForSelector("button::-p-text(Set a password)"),
-      page.waitForSelector("button#actions-for-root-password")
-    ]);
-
-    await button!.click();
-
-    const id = await button!.evaluate((x: { id: any; }) => x.id);
-    // drop the handler to avoid memory leaks
-    button!.dispose();
-
-    // if the menu button was clicked we need to additionally press the "Change" menu item
-    if (id === "actions-for-root-password") {
-      await page.locator("button[role='menuitem']::-p-text('Change')").click();
-    }
-
-    await page.locator("input#password").fill(options.password);
-    await page.locator("input#passwordConfirmation").fill(options.password);
-    await page.locator("button::-p-text(Confirm)").click();
+    await sidebar.goToUsers();
+    await users.setAPassword();
+    await setARootPassword.fillPassword(options.password);
+    await setARootPassword.fillPasswordConfirmation(options.password);
+    await setARootPassword.confirm();
   });
 
   it("should create first user", async function () {
