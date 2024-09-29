@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-import { type Product, type Page, type ProtocolType, Protocol } from "puppeteer-core";
+import { type Page, type ProtocolType } from "puppeteer-core";
 import { it as testIt } from "node:test";
 
 import { program, Option } from "commander";
@@ -32,7 +32,7 @@ function booleanEnv(name: string, default_value: boolean) {
 }
 
 interface BrowserSettings {
-  product: Product;
+  product: string;
   executablePath: string;
 }
 
@@ -127,9 +127,10 @@ async function it(label: string, test: () => Promise<void>, timeout?: number) {
 
 const puppeteerLaunchOptions = {
   // "webDriverBiDi" does not work with old FireFox, comment it out if needed
-  protocol: "webDriverBiDi" as ProtocolType,
+  // protocol: "webDriverBiDi" as ProtocolType,
   headless: !options.headed,
-  ignoreHTTPSErrors: true,
+  // ignoreHTTPSErrors: true,
+  acceptInsecureCerts: true,
   timeout: 30000,
   slowMo: options.delay,
   defaultViewport: {
