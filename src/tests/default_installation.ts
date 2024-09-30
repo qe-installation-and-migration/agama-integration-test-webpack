@@ -47,7 +47,9 @@ async function it(label: string, test: () => Promise<void>, timeout?: number) {
 };
 
 const agamaInstall = booleanEnv("AGAMA_INSTALL", true);
-const configureDasd = booleanEnv("CONFIGURE_DASD", false);
+const agamaDasd = booleanEnv("AGAMA_DASD", false);
+const agamaProduct = process.env.AGAMA_PRODUCT || "tumbleweed";
+
 const agamaUser = "bernhard";
 const agamaUserFullName = "Bernhard M. Wiedemann";
 
@@ -86,7 +88,12 @@ describe("Agama test", function () {
 
     if (productSelectionDisplayed) {
       const productselection = new ProductSelectionPage(page);
-      await productselection.selectTumbleweed();
+      if (agamaProduct === "leap") {
+        await productselection.selectLeap();
+      }
+      else {
+        await productselection.selectTumbleweed();
+      }
 
       // Check if configuration procedure is progressing
       await page.locator("::-p-text(Configuring the product)").wait();
@@ -157,7 +164,7 @@ describe("Agama test", function () {
     await page.locator("button[form='firstUserForm']").click();
   });
 
-  if (configureDasd) {
+  if (agamaDasd) {
     it("should prepare storage", async function () {
 
       // Workaround, sometimes the UI seems not responsive
