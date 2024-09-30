@@ -1,15 +1,50 @@
+import fs from "fs";
+import path from "path";
+
 import puppeteer, { type Browser, type Page } from "puppeteer-core";
 
-import { describe, before, after, skip } from "node:test";
+import { it as testIt, describe, before, after, skip } from "node:test";
 import assert from "node:assert/strict";
 
-import { booleanEnv, options, it, puppeteerLaunchOptions } from "../configuration";
+import { booleanEnv, options, puppeteerLaunchOptions } from "../configuration";
 
 import { LoginAsRootPage } from "../pages/login-as-root-page";
 import { ProductSelectionPage } from "../pages/product-selection-page";
 
 let page: Page;
 let browser: Browser;
+let failed = false;
+
+// define it() as a wrapper which dumps the page on a failure
+async function it(label: string, test: () => Promise<void>, timeout?: number) {
+  testIt(label,
+    // abort when the test takes more than one minute
+    { timeout: timeout || 60000 },
+    async (t) => {
+      try {
+        if (failed)
+          t.skip()
+        else
+          await test();
+      }
+      catch (error) {
+        if (!options.continue) failed = true;
+        if (page) {
+          // directory for storing the data
+          const dir = "log";
+          if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
+          // base file name for the dumps
+          const name = path.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
+          await page.screenshot({ path: name + ".png" });
+          const html = await page.content();
+          fs.writeFileSync(name + ".html", html);
+        }
+
+        throw new Error("Test failed!", { cause: error });
+      }
+    });
+};
 
 const agamaInstall = booleanEnv("AGAMA_INSTALL", true);
 const configureDasd = booleanEnv("CONFIGURE_DASD", false);
