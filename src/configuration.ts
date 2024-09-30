@@ -1,8 +1,4 @@
-import fs from "fs";
-import path from "path";
-
-import { type Product, type Page, type ProtocolType, Protocol } from "puppeteer-core";
-import { it as testIt } from "node:test";
+import { type Product, type ProtocolType } from "puppeteer-core";
 
 import { program, Option } from "commander";
 import * as commander from "commander";
@@ -91,40 +87,6 @@ program
 // parse options from the command line
 const options = program.opts();
 
-let page: Page;
-let failed = false;
-
-// define it() as a wrapper which dumps the page on a failure
-async function it(label: string, test: () => Promise<void>, timeout?: number) {
-  testIt(label,
-    // abort when the test takes more than one minute
-    { timeout: timeout || 60000 },
-    async (t) => {
-      try {
-        if (failed)
-          t.skip()
-        else
-          await test();
-      }
-      catch (error) {
-        if (!options.continue) failed = true;
-        if (page) {
-          // directory for storing the data
-          const dir = "log";
-          if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-
-          // base file name for the dumps
-          const name = path.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
-          await page.screenshot({ path: name + ".png" });
-          const html = await page.content();
-          fs.writeFileSync(name + ".html", html);
-        }
-
-        throw new Error("Test failed!", { cause: error });
-      }
-    });
-};
-
 const puppeteerLaunchOptions = {
   // "webDriverBiDi" does not work with old FireFox, comment it out if needed
   protocol: "webDriverBiDi" as ProtocolType,
@@ -139,4 +101,4 @@ const puppeteerLaunchOptions = {
   ...browserSettings(options.browser)
 }
 
-export { booleanEnv, options, it, puppeteerLaunchOptions };
+export { booleanEnv, options, puppeteerLaunchOptions };
