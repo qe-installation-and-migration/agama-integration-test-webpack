@@ -15,6 +15,8 @@ import { SidebarPage } from "../pages/sidebar-page";
 import { UsersPage } from "../pages/users-page";
 import { SetARootPasswordPage } from "../pages/root-password-page";
 import { CreateFirstUserPage } from "../pages/create-user-page"
+import { OverviewPage } from "../pages/overiew-page";
+import { ConfirmInstallationPopup } from "../pages/confirm-installation-page";
 
 let page: Page;
 let browser: Browser;
@@ -153,7 +155,8 @@ describe("Agama test", function () {
   }
 
   it("should be ready for installation", async function () {
-    await page.locator("a[href='#/overview']").click();
+    const sidebar = new SidebarPage(page);
+    await sidebar.goToOverview();
     // In Overview, Storage section takes more time to refresh changing 
     // the position in the screen of text 'Ready for installation and button 'Install'
     // page.waitForNetworkIdle solves this issue
@@ -163,8 +166,10 @@ describe("Agama test", function () {
   // For development will be useful to stop before starting installation
   if (agamaInstall === true) {
     it("should start installation", async function () {
-      await page.locator("button::-p-text('Install')").click();
-      await page.locator("button::-p-text('Continue')").click();
+      const overview = new OverviewPage(page);
+      const install = new ConfirmInstallationPopup(page);
+      await overview.install();
+      await install.continue();
       await page.locator("::-p-text(Installing the)").wait();
     });
 
