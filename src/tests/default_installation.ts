@@ -64,7 +64,6 @@ describe("Agama test", function () {
     page = await browser.newPage();
     page.setDefaultTimeout(20000);
     await page.goto(options.url, { timeout: 60000, waitUntil: "domcontentloaded" });
-    await page.waitForNetworkIdle({ idleTime: 1000 });
   });
 
   after(async function () {
@@ -113,9 +112,6 @@ describe("Agama test", function () {
     await setARootPassword.fillPassword(options.password);
     await setARootPassword.fillPasswordConfirmation(options.password);
     await setARootPassword.confirm();
-
-    // a popup to disappear which changes the positions of other elements
-    // page.waitForNetworkIdle solves this issue
   });
 
   it("should create first user", async function () {
@@ -154,15 +150,14 @@ describe("Agama test", function () {
 
   it("should be ready for installation", async function () {
     await page.locator("a[href='#/overview']").click();
-    // In Overview, Storage section takes more time to refresh changing 
-    // the position in the screen of text 'Ready for installation and button 'Install'
-    // page.waitForNetworkIdle solves this issue
     await page.locator("h4::-p-text('Ready for installation')").wait();
   });
 
   // For development will be useful to stop before starting installation
   if (agamaInstall === true) {
     it("should start installation", async function () {
+      // ensure storage is loaded before clicking on Install
+      await page.locator('::-p-aria(Storage[role=\\"heading\\"])').wait();
       await page.locator("button::-p-text('Install')").click();
       await page.locator("button::-p-text('Continue')").click();
       await page.locator("::-p-text(Installing the)").wait();
