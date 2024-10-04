@@ -91,7 +91,6 @@ const puppeteerLaunchOptions = {
   // "webDriverBiDi" does not work with old FireFox, comment it out if needed
   protocol: "webDriverBiDi" as ProtocolType,
   headless: !options.headed,
-  // ignoreHTTPSErrors: true,
   acceptInsecureCerts: true,
   timeout: 30000,
   slowMo: options.delay,
@@ -102,4 +101,8 @@ const puppeteerLaunchOptions = {
   ...browserSettings(options.browser)
 }
 
-export { booleanEnv, options, puppeteerLaunchOptions };
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export { booleanEnv, options, puppeteerLaunchOptions, sleep };

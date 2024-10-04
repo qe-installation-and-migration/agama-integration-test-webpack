@@ -6,7 +6,7 @@ import puppeteer, { type Browser, type Page } from "puppeteer-core";
 import { it as testIt, describe, before, after, skip } from "node:test";
 import assert from "node:assert/strict";
 
-import { booleanEnv, options, puppeteerLaunchOptions } from "../configuration";
+import { booleanEnv, options, puppeteerLaunchOptions, sleep } from "../configuration";
 
 
 import { LoginAsRootPage } from "../pages/login-as-root-page";
@@ -117,6 +117,9 @@ describe("Agama test", function () {
   it("should create first user", async function () {
     const users = new UsersPage(page);
     const createFirstUser = new CreateFirstUserPage(page);
+
+    // todo: button is moving in the page and fails in slow machines
+    await sleep(2000);
     await users.defineAUserNow();
     await createFirstUser.fillFullName(agamaUserFullName);
     await createFirstUser.fillUserName(agamaUser);
@@ -156,8 +159,8 @@ describe("Agama test", function () {
   // For development will be useful to stop before starting installation
   if (agamaInstall === true) {
     it("should start installation", async function () {
-      // ensure storage is loaded before clicking on Install
-      await page.locator('::-p-aria(Storage[role=\\"heading\\"])').wait();
+      // todo: button is moving in the page and fails in slow machines
+      await sleep(2000);
       await page.locator("button::-p-text('Install')").click();
       await page.locator("button::-p-text('Continue')").click();
       await page.locator("::-p-text(Installing the)").wait();
