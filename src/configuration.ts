@@ -1,4 +1,4 @@
-import { type Product, type ProtocolType } from "puppeteer-core";
+import { type SupportedBrowser, type ProtocolType } from "puppeteer-core";
 
 import { program, Option } from "commander";
 import * as commander from "commander";
@@ -28,7 +28,7 @@ function booleanEnv(name: string, default_value: boolean) {
 }
 
 interface BrowserSettings {
-  product: Product;
+  browser: SupportedBrowser;
   executablePath: string;
 }
 
@@ -37,17 +37,17 @@ function browserSettings(name: string): BrowserSettings {
   switch (name.toLowerCase()) {
     case "firefox":
       return {
-        product: "firefox",
+        browser: "firefox",
         executablePath: "/usr/bin/firefox",
       };
     case "chrome":
       return {
-        product: "chrome",
+        browser: "chrome",
         executablePath: "/usr/bin/google-chrome-stable",
       };
     case "chromium":
       return {
-        product: "chrome",
+        browser: "chrome",
         executablePath: "/usr/bin/chromium",
       };
     default:
@@ -91,7 +91,8 @@ const puppeteerLaunchOptions = {
   // "webDriverBiDi" does not work with old FireFox, comment it out if needed
   protocol: "webDriverBiDi" as ProtocolType,
   headless: !options.headed,
-  ignoreHTTPSErrors: true,
+  // ignoreHTTPSErrors: true,
+  acceptInsecureCerts: true,
   timeout: 30000,
   slowMo: options.delay,
   defaultViewport: {
