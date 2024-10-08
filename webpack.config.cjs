@@ -2,11 +2,14 @@ const path = require("path");
 const fs = require("fs");
 const webpack = require("webpack");
 
+const entry = {}
+// process all ./src/test-*.ts files
+fs.readdirSync("./src").filter(f => f.startsWith("test-") && f.endsWith(".ts")).forEach(
+  (f) => { entry[path.basename(f, ".ts")] = "./src/" + f }
+);
+
 module.exports = {
-  entry: {
-    full_disk_encryption: "./src/tests/full_disk_encryption.ts",
-    default_installation: "./src/tests/default_installation.ts",
-  },
+  entry,
   output: {
     filename: "[name].cjs",
     path: path.resolve(__dirname, "dist"),
@@ -28,18 +31,23 @@ module.exports = {
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
   },
+  optimization: {
+    splitChunks: {
+      chunks: "all",
+    },
+  },
   plugins: [
     // do not split the code into several files, generate a single output file
     new webpack.optimize.LimitChunkCountPlugin({
       maxChunks: 1,
     }),
     // prepend a hashbang at the beginning of the generated file
-    new webpack.BannerPlugin({ banner: "#! /usr/bin/env -S node --enable-source-maps --test-timeout=60000", raw: true }),
+    new webpack.BannerPlugin({ banner: "#! /usr/bin/env -S node --enable-source-maps --test-timeout=60000", raw: true, test: /^test-.*\.cjs$/ }),
     // make the file JS files executable
     function () {
       this.hooks.done.tap("Change permissions", (data) => {
         Object.keys(data.compilation.assets).forEach((file) => {
-          if (file.match(/\.cjs$/)) {
+          if (file.match(/^test-.*\.cjs$/)) {
             fs.chmodSync(`${__dirname}/dist/${file}`, 0o755);
           }
         });
