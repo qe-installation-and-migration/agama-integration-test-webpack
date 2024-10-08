@@ -1,10 +1,13 @@
 {
   "name": "agama-webpack-test",
   "version": "0.0.1",
-  "description": "Experimental bundling the Agama integration tests",
-  "type": "module",
+  "description": "Bundling the Agama integration tests using Webpack",
   "private": true,
   "license": "GPLv2",
+  "scripts": {
+    "build": "webpack --mode production",
+    "devel": "webpack --mode development"
+  },
   "devDependencies": {
     "ts-loader": "^9.5.1",
     "typescript": "^5.5.4",
