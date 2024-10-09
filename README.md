@@ -35,6 +35,12 @@ To generate the target files without optimizations run this command:
 
 In this case the generated files are a bit bigger.
 
+To rebuild the tests during development automatically you can run:
+
+    npm run watch
+
+This builds the tests in development mode to have faster builds.
+
 ## Executing the Test
 
 The generated test is executable, simply run it (this connects to the locally

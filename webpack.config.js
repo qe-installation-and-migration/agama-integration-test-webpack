@@ -40,6 +40,11 @@ module.exports = {
       },
     },
   },
+  watchOptions: {
+    // wait a little bit when saving multiple files
+    aggregateTimeout: 100,
+    ignored: /node_modules/,
+  },
   plugins: [
     // ignore the webpack warnings about the dynamic imports in yargs module,
     // it is used in the browser download code in puppeteer which is never used

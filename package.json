@@ -6,7 +6,8 @@
   "license": "GPLv2",
   "scripts": {
     "build": "webpack --mode production",
-    "devel": "webpack --mode development"
+    "devel": "webpack --mode development",
+    "watch": "webpack --mode development --watch"
   },
   "devDependencies": {
     "ts-loader": "^9.5.1",
