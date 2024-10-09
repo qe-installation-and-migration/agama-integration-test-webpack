@@ -79,6 +79,7 @@ describe("Agama test", function () {
     await loginAsRoot.logIn(options.password);
   });
 
+
   it("should display the product selection dialog", async function () {
     const productselection = new ProductSelectionPage(page);
 
@@ -87,14 +88,17 @@ describe("Agama test", function () {
     if (agamaProduct === "leap") {
       await productselection.selectLeap();
     }
-    else {
+    else if (agamaProduct === "tumbleweed"){
       await productselection.selectTumbleweed();
     }
-    // Check if configuration procedure is progressing
-    await page.locator("::-p-text(Configuring the product)").wait();
 
-    // refreshing the repositories might take long time
-    await page.locator("h3::-p-text('Overview')").setTimeout(timeout).wait();
+    if (productselection.page_selected != 'none'){
+      // Check if configuration procedure is progressing
+      await page.locator("::-p-text(Configuring the product)").wait();
+
+      // refreshing the repositories might take long time
+      await page.locator("h3::-p-text('Overview')").setTimeout(timeout).wait();
+    }
   });
 
   it("should display overview section", async function () {
