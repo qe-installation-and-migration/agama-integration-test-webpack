@@ -85,14 +85,14 @@ describe("Agama test", function () {
 
     let timeout = 2 * 60 * 1000;
 
-    if (agamaProduct === "leap") {
-      await productselection.selectLeap();
-    }
-    else if (agamaProduct === "tumbleweed"){
-      await productselection.selectTumbleweed();
-    }
+    if (agamaProduct != "sle") {
+      if (agamaProduct === "leap") {
+        await productselection.selectLeap();
+      }
+      else {
+        await productselection.selectTumbleweed();
+      }
 
-    if (productselection.page_selected != 'none'){
       // Check if configuration procedure is progressing
       await page.locator("::-p-text(Configuring the product)").wait();
 
