@@ -80,7 +80,7 @@ export async function finishBrowser() {
 export function test_init(options) {
   before(async function () {
     ({ page } = await startBrowser(
-      options.headless,
+      !options.headed,
       options.slowMo,
       options.browser,
       options.url
