@@ -6,15 +6,20 @@ export function optionalProductSelection(product: string) {
     // Either the main page is displayed (with the storage link) or there is
     // the product selection page.
     let productSelectionDisplayed = await Promise.any([
-      page.waitForSelector("a[href='#/storage']")
-        .then(s => {s!.dispose(); return false}),
-      page.waitForSelector("button[form='productSelectionForm']")
-        .then(s => {s!.dispose(); return true})
+      page.waitForSelector("a[href='#/storage']").then((s) => {
+        s!.dispose();
+        return false;
+      }),
+      page.waitForSelector("button[form='productSelectionForm']").then((s) => {
+        s!.dispose();
+        return true;
+      }),
     ]);
 
     if (productSelectionDisplayed) {
       await page.locator(`::-p-text('${product}')`).click();
-      await page.locator("button[form='productSelectionForm']")
+      await page
+        .locator("button[form='productSelectionForm']")
         // wait until the button is enabled
         .setWaitForEnabled(true)
         .click();
@@ -25,4 +30,4 @@ export function optionalProductSelection(product: string) {
       skip();
     }
   });
-};
+}

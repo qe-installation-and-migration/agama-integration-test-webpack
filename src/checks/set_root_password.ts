@@ -6,12 +6,12 @@ export function setRootPassword(password: string) {
 
     let button: any = await Promise.any([
       page.waitForSelector("button::-p-text(Set a password)"),
-      page.waitForSelector("button#actions-for-root-password")
+      page.waitForSelector("button#actions-for-root-password"),
     ]);
 
     await button!.click();
 
-    const id = await button!.evaluate((x: { id: any; }) => x.id);
+    const id = await button!.evaluate((x: { id: any }) => x.id);
     // drop the handler to avoid memory leaks
     button!.dispose();
 
