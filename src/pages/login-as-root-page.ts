@@ -9,8 +9,10 @@ export class LoginAsRootPage {
         this.page = page;
     }
 
-    async logIn(password: string) {
+    async fillPassword(password: string) {
         await this.passwordInput().fill(password);
+    }
+    async logIn() {
         await this.logInButton().click();
     }
 }

@@ -4,7 +4,7 @@ export class StoragePage {
     private readonly page: Page;
     private readonly enableButton = () => this.page.locator("button::-p-text(Enable)");
     private readonly enabledDiv = () => this.page.locator("div::-p-text(enabled)");
-    
+
     constructor(page: Page) {
         this.page = page;
     }
