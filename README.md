@@ -1,8 +1,8 @@
 # Webpack Experiment
 
 This is experimental repository for compiling the
-[Agama](https://github.com/openSUSE/agama) integration test into a single file
-with all dependencies bundled.
+[Agama](https://github.com/agama-project/agama) integration tests and bundling
+all dependencies into a single file.
 
 ## Advantages
 
@@ -17,36 +17,43 @@ with all dependencies bundled.
 
 ## Preparation
 
-First install the NPM packages:
+First install the needed NPM packages:
 
     npm ci
 
-Then we need to patch the Puppeteer code and remove the magic `webpackIgnore`
-comments which prevents from including some files in the bundle:
-
-    find node_modules/puppeteer-core/lib -type f -exec sed -i -e "s/webpackIgnore//" \{\} \;
-
 ## Compilation
 
-To compile the source test file run:
+To compile the source test files run:
 
-    npx webpack
+    npm run build
 
-This generates the new files into the `dist` subdirectory.
+This compiles the sources into the `dist` subdirectory.
 
-To generate the target file with source map and without optimizations set the
-`development` mode:
+To generate the target files without optimizations run this command:
 
-    NODE_ENV=development npx webpack
+    npm run devel
 
-In this mode the generated file is significantly bigger.
+In this case the generated files are a bit bigger.
+
+To rebuild the tests during development automatically you can run:
+
+    npm run watch
+
+This builds the tests in development mode to have faster builds.
 
 ## Executing the Test
 
 The generated test is executable, simply run it (this connects to the locally
 running Agama instance, to use a remote one see the options below):
 
-    ./dist/test_root_password.cjs
+    ./dist/test_root_password.js
+
+If you copy the test to different machine do not forget to also copy the
+`vendor.js` file and `*.map` files if you want to get backtrace locations in the
+original source code. To use the map files use the `--enable-source-maps` node
+option:
+
+    node --enable-source-maps ./dist/test_root_password.js
 
 To use the TAP output format, use the `--test-reporter` Node.js option:
 
@@ -56,7 +63,7 @@ Alternatively it is possible to implement [own test reporter](
 https://www.nearform.com/insights/writing-a-node-js-test-reporter/).
 
 The test currently accepts several optional arguments, run
-`./dist/test_root_password.cjs --help`:
+`./dist/test_root_password.js --help`:
 
     Usage: test_root_password [options]
 
@@ -79,19 +86,10 @@ The test currently accepts several optional arguments, run
 Full example for running the browser in the English locale, using local Chrome
 browser in headed mode and connecting to a remote Agama instance:
 
-    LC_ALL=en_US.UTF-8 ./dist/test_root_password.cjs -h -b chrome -u https://agama.local
+    LC_ALL=en_US.UTF-8 ./dist/test_root_password.js -h -b chrome -u https://agama.local
 
 ## Notes
 
-- It uses the Node.js built-in test framework and the runner instead of Mocha.js
+- It uses the Node.js built-in testing framework and the runner instead of Mocha.js
   (or any similar framework) which needs a special test runner that cannot be
   bundled into the generated file by Webpack.
-
-## TODO
-
-- [x] Dump the HTML page and screenshot on test failure
-- [ ] Split the test into small reusable parts
-- [x] Use the [commander.js](https://github.com/tj/commander.js) library and
-  implement a standard command line option parsing
-- [ ] Check why Puppeteer uses that `webpackIgnore` comments, is there a better
-  way than patching the Puppeteer code?

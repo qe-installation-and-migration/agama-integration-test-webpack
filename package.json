@@ -1,10 +1,14 @@
 {
   "name": "agama-webpack-test",
   "version": "0.0.1",
-  "description": "Experimental bundling the Agama integration tests",
-  "type": "module",
+  "description": "Bundling the Agama integration tests using Webpack",
   "private": true,
   "license": "GPLv2",
+  "scripts": {
+    "build": "webpack --mode production",
+    "devel": "webpack --mode development",
+    "watch": "webpack --mode development --watch"
+  },
   "devDependencies": {
     "ts-loader": "^9.5.1",
     "typescript": "^5.5.4",
@@ -14,7 +18,7 @@
   "dependencies": {
     "bufferutil": "^4.0.8",
     "commander": "^12.1.0",
-    "puppeteer-core": "^23.4.1",
+    "puppeteer-core": "22.13.0",
     "utf-8-validate": "^6.0.4"
   }
 }
