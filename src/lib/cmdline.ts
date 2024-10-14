@@ -12,10 +12,15 @@ function getInt(value: string) {
     return parsed;
 }
 
-export function parse() {
+/**
+ * Parse command line options. When an invalid command line option is used the script aborts.
+ * @param callback callback for adding custom command line options
+ * @returns [commander.OptionValues] parsed command line
+ * @see https://github.com/tj/commander.js
+ */
+export function parse(callback?: (cmd: commander.Command) => void) {
     // define the command line arguments and parse them
-    // see https://github.com/tj/commander.js
-    program
+    const prg = program
         .description("Run a simple Agama integration test")
         .option("-u, --url <url>", "Agama server URL", "http://localhost")
         .option("-p, --password <password>", "Agama login password", "linux")
@@ -39,9 +44,11 @@ export function parse() {
         .option(
             "-c, --continue",
             "Continue the test after a failure (the default is abort on error)"
-        )
-        .parse(process.argv);
+        );
 
+    if (callback) callback(prg);
+
+    prg.parse(process.argv);
     // parse options from the command line
     return program.opts();
 }

@@ -221,10 +221,15 @@ function getInt(value) {
     }
     return parsed;
 }
-function parse() {
+/**
+ * Parse command line options. When an invalid command line option is used the script aborts.
+ * @param callback callback for adding custom command line options
+ * @returns [commander.OptionValues] parsed command line
+ * @see https://github.com/tj/commander.js
+ */
+function parse(callback) {
     // define the command line arguments and parse them
-    // see https://github.com/tj/commander.js
-    commander_1.program
+    const prg = commander_1.program
         .description("Run a simple Agama integration test")
         .option("-u, --url <url>", "Agama server URL", "http://localhost")
         .option("-p, --password <password>", "Agama login password", "linux")
@@ -235,8 +240,10 @@ function parse() {
         .addOption(new commander_1.Option("-d, --delay <miliseconds>", "Delay between the browser actions, useful in headed mode")
         .argParser(getInt)
         .default(0))
-        .option("-c, --continue", "Continue the test after a failure (the default is abort on error)")
-        .parse(process.argv);
+        .option("-c, --continue", "Continue the test after a failure (the default is abort on error)");
+    if (callback)
+        callback(prg);
+    prg.parse(process.argv);
     // parse options from the command line
     return commander_1.program.opts();
 }
@@ -688,35 +695,31 @@ const prepare_dasd_storage_1 = __webpack_require__(/*! ./checks/prepare_dasd_sto
 const perform_installation_1 = __webpack_require__(/*! ./checks/perform_installation */ "./src/checks/perform_installation.ts");
 const sidebar_page_1 = __webpack_require__(/*! ./pages/sidebar-page */ "./src/pages/sidebar-page.ts");
 // parse options from the command line
-const options = (0, cmdline_1.parse)();
-const agamaInstall = (0, helpers_1.booleanEnv)("AGAMA_INSTALL", false);
-const agamaDasd = (0, helpers_1.booleanEnv)("AGAMA_DASD", false);
-const agamaProduct = process.env.AGAMA_PRODUCT || "openSUSE Tumbleweed";
+const options = (0, cmdline_1.parse)((cmd) => cmd.option("-r, --product <name>", "Product to install", "openSUSE Tumbleweed")
+    .option("-i, --install", "Proceed to install the system (the default is not to install it)")
+    .option("-z, --dasd", "Prepare DASD storage (the default is not to prepare it)"));
 (0, node_test_1.describe)("Agama test", function () {
     (0, helpers_1.test_init)(options);
     (0, helpers_1.it)("should have Agama page title", async function () {
         strict_1.default.deepEqual(await helpers_1.page.title(), "Agama");
     });
     (0, login_1.login)(options.password);
-    if (agamaProduct !== "SUSE Linux Enteprise Server 16.0 Alpha") {
-        (0, product_selection_1.productSelection)(agamaProduct);
-    }
+    if (options.product !== "SUSE Linux Enteprise Server 16.0 Alpha")
+        (0, product_selection_1.productSelection)(options.product);
     (0, helpers_1.it)("should display overview section", async function () {
         await helpers_1.page.locator("h3::-p-text('Overview')").wait();
     });
     (0, set_root_password_1.setRootPassword)(options.password);
     (0, create_first_user_1.createFirstUser)("Bernhard M. Wiedemann", "bernhard", options.password);
-    if (agamaDasd) {
+    if (options.dasd)
         (0, prepare_dasd_storage_1.prepareDasdStorage)();
-    }
     (0, helpers_1.it)("should be ready for installation", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToOverview();
         await helpers_1.page.locator("button::-p-text(Install)").wait();
     });
-    if (agamaInstall) {
+    if (options.install)
         (0, perform_installation_1.performInstallation)();
-    }
 });
 
 

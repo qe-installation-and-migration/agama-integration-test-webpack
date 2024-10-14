@@ -18,9 +18,8 @@ import { SidebarPage } from "./pages/sidebar-page";
 import { enableEncryption } from "./checks/enable_encryption";
 
 // parse options from the command line
-const options = parse();
-
-const agamaInstall = booleanEnv("AGAMA_INSTALL", false);
+const options = parse((cmd) =>
+    cmd.option("-i, --install", "Proceed to install the system (the default is not to install it)"));
 
 describe("Agama test", function () {
     test_init(options);
@@ -39,7 +38,5 @@ describe("Agama test", function () {
         await page.locator("button::-p-text(Install)").wait();
     });
 
-    if (agamaInstall) {
-        performInstallation();
-    }
+    if (options.install) performInstallation();
 });
