@@ -20,11 +20,10 @@ import { performInstallation } from "./checks/perform_installation";
 import { SidebarPage } from "./pages/sidebar-page";
 
 // parse options from the command line
-const options = parse();
-
-const agamaInstall = booleanEnv("AGAMA_INSTALL", false);
-const agamaDasd = booleanEnv("AGAMA_DASD", false);
-const agamaProduct = process.env.AGAMA_PRODUCT || "openSUSE Tumbleweed";
+const options = parse((cmd) =>
+    cmd.option("-r, --product <name>", "Product to install", "openSUSE Tumbleweed")
+        .option("-i, --install", "Proceed to install the system (the default is not to install it)")
+        .option("-z, --dasd", "Prepare DASD storage (the default is not to prepare it)"));
 
 describe("Agama test", function () {
     test_init(options);
@@ -35,9 +34,7 @@ describe("Agama test", function () {
 
     login(options.password);
 
-    if (agamaProduct !== "SUSE Linux Enteprise Server 16.0 Alpha") {
-        productSelection(agamaProduct);
-    }
+    if (options.product !== "SUSE Linux Enteprise Server 16.0 Alpha") productSelection(options.product);
 
     it("should display overview section", async function () {
         await page.locator("h3::-p-text('Overview')").wait();
@@ -47,9 +44,7 @@ describe("Agama test", function () {
 
     createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
 
-    if (agamaDasd) {
-        prepareDasdStorage();
-    }
+    if (options.dasd) prepareDasdStorage();
 
     it("should be ready for installation", async function () {
         const sidebar = new SidebarPage(page);
@@ -57,7 +52,5 @@ describe("Agama test", function () {
         await page.locator("button::-p-text(Install)").wait();
     });
 
-    if (agamaInstall) {
-        performInstallation();
-    }
+    if (options.install) performInstallation();
 });
