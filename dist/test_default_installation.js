@@ -292,7 +292,6 @@ exports.finishBrowser = finishBrowser;
 exports.test_init = test_init;
 exports.it = it;
 exports.sleep = sleep;
-exports.booleanEnv = booleanEnv;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
 const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
 const http_1 = __importDefault(__webpack_require__(/*! http */ "http"));
@@ -446,29 +445,6 @@ async function it(label, test, timeout) {
 }
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-}
-// helper function for converting String to Boolean
-function booleanEnv(name, default_value) {
-    const env = process.env[name];
-    if (env === undefined) {
-        return default_value;
-    }
-    switch (env.toLowerCase()) {
-        case "0":
-        case "false":
-        case "off":
-        case "disabled":
-        case "no":
-            return false;
-        case "1":
-        case "true":
-        case "on":
-        case "enabled":
-        case "yes":
-            return true;
-        default:
-            return default_value;
-    }
 }
 
 
