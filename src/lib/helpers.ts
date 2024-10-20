@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import http from "http";
 import https from "https";
 import zlib from "zlib";
 
@@ -96,38 +97,49 @@ let failed = false;
 let continueOnError = false;
 
 // helper function, dump the index.css file so the HTML dump can properly displayed
-function dumpCSS() {
+async function dumpCSS() {
     let cssData = [];
-    https
-        .get(
-            url + "/index.css",
-            {
-                // ignore HTTPS errors (self-signed certificate)
-                rejectUnauthorized: false,
-                // use gzip compression
-                headers: { "Accept-Encoding": "gzip" },
-            },
-            (res) => {
-                res.on("data", (chunk) => {
-                    cssData.push(Buffer.from(chunk, "binary"));
-                });
-
-                res.on("end", () => {
-                    // merge all chunks
-                    const data = Buffer.concat(cssData);
-                    if (res.headers["content-encoding"] === "gzip") {
-                        zlib.gunzip(data, (err, unpacked) => {
-                            fs.writeFileSync(dir + "/index.css", unpacked);
-                        });
-                    } else {
-                        fs.writeFileSync(dir + "/index.css", data);
-                    }
-                });
-            }
-        )
-        .on("error", (e) => {
-            console.error("Cannot download index.css: ", e);
-        });
+    const downloader = url.startsWith("https://") ? https : http;
+    return new Promise((resolve, reject) => {
+        downloader
+            .get(
+                url + "/index.css",
+                {
+                    // ignore HTTPS errors (self-signed certificate)
+                    rejectUnauthorized: false,
+                    // use gzip compression
+                    headers: { "Accept-Encoding": "gzip" },
+                },
+                (res) => {
+                    res.on("data", (chunk) => {
+                        cssData.push(Buffer.from(chunk, "binary"));
+                    });
+                    res.on("end", () => {
+                        // merge all chunks
+                        const data = Buffer.concat(cssData);
+                        const cssFile = dir + "/index.css";
+                        if (res.headers["content-encoding"] === "gzip") {
+                            zlib.gunzip(data, (err, unpacked) => {
+                                if (err) {
+                                    console.error("Cannot decompress index.css: ", err.cause);
+                                    reject(err.cause);
+                                } else {
+                                    fs.writeFileSync(cssFile, unpacked);
+                                    resolve(cssFile);
+                                }
+                            });
+                        } else {
+                            fs.writeFileSync(cssFile, data);
+                            resolve(cssFile);
+                        }
+                    });
+                }
+            )
+            .on("error", (e) => {
+                console.error("Cannot download index.css: ", e);
+                reject(e);
+            });
+    });
 }
 
 // dump the current page displayed in puppeteer
@@ -156,8 +168,8 @@ export async function it(label: string, test: () => Promise<void>, timeout?: num
                 if (page) {
                     // dump the current page
                     if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-                    await dumpPage(label);
-                    dumpCSS();
+                    // dump the page and the CSS in parallel
+                    await Promise.allSettled([dumpPage(label), dumpCSS()]);
                 }
                 throw new Error("Test failed!", { cause: error });
             }
