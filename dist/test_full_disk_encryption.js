@@ -202,6 +202,7 @@ exports.sleep = sleep;
 exports.booleanEnv = booleanEnv;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
 const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
+const http_1 = __importDefault(__webpack_require__(/*! http */ "http"));
 const https_1 = __importDefault(__webpack_require__(/*! https */ "https"));
 const zlib_1 = __importDefault(__webpack_require__(/*! zlib */ "zlib"));
 const puppeteer = __importStar(__webpack_require__(/*! puppeteer-core */ "./node_modules/puppeteer-core/lib/cjs/puppeteer/puppeteer-core.js"));
@@ -273,33 +274,46 @@ function test_init(options) {
 let failed = false;
 let continueOnError = false;
 // helper function, dump the index.css file so the HTML dump can properly displayed
-function dumpCSS() {
+async function dumpCSS() {
     let cssData = [];
-    https_1.default
-        .get(url + "/index.css", {
-        // ignore HTTPS errors (self-signed certificate)
-        rejectUnauthorized: false,
-        // use gzip compression
-        headers: { "Accept-Encoding": "gzip" },
-    }, (res) => {
-        res.on("data", (chunk) => {
-            cssData.push(Buffer.from(chunk, "binary"));
+    const downloader = url.startsWith("https://") ? https_1.default : http_1.default;
+    return new Promise((resolve, reject) => {
+        downloader
+            .get(url + "/index.css", {
+            // ignore HTTPS errors (self-signed certificate)
+            rejectUnauthorized: false,
+            // use gzip compression
+            headers: { "Accept-Encoding": "gzip" },
+        }, (res) => {
+            res.on("data", (chunk) => {
+                cssData.push(Buffer.from(chunk, "binary"));
+            });
+            res.on("end", () => {
+                // merge all chunks
+                const data = Buffer.concat(cssData);
+                const cssFile = dir + "/index.css";
+                if (res.headers["content-encoding"] === "gzip") {
+                    zlib_1.default.gunzip(data, (err, unpacked) => {
+                        if (err) {
+                            console.error("Cannot decompress index.css: ", err.cause);
+                            reject(err.cause);
+                        }
+                        else {
+                            fs_1.default.writeFileSync(cssFile, unpacked);
+                            resolve(cssFile);
+                        }
+                    });
+                }
+                else {
+                    fs_1.default.writeFileSync(cssFile, data);
+                    resolve(cssFile);
+                }
+            });
+        })
+            .on("error", (e) => {
+            console.error("Cannot download index.css: ", e);
+            reject(e);
         });
-        res.on("end", () => {
-            // merge all chunks
-            const data = Buffer.concat(cssData);
-            if (res.headers["content-encoding"] === "gzip") {
-                zlib_1.default.gunzip(data, (err, unpacked) => {
-                    fs_1.default.writeFileSync(dir + "/index.css", unpacked);
-                });
-            }
-            else {
-                fs_1.default.writeFileSync(dir + "/index.css", data);
-            }
-        });
-    })
-        .on("error", (e) => {
-        console.error("Cannot download index.css: ", e);
     });
 }
 // dump the current page displayed in puppeteer
@@ -330,8 +344,8 @@ async function it(label, test, timeout) {
                 // dump the current page
                 if (!fs_1.default.existsSync(dir))
                     fs_1.default.mkdirSync(dir);
-                await dumpPage(label);
-                dumpCSS();
+                // dump the page and the CSS in parallel
+                await Promise.allSettled([dumpPage(label), dumpCSS()]);
             }
             throw new Error("Test failed!", { cause: error });
         }
