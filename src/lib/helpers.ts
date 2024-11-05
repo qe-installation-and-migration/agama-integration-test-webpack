@@ -180,27 +180,3 @@ export async function it(label: string, test: () => Promise<void>, timeout?: num
 export function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-
-// helper function for converting String to Boolean
-export function booleanEnv(name: string, default_value: boolean) {
-    const env = process.env[name];
-    if (env === undefined) {
-        return default_value;
-    }
-    switch (env.toLowerCase()) {
-        case "0":
-        case "false":
-        case "off":
-        case "disabled":
-        case "no":
-            return false;
-        case "1":
-        case "true":
-        case "on":
-        case "enabled":
-        case "yes":
-            return true;
-        default:
-            return default_value;
-    }
-}

@@ -9,7 +9,7 @@ import { describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { parse } from "./lib/cmdline";
-import { it, test_init, page, booleanEnv } from "./lib/helpers";
+import { it, test_init, page } from "./lib/helpers";
 
 import { login } from "./checks/login";
 import { productSelection } from "./checks/product_selection";
