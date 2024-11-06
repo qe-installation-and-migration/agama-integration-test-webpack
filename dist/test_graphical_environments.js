@@ -55,6 +55,35 @@ function performInstallation() {
 
 /***/ }),
 
+/***/ "./src/checks/select_pattern.ts":
+/*!**************************************!*\
+  !*** ./src/checks/select_pattern.ts ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.selectPattern = selectPattern;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar-page */ "./src/pages/sidebar-page.ts");
+const software_page_1 = __webpack_require__(/*! ../pages/software-page */ "./src/pages/software-page.ts");
+const software_selection_page_1 = __webpack_require__(/*! ../pages/software-selection-page */ "./src/pages/software-selection-page.ts");
+function selectPattern(pattern) {
+    (0, helpers_1.it)(`should select pattern ${pattern}`, async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const software = new software_page_1.SoftwarePage(helpers_1.page);
+        const softwareSelection = new software_selection_page_1.SoftwareSelectionPage(helpers_1.page);
+        await sidebar.goToSoftware();
+        await software.changeSelection();
+        await softwareSelection.selectPattern(pattern);
+        await softwareSelection.close();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/lib/cmdline.ts":
 /*!****************************!*\
   !*** ./src/lib/cmdline.ts ***!
@@ -402,6 +431,60 @@ exports.SidebarPage = SidebarPage;
 
 /***/ }),
 
+/***/ "./src/pages/software-page.ts":
+/*!************************************!*\
+  !*** ./src/pages/software-page.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SoftwarePage = void 0;
+class SoftwarePage {
+    page;
+    changeSelectionButton = () => this.page.locator("button::-p-text(ChangeSelection)");
+    constructor(page) {
+        this.page = page;
+    }
+    async changeSelection() {
+        await this.changeSelectionButton().click();
+    }
+}
+exports.SoftwarePage = SoftwarePage;
+
+
+/***/ }),
+
+/***/ "./src/pages/software-selection-page.ts":
+/*!**********************************************!*\
+  !*** ./src/pages/software-selection-page.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SoftwareSelectionPage = void 0;
+class SoftwareSelectionPage {
+    page;
+    patternText = (pattern) => this.page.locator(`::-p-text('${pattern}')`);
+    closeButton = () => this.page.locator("button::-p-text(Close)");
+    constructor(page) {
+        this.page = page;
+    }
+    async selectPattern(pattern) {
+        await this.patternText(pattern).click();
+    }
+    async close() {
+        await this.closeButton().click();
+    }
+}
+exports.SoftwareSelectionPage = SoftwareSelectionPage;
+
+
+/***/ }),
+
 /***/ "./src/test_graphical_environments.ts":
 /*!********************************************!*\
   !*** ./src/test_graphical_environments.ts ***!
@@ -427,15 +510,17 @@ const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const perform_installation_1 = __webpack_require__(/*! ./checks/perform_installation */ "./src/checks/perform_installation.ts");
 const sidebar_page_1 = __webpack_require__(/*! ./pages/sidebar-page */ "./src/pages/sidebar-page.ts");
+const select_pattern_1 = __webpack_require__(/*! ./checks/select_pattern */ "./src/checks/select_pattern.ts");
 // parse options from the command line
-const options = (0, cmdline_1.parse)((cmd) => cmd.option("-i, --install", "Proceed to install the system (the default is not to install it)"));
-softwareSelection(options.pattern);
+const options = (0, cmdline_1.parse)((cmd) => cmd.option("-i, --install", "Proceed to install the system (the default is not to install it)")
+    .option("-s, --software <name>", "Proceed to select pattern", "GNOME Desktop Environment (Wayland)"));
 (0, node_test_1.describe)("Agama test", function () {
     (0, helpers_1.test_init)(options);
     (0, helpers_1.it)("should have Agama page title", async function () {
         strict_1.default.deepEqual(await helpers_1.page.title(), "Agama");
     });
     (0, login_1.login)(options.password);
+    (0, select_pattern_1.selectPattern)(options.pattern);
     (0, helpers_1.it)("should be ready for installation", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToOverview();
