@@ -15,13 +15,12 @@ import { it, test_init, page } from "./lib/helpers";
 import { login } from "./checks/login";
 import { performInstallation } from "./checks/perform_installation";
 import { SidebarPage } from "./pages/sidebar-page";
-import { SoftwarePage } from "./pages/software-page";
-import { SoftwareSelectionPage } from "./pages/software-selection-page";
+import { selectPattern } from "./checks/select_pattern";
 
 // parse options from the command line
 const options = parse((cmd) =>
-    cmd.option("-i, --install", "Proceed to install the system (the default is not to install it)"));
-        .option("-s, --software <name>", "Proceed to select pattern", "GNOME Desktop Environment (Wayland)")
+    cmd.option("-i, --install", "Proceed to install the system (the default is not to install it)")
+        .option("-s, --software <name>", "Proceed to select pattern", "GNOME Desktop Environment (Wayland)"));
 
 describe("Agama test", function () {
     test_init(options);
@@ -32,7 +31,7 @@ describe("Agama test", function () {
 
     login(options.password);
 
-    softwareSelection(options.pattern);
+    selectPattern(options.pattern);
 
     it("should be ready for installation", async function () {
         const sidebar = new SidebarPage(page);
