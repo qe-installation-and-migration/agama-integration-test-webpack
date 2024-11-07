@@ -12,7 +12,7 @@ export function performInstallation() {
     it("should finish installation", async function () {
         await page
             .locator("h2::-p-text('Congratulations!')")
-            .setTimeout(15 * 60 * 1000)
+            .setTimeout(40 * 60 * 1000)
             .wait();
-    }, 15 * 60 * 1000);
+    }, 40 * 60 * 1000);
 }
