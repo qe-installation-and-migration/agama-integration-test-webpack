@@ -23,7 +23,7 @@ License:        GPL-2.0-or-later
 URL:            https://github.com/openSUSE/agama
 # source_validator insists that if obscpio has no version then
 # tarball must neither
-Source0:        agama.tar
+Source0:        agama-integration-tests.tar
 Source10:       package-lock.json
 Source11:       node_modules.spec.inc
 Source12:       node_modules.sums
@@ -40,16 +40,20 @@ The package includes only one example test, the real tests should be added from
 outside.
 
 %prep
-%autosetup -p1 -n agama
+%autosetup -p1 -n agama-integration-tests
 
 %build
 rm -f package-lock.json
 local-npm-registry %{_sourcedir} install --omit=optional --with=dev --legacy-peer-deps || ( find ~/.npm/_logs -name '*-debug.log' -print0 | xargs -0 cat; false)
 npm install
+npm run build
 
 %install
 install -D -d -m 0755 %{buildroot}%{_datadir}/agama/integration-tests
-cp -aR %{_builddir}/agama/build/* %{buildroot}%{_datadir}/agama/integration-tests
+cp -aR %{_builddir}/agama-integration-tests/dist/* %{buildroot}%{_datadir}/agama/integration-tests
+# delete the huge vendor.js.map file, we usually do not need backtrace locations from the node packages
+rm %{buildroot}%{_datadir}/agama/integration-tests/vendor.js.map
+rm %{buildroot}%{_datadir}/agama/integration-tests/vendor.js.LICENSE.txt
 
 %files
 %defattr(-,root,root,-)

@@ -12,6 +12,7 @@
     .github/workflows/obs-staging-shared.yml action when submitting to OBS -->
     <param name="revision">main</param>
     <!-- <param name="subdir">puppeteer</param> -->
+    <param name="filename">agama-integration-tests</param>
     <param name="without-version">enable</param>
     <param name="extract">package-lock.json</param>
     <param name="extract">package/agama-integration-tests.changes</param>
@@ -23,10 +24,10 @@
     <param name="source-offset">1000</param>
   </service>
   <service mode="buildtime" name="tar">
-    <param name="obsinfo">agama.obsinfo</param>
-    <param name="filename">agama</param>
+    <param name="obsinfo">agama-integration-tests.obsinfo</param>
+    <param name="filename">agama-integration-tests</param>
   </service>
   <service mode="buildtime" name="set_version">
-    <param name="basename">agama</param>
+    <param name="basename">agama-integration-tests</param>
   </service>
 </services>
