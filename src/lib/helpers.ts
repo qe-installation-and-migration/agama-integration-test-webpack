@@ -59,7 +59,7 @@ export async function startBrowser(
     slowMo,
     defaultViewport: {
       width: 1280,
-      height: 768,
+      height: 800,
     },
     ...browserSettings(agamaBrowser),
   });
@@ -146,7 +146,7 @@ async function dumpCSS() {
 }
 
 // dump the current page displayed in puppeteer
-async function dumpPage(label: string) {
+export async function dumpPage(label: string) {
   // base file name for the dumps
   const name = path.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
   await page.screenshot({ path: name + ".png" });

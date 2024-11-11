@@ -24,5 +24,8 @@ export function setRootPassword(password: string) {
     await page.type("input#passwordConfirmation", password);
 
     await page.locator("button::-p-text(Confirm)").click();
+
+    // wait until the password popup disappears
+    await page.locator("input#passwordConfirmation").setVisibility("hidden").wait();
   });
 }
