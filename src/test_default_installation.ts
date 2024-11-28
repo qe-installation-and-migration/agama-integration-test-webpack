@@ -5,52 +5,34 @@
 
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 import { describe } from "node:test";
-// see https://nodejs.org/docs/latest-v20.x/api/assert.html
-import assert from "node:assert/strict";
 
 import { parse } from "./lib/cmdline";
-import { it, test_init, page } from "./lib/helpers";
+import { Option } from "commander";
+import { test_init } from "./lib/helpers";
 
-import { login } from "./checks/login";
+import { logIn } from "./checks/login";
 import { productSelection } from "./checks/product_selection";
 import { setRootPassword } from "./checks/set_root_password";
 import { createFirstUser } from "./checks/create_first_user";
-import { prepareDasdStorage } from "./checks/prepare_dasd_storage";
 import { performInstallation } from "./checks/perform_installation";
-import { SidebarPage } from "./pages/sidebar-page";
+import { prepareDasdStorage } from "./checks/prepare_dasd_storage";
 
 // parse options from the command line
 const options = parse((cmd) =>
-    cmd.option("-r, --product <name>", "Product to install", "openSUSE Tumbleweed")
-        .option("-i, --install", "Proceed to install the system (the default is not to install it)")
-        .option("-z, --dasd", "Prepare DASD storage (the default is not to prepare it)"));
+    cmd.addOption(
+        new Option("--product-selection <name>", "Selection of product to install")
+            .choices(["tumbleweed", "leap", "none"])
+            .default("none"))
+        .option("--install", "Proceed to install the system (the default is not to install it)")
+        .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
 
-describe("Agama test", function () {
+describe("Installation with default values", function () {
     test_init(options);
 
-    it("should have Agama page title", async function () {
-        assert.deepEqual(await page.title(), "Agama");
-    });
-
-    login(options.password);
-
-    if (options.product !== "SUSE Linux Enteprise Server 16.0 Alpha") productSelection(options.product);
-
-    it("should display overview section", async function () {
-        await page.locator("h3::-p-text('Overview')").wait();
-    });
-
-    setRootPassword(options.password);
-
+    logIn(options.password);
+    if (options.productSelection !== "none") productSelection(options.productSelection);
     createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
-
+    setRootPassword(options.password);
     if (options.dasd) prepareDasdStorage();
-
-    it("should be ready for installation", async function () {
-        const sidebar = new SidebarPage(page);
-        await sidebar.goToOverview();
-        await page.locator("button::-p-text(Install)").wait();
-    });
-
     if (options.install) performInstallation();
 });

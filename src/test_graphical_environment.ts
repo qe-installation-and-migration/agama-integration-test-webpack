@@ -8,20 +8,25 @@
 import { describe } from "node:test";
 
 import { parse } from "./lib/cmdline";
+import { Option } from "commander";
 import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/perform_installation";
-import { enableEncryption } from "./checks/enable_encryption";
+import { selectSinglePattern } from "./checks/software_selection";
 
 // parse options from the command line
 const options = parse((cmd) =>
-    cmd.option("--install", "Proceed to install the system (the default is not to install it)"));
+    cmd.addOption(
+        new Option("--desktop <name>", "Desktop to install")
+            .choices(["gnome", "kde", "xfc", "basic", "none"])
+            .default("none"))
+        .option("--install", "Proceed to install the system (the default is not to install it)"));
 
-describe("Installation with Full Disk Encryption (FDE)", function () {
+describe("Installation with a graphical environment", function () {
     test_init(options);
 
     logIn(options.password);
-    enableEncryption(options.password);
+    selectSinglePattern(options.desktop);
     if (options.install) performInstallation();
 });

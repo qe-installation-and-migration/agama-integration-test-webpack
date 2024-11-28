@@ -3,6 +3,7 @@ import { type Page } from "puppeteer-core";
 export class SidebarPage {
     private readonly page: Page;
     private readonly overviewLink = () => this.page.locator("a[href='#/overview']");
+    private readonly overviewText = () => this.page.locator("h3::-p-text('Overview')");
     private readonly localizationLink = () => this.page.locator("a[href='#/l10n']");
     private readonly networkLink = () => this.page.locator("a[href='#/network']");
     private readonly storageLink = () => this.page.locator("a[href='#/storage']");
@@ -15,6 +16,10 @@ export class SidebarPage {
 
     async goToOverview() {
         await this.overviewLink().click();
+    }
+
+    async waitOverviewVisible(timeout: number) {
+        await this.overviewText().setTimeout(timeout).wait();
     }
 
     async goToLocalization() {

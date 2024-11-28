@@ -1,16 +1,24 @@
 import { it, page } from "../lib/helpers";
-import { ProductSelectionPage } from "../pages/product-selection-page";
+import { ConfiguringProductPage } from "../pages/configuring_product_page";
+import { ProductSelectionPage } from "../pages/product_selection_page";
+import { SidebarPage } from "../pages/sidebar_page";
 
 export function productSelection(product: string) {
-    it("should display the product selection dialog", async function () {
-        const productselection = new ProductSelectionPage(page);
-        let timeout = 2 * 60 * 1000;
+    const productMap = {
+        "tumbleweed": "openSUSE Tumbleweed",
+        "leap": "Leap 16.0 Alpha"
+    };
 
-        await productselection.selectProduct(product);
+    it("should allow to select a product", async function () {
+        await new ProductSelectionPage(page).selectProduct(productMap[product]);
+    });
 
-        // Check if configuration procedure is progressing
-        await page.locator("::-p-text(Configuring the product)").wait();
-        // refreshing the repositories might take long time
-        await page.locator("h3::-p-text('Overview')").setTimeout(timeout).wait();
+    it("should start configuring the product", async function () {
+        await new ConfiguringProductPage(page).wait();
+    });
+
+    it("should display overview section", async function () {
+        // longer timeout to refresh repos when coming from product selection
+        await new SidebarPage(page).waitOverviewVisible(2 * 60 * 1000);
     });
 }

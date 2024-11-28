@@ -1,4 +1,4 @@
-import puppeteer, { type Locator, type Page } from "puppeteer-core";
+import { type Page } from "puppeteer-core";
 
 export class ProductSelectionPage {
     private readonly page: Page;

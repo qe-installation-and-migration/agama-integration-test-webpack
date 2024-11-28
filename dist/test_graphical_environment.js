@@ -6,16 +6,23 @@
 /*!*****************************!*\
   !*** ./src/checks/login.ts ***!
   \*****************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.login = login;
+exports.logIn = logIn;
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const login_as_root_page_1 = __webpack_require__(/*! ../pages/login-as-root-page */ "./src/pages/login-as-root-page.ts");
-function login(password) {
-    (0, helpers_1.it)("allows logging in", async function () {
+const login_as_root_page_1 = __webpack_require__(/*! ../pages/login_as_root_page */ "./src/pages/login_as_root_page.ts");
+function logIn(password) {
+    (0, helpers_1.it)("should have Agama page title", async function () {
+        strict_1.default.deepEqual(await helpers_1.page.title(), "Agama");
+    });
+    (0, helpers_1.it)("should allow logging in", async function () {
         const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
         await loginAsRoot.fillPassword(password);
         await loginAsRoot.logIn();
@@ -36,47 +43,59 @@ function login(password) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.performInstallation = performInstallation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
+const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
+const installing_page_1 = __webpack_require__(/*! ../pages/installing_page */ "./src/pages/installing_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 function performInstallation() {
     (0, helpers_1.it)("should start installation", async function () {
-        // todo: button is moving in the page and fails in slow machines
-        await (0, helpers_1.sleep)(2000);
-        await helpers_1.page.locator("button::-p-text('Install')").click();
-        await helpers_1.page.locator("button::-p-text('Continue')").click();
-        await helpers_1.page.locator("::-p-text(Installing the)").wait();
+        const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
+        const installing = new installing_page_1.InstallingPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToOverview();
+        await overview.install();
+        await confirmInstallation.continue();
+        await installing.wait();
     });
     (0, helpers_1.it)("should finish installation", async function () {
-        await helpers_1.page
-            .locator("h2::-p-text('Congratulations!')")
-            .setTimeout(40 * 60 * 1000)
-            .wait();
+        const congratulation = new congratulation_page_1.CongratulationPage(helpers_1.page);
+        await congratulation.wait(40 * 60 * 1000);
     }, 40 * 60 * 1000);
 }
 
 
 /***/ }),
 
-/***/ "./src/checks/select_pattern.ts":
-/*!**************************************!*\
-  !*** ./src/checks/select_pattern.ts ***!
-  \**************************************/
+/***/ "./src/checks/software_selection.ts":
+/*!******************************************!*\
+  !*** ./src/checks/software_selection.ts ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.selectPattern = selectPattern;
+exports.selectSinglePattern = selectSinglePattern;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar-page */ "./src/pages/sidebar-page.ts");
-const software_page_1 = __webpack_require__(/*! ../pages/software-page */ "./src/pages/software-page.ts");
-const software_selection_page_1 = __webpack_require__(/*! ../pages/software-selection-page */ "./src/pages/software-selection-page.ts");
-function selectPattern(pattern) {
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const software_page_1 = __webpack_require__(/*! ../pages/software_page */ "./src/pages/software_page.ts");
+const software_selection_page_1 = __webpack_require__(/*! ../pages/software_selection_page */ "./src/pages/software_selection_page.ts");
+function selectSinglePattern(pattern) {
+    const patternMap = {
+        "gnome": "GNOME Desktop Environment (Wayland)",
+        "kde": "KDE Appications and Plasma Desktop",
+        "xfce": "XFCE Desktop Environment",
+        "basic": "A basic desktop (based on IceWM)"
+    };
     (0, helpers_1.it)(`should select pattern ${pattern}`, async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         const software = new software_page_1.SoftwarePage(helpers_1.page);
         const softwareSelection = new software_selection_page_1.SoftwareSelectionPage(helpers_1.page);
         await sidebar.goToSoftware();
         await software.changeSelection();
-        await softwareSelection.selectPattern(pattern);
+        await softwareSelection.selectPattern(patternMap[pattern]);
         await softwareSelection.close();
     });
 }
@@ -197,6 +216,7 @@ exports.page = void 0;
 exports.startBrowser = startBrowser;
 exports.finishBrowser = finishBrowser;
 exports.test_init = test_init;
+exports.dumpPage = dumpPage;
 exports.it = it;
 exports.sleep = sleep;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
@@ -357,9 +377,84 @@ function sleep(ms) {
 
 /***/ }),
 
-/***/ "./src/pages/login-as-root-page.ts":
+/***/ "./src/pages/confirm_installation_page.ts":
+/*!************************************************!*\
+  !*** ./src/pages/confirm_installation_page.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfirmInstallationPage = void 0;
+class ConfirmInstallationPage {
+    page;
+    continueButton = () => this.page.locator("button::-p-text('Continue')");
+    constructor(page) {
+        this.page = page;
+    }
+    async continue() {
+        await this.continueButton().click();
+    }
+}
+exports.ConfirmInstallationPage = ConfirmInstallationPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/congratulation_page.ts":
+/*!******************************************!*\
+  !*** ./src/pages/congratulation_page.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CongratulationPage = void 0;
+class CongratulationPage {
+    page;
+    congratulationText = () => this.page.locator("h2::-p-text('Congratulations!')");
+    constructor(page) {
+        this.page = page;
+    }
+    async wait(timeout) {
+        await this.congratulationText().setTimeout(timeout).wait();
+    }
+}
+exports.CongratulationPage = CongratulationPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/installing_page.ts":
+/*!**************************************!*\
+  !*** ./src/pages/installing_page.ts ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.InstallingPage = void 0;
+class InstallingPage {
+    page;
+    installingTheSystemText = () => this.page.locator("::-p-text(Installing the)");
+    constructor(page) {
+        this.page = page;
+    }
+    async wait() {
+        await this.installingTheSystemText().wait();
+    }
+}
+exports.InstallingPage = InstallingPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/login_as_root_page.ts":
 /*!*****************************************!*\
-  !*** ./src/pages/login-as-root-page.ts ***!
+  !*** ./src/pages/login_as_root_page.ts ***!
   \*****************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -386,9 +481,34 @@ exports.LoginAsRootPage = LoginAsRootPage;
 
 /***/ }),
 
-/***/ "./src/pages/sidebar-page.ts":
+/***/ "./src/pages/overview_page.ts":
+/*!************************************!*\
+  !*** ./src/pages/overview_page.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OverviewPage = void 0;
+class OverviewPage {
+    page;
+    installButton = () => this.page.locator("button::-p-text(Install)");
+    constructor(page) {
+        this.page = page;
+    }
+    async install() {
+        await this.installButton().click();
+    }
+}
+exports.OverviewPage = OverviewPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/sidebar_page.ts":
 /*!***********************************!*\
-  !*** ./src/pages/sidebar-page.ts ***!
+  !*** ./src/pages/sidebar_page.ts ***!
   \***********************************/
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -399,6 +519,7 @@ exports.SidebarPage = void 0;
 class SidebarPage {
     page;
     overviewLink = () => this.page.locator("a[href='#/overview']");
+    overviewText = () => this.page.locator("h3::-p-text('Overview')");
     localizationLink = () => this.page.locator("a[href='#/l10n']");
     networkLink = () => this.page.locator("a[href='#/network']");
     storageLink = () => this.page.locator("a[href='#/storage']");
@@ -409,6 +530,9 @@ class SidebarPage {
     }
     async goToOverview() {
         await this.overviewLink().click();
+    }
+    async waitOverviewVisible(timeout) {
+        await this.overviewText().setTimeout(timeout).wait();
     }
     async goToLocalization() {
         await this.localizationLink().click();
@@ -431,9 +555,9 @@ exports.SidebarPage = SidebarPage;
 
 /***/ }),
 
-/***/ "./src/pages/software-page.ts":
+/***/ "./src/pages/software_page.ts":
 /*!************************************!*\
-  !*** ./src/pages/software-page.ts ***!
+  !*** ./src/pages/software_page.ts ***!
   \************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -456,9 +580,9 @@ exports.SoftwarePage = SoftwarePage;
 
 /***/ }),
 
-/***/ "./src/pages/software-selection-page.ts":
+/***/ "./src/pages/software_selection_page.ts":
 /*!**********************************************!*\
-  !*** ./src/pages/software-selection-page.ts ***!
+  !*** ./src/pages/software_selection_page.ts ***!
   \**********************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -485,11 +609,11 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 
 /***/ }),
 
-/***/ "./src/test_graphical_environments.ts":
-/*!********************************************!*\
-  !*** ./src/test_graphical_environments.ts ***!
-  \********************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ "./src/test_graphical_environment.ts":
+/*!*******************************************!*\
+  !*** ./src/test_graphical_environment.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
@@ -497,35 +621,24 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 // If the test fails it saves the page screenshot and the HTML page dump to
 // ./log/ subdirectory. For more details about customization see the README.md
 // file.
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
-// see https://nodejs.org/docs/latest-v20.x/api/assert.html
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
+const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const perform_installation_1 = __webpack_require__(/*! ./checks/perform_installation */ "./src/checks/perform_installation.ts");
-const sidebar_page_1 = __webpack_require__(/*! ./pages/sidebar-page */ "./src/pages/sidebar-page.ts");
-const select_pattern_1 = __webpack_require__(/*! ./checks/select_pattern */ "./src/checks/select_pattern.ts");
+const software_selection_1 = __webpack_require__(/*! ./checks/software_selection */ "./src/checks/software_selection.ts");
 // parse options from the command line
-const options = (0, cmdline_1.parse)((cmd) => cmd.option("-i, --install", "Proceed to install the system (the default is not to install it)")
-    .option("-s, --software <name>", "Proceed to select pattern", "GNOME Desktop Environment (Wayland)"));
-(0, node_test_1.describe)("Agama test", function () {
+const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Option("--desktop <name>", "Desktop to install")
+    .choices(["gnome", "kde", "xfc", "basic", "none"])
+    .default("none"))
+    .option("--install", "Proceed to install the system (the default is not to install it)"));
+(0, node_test_1.describe)("Installation with a graphical environment", function () {
     (0, helpers_1.test_init)(options);
-    (0, helpers_1.it)("should have Agama page title", async function () {
-        strict_1.default.deepEqual(await helpers_1.page.title(), "Agama");
-    });
-    (0, login_1.login)(options.password);
-    (0, select_pattern_1.selectPattern)(options.pattern);
-    (0, helpers_1.it)("should be ready for installation", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToOverview();
-        await helpers_1.page.locator("button::-p-text(Install)").wait();
-    });
+    (0, login_1.logIn)(options.password);
+    (0, software_selection_1.selectSinglePattern)(options.desktop);
     if (options.install)
         (0, perform_installation_1.performInstallation)();
 });
@@ -926,7 +1039,7 @@ module.exports = require("zlib");
 /******/ 	// the startup function
 /******/ 	__webpack_require__.x = () => {
 /******/ 		// Load entry module and return exports
-/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_graphical_environments.ts")))
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_graphical_environment.ts")))
 /******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 		return __webpack_exports__;
 /******/ 	};
@@ -1030,7 +1143,7 @@ module.exports = require("zlib");
 /******/ 		// object to store loaded chunks
 /******/ 		// "1" means "loaded", otherwise not loaded yet
 /******/ 		var installedChunks = {
-/******/ 			"test_graphical_environments": 1
+/******/ 			"test_graphical_environment": 1
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.O.require = (chunkId) => (installedChunks[chunkId]);
@@ -1082,4 +1195,4 @@ module.exports = require("zlib");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=test_graphical_environments.js.map
+//# sourceMappingURL=test_graphical_environment.js.map
