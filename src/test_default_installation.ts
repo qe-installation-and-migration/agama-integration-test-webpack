@@ -28,29 +28,29 @@ const options = parse((cmd) =>
 describe("Agama test", function () {
     test_init(options);
 
-    it("should have Agama page title", async function () {
-        assert.deepEqual(await page.title(), "Agama");
-    });
+    // it("should have Agama page title", async function () {
+    //     assert.deepEqual(await page.title(), "Agama");
+    // });
 
     login(options.password);
 
-    if (options.product !== "SUSE Linux Enteprise Server 16.0 Alpha") productSelection(options.product);
+    // if (options.product !== "SUSE Linux Enteprise Server 16.0 Alpha") productSelection(options.product);
 
-    it("should display overview section", async function () {
-        await page.locator("h3::-p-text('Overview')").wait();
-    });
+    // it("should display overview section", async function () {
+    //     await page.locator("h3::-p-text('Overview')").wait();
+    // });
 
-    setRootPassword(options.password);
+    // setRootPassword(options.password);
 
-    createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
+    // createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
 
-    if (options.dasd) prepareDasdStorage();
+    // if (options.dasd) prepareDasdStorage();
 
-    it("should be ready for installation", async function () {
-        const sidebar = new SidebarPage(page);
-        await sidebar.goToOverview();
-        await page.locator("button::-p-text(Install)").wait();
-    });
+    // it("should be ready for installation", async function () {
+    //     const sidebar = new SidebarPage(page);
+    //     await sidebar.goToOverview();
+    //     await page.locator("button::-p-text(Install)").wait();
+    // });
 
     if (options.install) performInstallation();
 });

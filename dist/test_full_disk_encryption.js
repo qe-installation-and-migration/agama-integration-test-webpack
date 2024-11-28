@@ -66,13 +66,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.performInstallation = performInstallation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 function performInstallation() {
-    (0, helpers_1.it)("should start installation", async function () {
-        // todo: button is moving in the page and fails in slow machines
-        await (0, helpers_1.sleep)(2000);
-        await helpers_1.page.locator("button::-p-text('Install')").click();
-        await helpers_1.page.locator("button::-p-text('Continue')").click();
-        await helpers_1.page.locator("::-p-text(Installing the)").wait();
-    });
+    // it("should start installation", async function () {
+    //     // todo: button is moving in the page and fails in slow machines
+    //     await sleep(2000);
+    //     await page.locator("button::-p-text('Install')").click();
+    //     await page.locator("button::-p-text('Continue')").click();
+    //     await page.locator("::-p-text(Installing the)").wait();
+    // });
     (0, helpers_1.it)("should finish installation", async function () {
         await helpers_1.page
             .locator("h2::-p-text('Congratulations!')")

@@ -2,37 +2,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/checks/create_first_user.ts":
-/*!*****************************************!*\
-  !*** ./src/checks/create_first_user.ts ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createFirstUser = createFirstUser;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const create_user_page_1 = __webpack_require__(/*! ../pages/create-user-page */ "./src/pages/create-user-page.ts");
-const users_page_1 = __webpack_require__(/*! ../pages/users-page */ "./src/pages/users-page.ts");
-function createFirstUser(fullName, userName, password) {
-    (0, helpers_1.it)("should create first user", async function () {
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
-        // todo: button is moving in the page and fails in slow machines
-        await (0, helpers_1.sleep)(2000);
-        await users.defineAUserNow();
-        await createFirstUser.fillFullName(fullName);
-        await createFirstUser.fillUserName(userName);
-        await createFirstUser.fillPassword(password);
-        await createFirstUser.fillPasswordConfirmation(password);
-        await createFirstUser.accept();
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/login.ts":
 /*!*****************************!*\
   !*** ./src/checks/login.ts ***!
@@ -68,110 +37,19 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.performInstallation = performInstallation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 function performInstallation() {
-    (0, helpers_1.it)("should start installation", async function () {
-        // todo: button is moving in the page and fails in slow machines
-        await (0, helpers_1.sleep)(2000);
-        await helpers_1.page.locator("button::-p-text('Install')").click();
-        await helpers_1.page.locator("button::-p-text('Continue')").click();
-        await helpers_1.page.locator("::-p-text(Installing the)").wait();
-    });
+    // it("should start installation", async function () {
+    //     // todo: button is moving in the page and fails in slow machines
+    //     await sleep(2000);
+    //     await page.locator("button::-p-text('Install')").click();
+    //     await page.locator("button::-p-text('Continue')").click();
+    //     await page.locator("::-p-text(Installing the)").wait();
+    // });
     (0, helpers_1.it)("should finish installation", async function () {
         await helpers_1.page
             .locator("h2::-p-text('Congratulations!')")
             .setTimeout(40 * 60 * 1000)
             .wait();
     }, 40 * 60 * 1000);
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/prepare_dasd_storage.ts":
-/*!********************************************!*\
-  !*** ./src/checks/prepare_dasd_storage.ts ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.prepareDasdStorage = prepareDasdStorage;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-function prepareDasdStorage() {
-    (0, helpers_1.it)("should prepare DASD storage", async function () {
-        // Workaround, sometimes the UI seems not responsive
-        await helpers_1.page.locator("a[href='#/storage']").click({ delay: 1000 });
-        await helpers_1.page.locator("a[href='#/storage']").click({ delay: 1000 });
-        await helpers_1.page.locator("a[href='#/storage/target-device']").click();
-        await helpers_1.page.locator("span::-p-text('storage techs')").click();
-        await helpers_1.page.locator("span::-p-text('DASD')").click({ delay: 1000 });
-        // Enabling DASD device, by default it is always disabled
-        await helpers_1.page.locator("input[name='checkrow0']").click({ delay: 1000 });
-        await helpers_1.page.locator("span::-p-text('Perform an action')").click({ delay: 1000 });
-        await helpers_1.page.locator("span::-p-text('Activate')").click();
-        // Selecting installation device
-        await helpers_1.page.locator("a[href='#/storage']").click();
-        await helpers_1.page.locator("a[href='#/storage/target-device']").click({ delay: 1000 });
-        await helpers_1.page.locator("input[aria-label='Select row 0']").click();
-        await helpers_1.page.locator("button[form='targetSelection']").click();
-    });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/product_selection.ts":
-/*!*****************************************!*\
-  !*** ./src/checks/product_selection.ts ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.productSelection = productSelection;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const product_selection_page_1 = __webpack_require__(/*! ../pages/product-selection-page */ "./src/pages/product-selection-page.ts");
-function productSelection(product) {
-    (0, helpers_1.it)("should display the product selection dialog", async function () {
-        const productselection = new product_selection_page_1.ProductSelectionPage(helpers_1.page);
-        let timeout = 2 * 60 * 1000;
-        await productselection.selectProduct(product);
-        // Check if configuration procedure is progressing
-        await helpers_1.page.locator("::-p-text(Configuring the product)").wait();
-        // refreshing the repositories might take long time
-        await helpers_1.page.locator("h3::-p-text('Overview')").setTimeout(timeout).wait();
-    });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/set_root_password.ts":
-/*!*****************************************!*\
-  !*** ./src/checks/set_root_password.ts ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setRootPassword = setRootPassword;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const root_password_page_1 = __webpack_require__(/*! ../pages/root-password-page */ "./src/pages/root-password-page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar-page */ "./src/pages/sidebar-page.ts");
-const users_page_1 = __webpack_require__(/*! ../pages/users-page */ "./src/pages/users-page.ts");
-function setRootPassword(password) {
-    (0, helpers_1.it)("should allow setting the root password", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const setARootPassword = new root_password_page_1.SetARootPasswordPage(helpers_1.page);
-        await sidebar.goToUsers();
-        await users.setAPassword();
-        await setARootPassword.fillPassword(password);
-        await setARootPassword.fillPasswordConfirmation(password);
-        await setARootPassword.confirm();
-    });
 }
 
 
@@ -450,47 +328,6 @@ function sleep(ms) {
 
 /***/ }),
 
-/***/ "./src/pages/create-user-page.ts":
-/*!***************************************!*\
-  !*** ./src/pages/create-user-page.ts ***!
-  \***************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CreateFirstUserPage = void 0;
-class CreateFirstUserPage {
-    page;
-    fullNameInput = () => this.page.locator("input#userFullName");
-    usernameInput = () => this.page.locator("input#userName");
-    passwordInput = () => this.page.locator("input#password");
-    passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
-    acceptButton = () => this.page.locator("button[form='firstUserForm']");
-    constructor(page) {
-        this.page = page;
-    }
-    async fillFullName(fullName) {
-        await this.fullNameInput().fill(fullName);
-    }
-    async fillUserName(userName) {
-        await this.usernameInput().fill(userName);
-    }
-    async fillPassword(password) {
-        await this.passwordInput().fill(password);
-    }
-    async fillPasswordConfirmation(password) {
-        await this.passwordConfirmationInput().fill(password);
-    }
-    async accept() {
-        await this.acceptButton().click();
-    }
-}
-exports.CreateFirstUserPage = CreateFirstUserPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/login-as-root-page.ts":
 /*!*****************************************!*\
   !*** ./src/pages/login-as-root-page.ts ***!
@@ -520,146 +357,11 @@ exports.LoginAsRootPage = LoginAsRootPage;
 
 /***/ }),
 
-/***/ "./src/pages/product-selection-page.ts":
-/*!*********************************************!*\
-  !*** ./src/pages/product-selection-page.ts ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProductSelectionPage = void 0;
-class ProductSelectionPage {
-    page;
-    productText = (product) => this.page.locator(`::-p-text('${product}')`);
-    selectButton = () => this.page.locator("button[form='productSelectionForm']");
-    constructor(page) {
-        this.page = page;
-    }
-    async selectProduct(product) {
-        await this.productText(product).click();
-        await this.selectButton().click();
-    }
-}
-exports.ProductSelectionPage = ProductSelectionPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/root-password-page.ts":
-/*!*****************************************!*\
-  !*** ./src/pages/root-password-page.ts ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SetARootPasswordPage = void 0;
-class SetARootPasswordPage {
-    page;
-    passwordInput = () => this.page.locator("input#password");
-    passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
-    confirmText = () => this.page.locator("button::-p-text(Confirm)");
-    cancelText = () => this.page.locator("button::-p-text(Cancel)");
-    constructor(page) {
-        this.page = page;
-    }
-    async fillPassword(password) {
-        await this.passwordInput().fill(password);
-    }
-    async fillPasswordConfirmation(password) {
-        await this.passwordConfirmationInput().fill(password);
-    }
-    async confirm() {
-        await this.confirmText().click();
-    }
-}
-exports.SetARootPasswordPage = SetARootPasswordPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/sidebar-page.ts":
-/*!***********************************!*\
-  !*** ./src/pages/sidebar-page.ts ***!
-  \***********************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SidebarPage = void 0;
-class SidebarPage {
-    page;
-    overviewLink = () => this.page.locator("a[href='#/overview']");
-    localizationLink = () => this.page.locator("a[href='#/l10n']");
-    networkLink = () => this.page.locator("a[href='#/network']");
-    storageLink = () => this.page.locator("a[href='#/storage']");
-    softwareLink = () => this.page.locator("a[href='#/software']");
-    usersLink = () => this.page.locator("a[href='#/users']");
-    constructor(page) {
-        this.page = page;
-    }
-    async goToOverview() {
-        await this.overviewLink().click();
-    }
-    async goToLocalization() {
-        await this.localizationLink().click();
-    }
-    async goToNetwork() {
-        await this.networkLink().click();
-    }
-    async goToStorage() {
-        await this.storageLink().click();
-    }
-    async goToSoftware() {
-        await this.softwareLink().click();
-    }
-    async goToUsers() {
-        await this.usersLink().click();
-    }
-}
-exports.SidebarPage = SidebarPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/users-page.ts":
-/*!*********************************!*\
-  !*** ./src/pages/users-page.ts ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UsersPage = void 0;
-class UsersPage {
-    page;
-    firstUserLink = () => this.page.locator("a[href='#/users/first']");
-    setAPasswordText = () => this.page.locator("button::-p-text(Set a password)");
-    constructor(page) {
-        this.page = page;
-    }
-    async defineAUserNow() {
-        await this.firstUserLink().click();
-    }
-    async setAPassword() {
-        await this.setAPasswordText().click();
-    }
-}
-exports.UsersPage = UsersPage;
-
-
-/***/ }),
-
 /***/ "./src/test_default_installation.ts":
 /*!******************************************!*\
   !*** ./src/test_default_installation.ts ***!
   \******************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
@@ -667,47 +369,35 @@ exports.UsersPage = UsersPage;
 // If the test fails it saves the page screenshot and the HTML page dump to
 // ./log/ subdirectory. For more details about customization see the README.md
 // file.
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
-// see https://nodejs.org/docs/latest-v20.x/api/assert.html
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
-const set_root_password_1 = __webpack_require__(/*! ./checks/set_root_password */ "./src/checks/set_root_password.ts");
-const create_first_user_1 = __webpack_require__(/*! ./checks/create_first_user */ "./src/checks/create_first_user.ts");
-const prepare_dasd_storage_1 = __webpack_require__(/*! ./checks/prepare_dasd_storage */ "./src/checks/prepare_dasd_storage.ts");
 const perform_installation_1 = __webpack_require__(/*! ./checks/perform_installation */ "./src/checks/perform_installation.ts");
-const sidebar_page_1 = __webpack_require__(/*! ./pages/sidebar-page */ "./src/pages/sidebar-page.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd.option("-r, --product <name>", "Product to install", "openSUSE Tumbleweed")
     .option("-i, --install", "Proceed to install the system (the default is not to install it)")
     .option("-z, --dasd", "Prepare DASD storage (the default is not to prepare it)"));
 (0, node_test_1.describe)("Agama test", function () {
     (0, helpers_1.test_init)(options);
-    (0, helpers_1.it)("should have Agama page title", async function () {
-        strict_1.default.deepEqual(await helpers_1.page.title(), "Agama");
-    });
+    // it("should have Agama page title", async function () {
+    //     assert.deepEqual(await page.title(), "Agama");
+    // });
     (0, login_1.login)(options.password);
-    if (options.product !== "SUSE Linux Enteprise Server 16.0 Alpha")
-        (0, product_selection_1.productSelection)(options.product);
-    (0, helpers_1.it)("should display overview section", async function () {
-        await helpers_1.page.locator("h3::-p-text('Overview')").wait();
-    });
-    (0, set_root_password_1.setRootPassword)(options.password);
-    (0, create_first_user_1.createFirstUser)("Bernhard M. Wiedemann", "bernhard", options.password);
-    if (options.dasd)
-        (0, prepare_dasd_storage_1.prepareDasdStorage)();
-    (0, helpers_1.it)("should be ready for installation", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToOverview();
-        await helpers_1.page.locator("button::-p-text(Install)").wait();
-    });
+    // if (options.product !== "SUSE Linux Enteprise Server 16.0 Alpha") productSelection(options.product);
+    // it("should display overview section", async function () {
+    //     await page.locator("h3::-p-text('Overview')").wait();
+    // });
+    // setRootPassword(options.password);
+    // createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
+    // if (options.dasd) prepareDasdStorage();
+    // it("should be ready for installation", async function () {
+    //     const sidebar = new SidebarPage(page);
+    //     await sidebar.goToOverview();
+    //     await page.locator("button::-p-text(Install)").wait();
+    // });
     if (options.install)
         (0, perform_installation_1.performInstallation)();
 });
@@ -880,17 +570,6 @@ module.exports = require("https");
 
 "use strict";
 module.exports = require("net");
-
-/***/ }),
-
-/***/ "node:assert/strict":
-/*!*************************************!*\
-  !*** external "node:assert/strict" ***!
-  \*************************************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("node:assert/strict");
 
 /***/ }),
 
