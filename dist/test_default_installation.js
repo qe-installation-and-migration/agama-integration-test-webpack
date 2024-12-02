@@ -29,7 +29,7 @@ function createFirstUser(fullName, userName, password) {
         await createFirstUser.fillPasswordConfirmation(password);
         await createFirstUser.accept();
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(1000);
+        await (0, helpers_1.sleep)(2000);
     });
 }
 
@@ -195,7 +195,7 @@ function setRootPassword(password) {
         await setARootPassword.fillPasswordConfirmation(password);
         await setARootPassword.confirm();
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(1000);
+        await (0, helpers_1.sleep)(2000);
     });
 }
 

@@ -18,6 +18,6 @@ export function createFirstUser(fullName: string, userName: string, password: st
         await createFirstUser.fillPasswordConfirmation(password);
         await createFirstUser.accept();
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await sleep(1000);
+        await sleep(2000);
     });
 }
