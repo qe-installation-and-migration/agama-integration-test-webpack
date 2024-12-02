@@ -1,7 +1,7 @@
 import { it, page } from "../lib/helpers";
-import { SidebarPage } from "../pages/sidebar-page";
-import { StorageEncryptionPage } from "../pages/storage-encryption-page";
-import { StoragePage } from "../pages/storage-page";
+import { SidebarPage } from "../pages/sidebar_page";
+import { StorageEncryptionPage } from "../pages/storage_encryption_page";
+import { StoragePage } from "../pages/storage_page";
 
 export function enableEncryption(password: string) {
     it("should enable encryption", async function () {

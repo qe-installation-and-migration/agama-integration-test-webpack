@@ -1,4 +1,4 @@
-import puppeteer, { type Page } from "puppeteer-core";
+import { type Page } from "puppeteer-core";
 
 export class LoginAsRootPage {
     private readonly page: Page;

@@ -13,9 +13,9 @@
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enableEncryption = enableEncryption;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar-page */ "./src/pages/sidebar-page.ts");
-const storage_encryption_page_1 = __webpack_require__(/*! ../pages/storage-encryption-page */ "./src/pages/storage-encryption-page.ts");
-const storage_page_1 = __webpack_require__(/*! ../pages/storage-page */ "./src/pages/storage-page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_encryption_page_1 = __webpack_require__(/*! ../pages/storage_encryption_page */ "./src/pages/storage_encryption_page.ts");
+const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
 function enableEncryption(password) {
     (0, helpers_1.it)("should enable encryption", async function () {
         const storage = new storage_page_1.StoragePage(helpers_1.page);
@@ -35,16 +35,23 @@ function enableEncryption(password) {
 /*!*****************************!*\
   !*** ./src/checks/login.ts ***!
   \*****************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.login = login;
+exports.logIn = logIn;
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const login_as_root_page_1 = __webpack_require__(/*! ../pages/login-as-root-page */ "./src/pages/login-as-root-page.ts");
-function login(password) {
-    (0, helpers_1.it)("allows logging in", async function () {
+const login_as_root_page_1 = __webpack_require__(/*! ../pages/login_as_root_page */ "./src/pages/login_as_root_page.ts");
+function logIn(password) {
+    (0, helpers_1.it)("should have Agama page title", async function () {
+        strict_1.default.deepEqual(await helpers_1.page.title(), "Agama");
+    });
+    (0, helpers_1.it)("should allow logging in", async function () {
         const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
         await loginAsRoot.fillPassword(password);
         await loginAsRoot.logIn();
@@ -65,19 +72,25 @@ function login(password) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.performInstallation = performInstallation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
+const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
+const installing_page_1 = __webpack_require__(/*! ../pages/installing_page */ "./src/pages/installing_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 function performInstallation() {
     (0, helpers_1.it)("should start installation", async function () {
-        // todo: button is moving in the page and fails in slow machines
-        await (0, helpers_1.sleep)(2000);
-        await helpers_1.page.locator("button::-p-text('Install')").click();
-        await helpers_1.page.locator("button::-p-text('Continue')").click();
-        await helpers_1.page.locator("::-p-text(Installing the)").wait();
+        const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
+        const installing = new installing_page_1.InstallingPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToOverview();
+        await overview.install();
+        await confirmInstallation.continue();
+        await installing.wait();
     });
     (0, helpers_1.it)("should finish installation", async function () {
-        await helpers_1.page
-            .locator("h2::-p-text('Congratulations!')")
-            .setTimeout(40 * 60 * 1000)
-            .wait();
+        const congratulation = new congratulation_page_1.CongratulationPage(helpers_1.page);
+        await congratulation.wait(40 * 60 * 1000);
     }, 40 * 60 * 1000);
 }
 
@@ -197,6 +210,7 @@ exports.page = void 0;
 exports.startBrowser = startBrowser;
 exports.finishBrowser = finishBrowser;
 exports.test_init = test_init;
+exports.dumpPage = dumpPage;
 exports.it = it;
 exports.sleep = sleep;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
@@ -357,9 +371,84 @@ function sleep(ms) {
 
 /***/ }),
 
-/***/ "./src/pages/login-as-root-page.ts":
+/***/ "./src/pages/confirm_installation_page.ts":
+/*!************************************************!*\
+  !*** ./src/pages/confirm_installation_page.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfirmInstallationPage = void 0;
+class ConfirmInstallationPage {
+    page;
+    continueButton = () => this.page.locator("button::-p-text('Continue')");
+    constructor(page) {
+        this.page = page;
+    }
+    async continue() {
+        await this.continueButton().click();
+    }
+}
+exports.ConfirmInstallationPage = ConfirmInstallationPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/congratulation_page.ts":
+/*!******************************************!*\
+  !*** ./src/pages/congratulation_page.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CongratulationPage = void 0;
+class CongratulationPage {
+    page;
+    congratulationText = () => this.page.locator("h2::-p-text('Congratulations!')");
+    constructor(page) {
+        this.page = page;
+    }
+    async wait(timeout) {
+        await this.congratulationText().setTimeout(timeout).wait();
+    }
+}
+exports.CongratulationPage = CongratulationPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/installing_page.ts":
+/*!**************************************!*\
+  !*** ./src/pages/installing_page.ts ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.InstallingPage = void 0;
+class InstallingPage {
+    page;
+    installingTheSystemText = () => this.page.locator("::-p-text(Installing the)");
+    constructor(page) {
+        this.page = page;
+    }
+    async wait() {
+        await this.installingTheSystemText().wait();
+    }
+}
+exports.InstallingPage = InstallingPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/login_as_root_page.ts":
 /*!*****************************************!*\
-  !*** ./src/pages/login-as-root-page.ts ***!
+  !*** ./src/pages/login_as_root_page.ts ***!
   \*****************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -386,9 +475,34 @@ exports.LoginAsRootPage = LoginAsRootPage;
 
 /***/ }),
 
-/***/ "./src/pages/sidebar-page.ts":
+/***/ "./src/pages/overview_page.ts":
+/*!************************************!*\
+  !*** ./src/pages/overview_page.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OverviewPage = void 0;
+class OverviewPage {
+    page;
+    installButton = () => this.page.locator("button::-p-text(Install)");
+    constructor(page) {
+        this.page = page;
+    }
+    async install() {
+        await this.installButton().click();
+    }
+}
+exports.OverviewPage = OverviewPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/sidebar_page.ts":
 /*!***********************************!*\
-  !*** ./src/pages/sidebar-page.ts ***!
+  !*** ./src/pages/sidebar_page.ts ***!
   \***********************************/
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -399,6 +513,7 @@ exports.SidebarPage = void 0;
 class SidebarPage {
     page;
     overviewLink = () => this.page.locator("a[href='#/overview']");
+    overviewText = () => this.page.locator("h3::-p-text('Overview')");
     localizationLink = () => this.page.locator("a[href='#/l10n']");
     networkLink = () => this.page.locator("a[href='#/network']");
     storageLink = () => this.page.locator("a[href='#/storage']");
@@ -409,6 +524,9 @@ class SidebarPage {
     }
     async goToOverview() {
         await this.overviewLink().click();
+    }
+    async waitOverviewVisible(timeout) {
+        await this.overviewText().setTimeout(timeout).wait();
     }
     async goToLocalization() {
         await this.localizationLink().click();
@@ -431,9 +549,9 @@ exports.SidebarPage = SidebarPage;
 
 /***/ }),
 
-/***/ "./src/pages/storage-encryption-page.ts":
+/***/ "./src/pages/storage_encryption_page.ts":
 /*!**********************************************!*\
-  !*** ./src/pages/storage-encryption-page.ts ***!
+  !*** ./src/pages/storage_encryption_page.ts ***!
   \**********************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -462,9 +580,9 @@ exports.StorageEncryptionPage = StorageEncryptionPage;
 
 /***/ }),
 
-/***/ "./src/pages/storage-page.ts":
+/***/ "./src/pages/storage_page.ts":
 /*!***********************************!*\
-  !*** ./src/pages/storage-page.ts ***!
+  !*** ./src/pages/storage_page.ts ***!
   \***********************************/
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -495,7 +613,7 @@ exports.StoragePage = StoragePage;
 /*!******************************************!*\
   !*** ./src/test_full_disk_encryption.ts ***!
   \******************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
@@ -503,34 +621,20 @@ exports.StoragePage = StoragePage;
 // If the test fails it saves the page screenshot and the HTML page dump to
 // ./log/ subdirectory. For more details about customization see the README.md
 // file.
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
-// see https://nodejs.org/docs/latest-v20.x/api/assert.html
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const perform_installation_1 = __webpack_require__(/*! ./checks/perform_installation */ "./src/checks/perform_installation.ts");
-const sidebar_page_1 = __webpack_require__(/*! ./pages/sidebar-page */ "./src/pages/sidebar-page.ts");
 const enable_encryption_1 = __webpack_require__(/*! ./checks/enable_encryption */ "./src/checks/enable_encryption.ts");
 // parse options from the command line
-const options = (0, cmdline_1.parse)((cmd) => cmd.option("-i, --install", "Proceed to install the system (the default is not to install it)"));
-(0, node_test_1.describe)("Agama test", function () {
+const options = (0, cmdline_1.parse)((cmd) => cmd.option("--install", "Proceed to install the system (the default is not to install it)"));
+(0, node_test_1.describe)("Installation with Full Disk Encryption (FDE)", function () {
     (0, helpers_1.test_init)(options);
-    (0, helpers_1.it)("should have Agama page title", async function () {
-        strict_1.default.deepEqual(await helpers_1.page.title(), "Agama");
-    });
-    (0, login_1.login)(options.password);
+    (0, login_1.logIn)(options.password);
     (0, enable_encryption_1.enableEncryption)(options.password);
-    (0, helpers_1.it)("should be ready for installation", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToOverview();
-        await helpers_1.page.locator("button::-p-text(Install)").wait();
-    });
     if (options.install)
         (0, perform_installation_1.performInstallation)();
 });

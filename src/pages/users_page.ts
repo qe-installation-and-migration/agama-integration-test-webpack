@@ -1,9 +1,9 @@
-import puppeteer, { type Locator, type Page } from "puppeteer-core";
+import { type Page } from "puppeteer-core";
 
 export class UsersPage {
     private readonly page: Page;
     private readonly firstUserLink = () => this.page.locator("a[href='#/users/first']");
-    private readonly setAPasswordText = () => this.page.locator("button::-p-text(Set a password)");
+    private readonly setAPasswordButton = () => this.page.locator("button::-p-text(Set a password)");
 
     constructor(page: Page) {
         this.page = page;
@@ -14,6 +14,6 @@ export class UsersPage {
     }
 
     async setAPassword() {
-        await this.setAPasswordText().click();
+        await this.setAPasswordButton().click();
     }
 }

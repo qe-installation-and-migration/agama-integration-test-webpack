@@ -1,7 +1,7 @@
-import { it, page } from "../lib/helpers";
-import { SetARootPasswordPage } from "../pages/root-password-page";
-import { SidebarPage } from "../pages/sidebar-page";
-import { UsersPage } from "../pages/users-page";
+import { it, page, sleep } from "../lib/helpers";
+import { SetARootPasswordPage } from "../pages/root_password_page";
+import { SidebarPage } from "../pages/sidebar_page";
+import { UsersPage } from "../pages/users_page";
 
 export function setRootPassword(password: string) {
     it("should allow setting the root password", async function () {
@@ -14,5 +14,7 @@ export function setRootPassword(password: string) {
         await setARootPassword.fillPassword(password);
         await setARootPassword.fillPasswordConfirmation(password);
         await setARootPassword.confirm();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await sleep(1000);
     });
 }
