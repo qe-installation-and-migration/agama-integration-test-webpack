@@ -150,13 +150,17 @@ const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.t
 const configuring_product_page_1 = __webpack_require__(/*! ../pages/configuring_product_page */ "./src/pages/configuring_product_page.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function productSelection(product) {
-    const productMap = {
-        "tumbleweed": "openSUSE Tumbleweed",
-        "leap": "Leap 16.0 Alpha"
+function productSelection(productId) {
+    const productIdMap = {
+        "Leap_16.0": "Leap 16.0 Alpha",
+        "MicroOS": "openSUSE MicroOS",
+        "SLES_16.0": "SUSE Linux Enterprise Server 16.0 Alpha",
+        "SLES_SAP_16.0": "SUSE Linux Enterprise Server for SAP Applications 16.0 Alpha",
+        "Slowroll": "Slowroll",
+        "Tumbleweed": "openSUSE Tumbleweed"
     };
     (0, helpers_1.it)("should allow to select a product", async function () {
-        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectProduct(productMap[product]);
+        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectProduct(productIdMap[productId]);
     });
     (0, helpers_1.it)("should start configuring the product", async function () {
         await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
@@ -835,16 +839,18 @@ const create_first_user_1 = __webpack_require__(/*! ./checks/create_first_user *
 const perform_installation_1 = __webpack_require__(/*! ./checks/perform_installation */ "./src/checks/perform_installation.ts");
 const prepare_dasd_storage_1 = __webpack_require__(/*! ./checks/prepare_dasd_storage */ "./src/checks/prepare_dasd_storage.ts");
 // parse options from the command line
-const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Option("--product-selection <name>", "Selection of product to install")
-    .choices(["tumbleweed", "leap", "none"])
+const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(
+// for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
+new commander_1.Option("--product-id <id>", "Product id to select a product to install")
+    .choices(["Leap_16.0", "MicroOS", "SLES_16.0", "SLES_SAP_16.0", "Slowroll", "Tumbleweed", "none"])
     .default("none"))
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
 (0, node_test_1.describe)("Installation with default values", function () {
     (0, helpers_1.test_init)(options);
     (0, login_1.logIn)(options.password);
-    if (options.productSelection !== "none")
-        (0, product_selection_1.productSelection)(options.productSelection);
+    if (options.productId !== "none")
+        (0, product_selection_1.productSelection)(options.productId);
     (0, create_first_user_1.createFirstUser)("Bernhard M. Wiedemann", "bernhard", options.password);
     (0, set_root_password_1.setRootPassword)(options.password);
     if (options.dasd)
