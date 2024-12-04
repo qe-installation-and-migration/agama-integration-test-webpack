@@ -20,8 +20,9 @@ import { prepareDasdStorage } from "./checks/prepare_dasd_storage";
 // parse options from the command line
 const options = parse((cmd) =>
     cmd.addOption(
-        new Option("--product-selection <name>", "Selection of product to install")
-            .choices(["tumbleweed", "leap", "none"])
+        // for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
+        new Option("--product-id <id>", "Product id to select a product to install")
+            .choices(["Leap_16.0", "MicroOS", "SLES_16.0", "SLES_SAP_16.0", "Slowroll", "Tumbleweed", "none"])
             .default("none"))
         .option("--install", "Proceed to install the system (the default is not to install it)")
         .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
@@ -30,7 +31,7 @@ describe("Installation with default values", function () {
     test_init(options);
 
     logIn(options.password);
-    if (options.productSelection !== "none") productSelection(options.productSelection);
+    if (options.productSelection !== "none") productSelection(options.productId);
     createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
     setRootPassword(options.password);
     if (options.dasd) prepareDasdStorage();
