@@ -849,7 +849,7 @@ new commander_1.Option("--product-id <id>", "Product id to select a product to i
 (0, node_test_1.describe)("Installation with default values", function () {
     (0, helpers_1.test_init)(options);
     (0, login_1.logIn)(options.password);
-    if (options.productSelection !== "none")
+    if (options.productId !== "none")
         (0, product_selection_1.productSelection)(options.productId);
     (0, create_first_user_1.createFirstUser)("Bernhard M. Wiedemann", "bernhard", options.password);
     (0, set_root_password_1.setRootPassword)(options.password);

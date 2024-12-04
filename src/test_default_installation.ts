@@ -31,7 +31,7 @@ describe("Installation with default values", function () {
     test_init(options);
 
     logIn(options.password);
-    if (options.productSelection !== "none") productSelection(options.productId);
+    if (options.productId !== "none") productSelection(options.productId);
     createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
     setRootPassword(options.password);
     if (options.dasd) prepareDasdStorage();
