@@ -1,7 +1,8 @@
 import { type Page } from "puppeteer-core";
+import { type GConstructor } from "../lib/helpers";
 
 export class SidebarPage {
-    private readonly page: Page;
+    protected readonly page: Page;
     private readonly overviewLink = () => this.page.locator("a[href='#/overview']");
     private readonly overviewText = () => this.page.locator("h3::-p-text('Overview')");
     private readonly localizationLink = () => this.page.locator("a[href='#/l10n']");
@@ -42,3 +43,16 @@ export class SidebarPage {
         await this.usersLink().click();
     }
 }
+
+function RegistrationNavigable<TBase extends GConstructor<SidebarPage>>(Base: TBase) {
+    return class extends Base {
+        private readonly registrationLink = () => this.page.locator("a[href='#/registration']");
+
+        async goToRegistration() {
+            await this.registrationLink().click();
+        }
+    }
+}
+
+export class SidebarWithRegistrationPage extends RegistrationNavigable(SidebarPage) { }
+

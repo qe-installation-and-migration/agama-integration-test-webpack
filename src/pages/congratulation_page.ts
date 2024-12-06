@@ -8,7 +8,7 @@ export class CongratulationPage {
         this.page = page;
     }
 
-    async wait(timeout) {
+    async wait(timeout: number) {
         await this.congratulationText().setTimeout(timeout).wait();
     }
 }
