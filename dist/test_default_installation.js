@@ -149,7 +149,6 @@ exports.productSelection = productSelection;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const configuring_product_page_1 = __webpack_require__(/*! ../pages/configuring_product_page */ "./src/pages/configuring_product_page.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 function productSelection(productId) {
     const productIdMap = {
         "Leap_16.0": "Leap 16.0 Alpha",
@@ -165,41 +164,30 @@ function productSelection(productId) {
     (0, helpers_1.it)("should start configuring the product", async function () {
         await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
     });
-    (0, helpers_1.it)("should display overview section", async function () {
-        // longer timeout to refresh repos when coming from product selection
-        await new sidebar_page_1.SidebarPage(helpers_1.page).waitOverviewVisible(2 * 60 * 1000);
-    });
 }
 
 
 /***/ }),
 
-/***/ "./src/checks/set_root_password.ts":
-/*!*****************************************!*\
-  !*** ./src/checks/set_root_password.ts ***!
-  \*****************************************/
+/***/ "./src/checks/setup_root_authentication.ts":
+/*!*************************************************!*\
+  !*** ./src/checks/setup_root_authentication.ts ***!
+  \*************************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setRootPassword = setRootPassword;
+exports.setupRootAuthenticationPassword = setupRootAuthenticationPassword;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const root_password_page_1 = __webpack_require__(/*! ../pages/root_password_page */ "./src/pages/root_password_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
-function setRootPassword(password) {
-    (0, helpers_1.it)("should allow setting the root password", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const setARootPassword = new root_password_page_1.SetARootPasswordPage(helpers_1.page);
-        await sidebar.goToUsers();
-        await users.setAPassword();
-        await setARootPassword.fillPassword(password);
-        await setARootPassword.fillPasswordConfirmation(password);
-        await setARootPassword.confirm();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
+const setup_root_user_authentication_page_1 = __webpack_require__(/*! ../pages/setup_root_user_authentication_page */ "./src/pages/setup_root_user_authentication_page.ts");
+function setupRootAuthenticationPassword(password) {
+    (0, helpers_1.it)("should setup root user authentication password", async function () {
+        const setupRootuserAuthentication = new setup_root_user_authentication_page_1.SetupRootUserAuthenticationPage(helpers_1.page);
+        // longer timeout to refresh repos when coming from product selection
+        await setupRootuserAuthentication.wait(2 * 60 * 1000);
+        await setupRootuserAuthentication.fillPassword(password);
+        await setupRootuserAuthentication.submit();
     });
 }
 
@@ -702,36 +690,34 @@ exports.ProductSelectionPage = ProductSelectionPage;
 
 /***/ }),
 
-/***/ "./src/pages/root_password_page.ts":
-/*!*****************************************!*\
-  !*** ./src/pages/root_password_page.ts ***!
-  \*****************************************/
+/***/ "./src/pages/setup_root_user_authentication_page.ts":
+/*!**********************************************************!*\
+  !*** ./src/pages/setup_root_user_authentication_page.ts ***!
+  \**********************************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SetARootPasswordPage = void 0;
-class SetARootPasswordPage {
+exports.SetupRootUserAuthenticationPage = void 0;
+class SetupRootUserAuthenticationPage {
     page;
-    passwordInput = () => this.page.locator("input#password");
-    passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
-    confirmText = () => this.page.locator("button::-p-text(Confirm)");
-    cancelText = () => this.page.locator("button::-p-text(Cancel)");
+    rootPasswordInput = () => this.page.locator("input#rootPassword");
+    submitButton = () => this.page.locator("button[type='submit']");
     constructor(page) {
         this.page = page;
     }
+    async wait(timeout) {
+        await this.rootPasswordInput().setTimeout(timeout).wait();
+    }
     async fillPassword(password) {
-        await this.passwordInput().fill(password);
+        await this.rootPasswordInput().fill(password);
     }
-    async fillPasswordConfirmation(password) {
-        await this.passwordConfirmationInput().fill(password);
-    }
-    async confirm() {
-        await this.confirmText().click();
+    async submit() {
+        await this.submitButton().click();
     }
 }
-exports.SetARootPasswordPage = SetARootPasswordPage;
+exports.SetupRootUserAuthenticationPage = SetupRootUserAuthenticationPage;
 
 
 /***/ }),
@@ -834,7 +820,7 @@ const commander_1 = __webpack_require__(/*! commander */ "./node_modules/command
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
-const set_root_password_1 = __webpack_require__(/*! ./checks/set_root_password */ "./src/checks/set_root_password.ts");
+const setup_root_authentication_1 = __webpack_require__(/*! ./checks/setup_root_authentication */ "./src/checks/setup_root_authentication.ts");
 const create_first_user_1 = __webpack_require__(/*! ./checks/create_first_user */ "./src/checks/create_first_user.ts");
 const perform_installation_1 = __webpack_require__(/*! ./checks/perform_installation */ "./src/checks/perform_installation.ts");
 const prepare_dasd_storage_1 = __webpack_require__(/*! ./checks/prepare_dasd_storage */ "./src/checks/prepare_dasd_storage.ts");
@@ -851,8 +837,8 @@ new commander_1.Option("--product-id <id>", "Product id to select a product to i
     (0, login_1.logIn)(options.password);
     if (options.productId !== "none")
         (0, product_selection_1.productSelection)(options.productId);
+    (0, setup_root_authentication_1.setupRootAuthenticationPassword)(options.password);
     (0, create_first_user_1.createFirstUser)("Bernhard M. Wiedemann", "bernhard", options.password);
-    (0, set_root_password_1.setRootPassword)(options.password);
     if (options.dasd)
         (0, prepare_dasd_storage_1.prepareDasdStorage)();
     if (options.install)

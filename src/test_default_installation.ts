@@ -12,7 +12,7 @@ import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
 import { productSelection } from "./checks/product_selection";
-import { setRootPassword } from "./checks/set_root_password";
+import { setupRootAuthenticationPassword } from "./checks/setup_root_authentication";
 import { createFirstUser } from "./checks/create_first_user";
 import { performInstallation } from "./checks/perform_installation";
 import { prepareDasdStorage } from "./checks/prepare_dasd_storage";
@@ -32,8 +32,8 @@ describe("Installation with default values", function () {
 
     logIn(options.password);
     if (options.productId !== "none") productSelection(options.productId);
+    setupRootAuthenticationPassword(options.password);
     createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
-    setRootPassword(options.password);
     if (options.dasd) prepareDasdStorage();
     if (options.install) performInstallation();
 });
