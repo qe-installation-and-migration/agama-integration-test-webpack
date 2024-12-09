@@ -23,3 +23,10 @@ export function performInstallation() {
         await congratulation.wait(40 * 60 * 1000);
     }, 40 * 60 * 1000);
 }
+
+export function finishInstallation() {
+    it("should finish", async function () {
+        const congratulation = new CongratulationPage(page);
+        await congratulation.wait(40 * 60 * 1000);
+    }, 40 * 60 * 1000);
+}
