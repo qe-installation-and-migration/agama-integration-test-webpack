@@ -11,8 +11,8 @@ import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
-import { performInstallation } from "./checks/perform_installation";
-import { enableEncryption } from "./checks/enable_encryption";
+import { performInstallation } from "./checks/installation";
+import { enableEncryption } from "./checks/encryption";
 
 // parse options from the command line
 const options = parse((cmd) =>

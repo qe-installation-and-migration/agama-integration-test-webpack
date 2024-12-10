@@ -5,7 +5,6 @@ export class SetARootPasswordPage {
     private readonly passwordInput = () => this.page.locator("input#password");
     private readonly passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
     private readonly confirmText = () => this.page.locator("button::-p-text(Confirm)");
-    private readonly cancelText = () => this.page.locator("button::-p-text(Cancel)");
 
     constructor(page: Page) {
         this.page = page;

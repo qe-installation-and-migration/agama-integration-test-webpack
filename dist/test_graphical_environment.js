@@ -2,6 +2,41 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/checks/installation.ts":
+/*!************************************!*\
+  !*** ./src/checks/installation.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.performInstallation = performInstallation;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
+const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
+const installing_page_1 = __webpack_require__(/*! ../pages/installing_page */ "./src/pages/installing_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+function performInstallation() {
+    (0, helpers_1.it)("should start installation", async function () {
+        const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
+        const installing = new installing_page_1.InstallingPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToOverview();
+        await overview.install();
+        await confirmInstallation.continue();
+        await installing.wait();
+    });
+    (0, helpers_1.it)("should finish installation", async function () {
+        await new congratulation_page_1.CongratulationPage(helpers_1.page).wait(40 * 60 * 1000);
+    }, 40 * 60 * 1000);
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/login.ts":
 /*!*****************************!*\
   !*** ./src/checks/login.ts ***!
@@ -32,42 +67,6 @@ function logIn(password) {
 
 /***/ }),
 
-/***/ "./src/checks/perform_installation.ts":
-/*!********************************************!*\
-  !*** ./src/checks/perform_installation.ts ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.performInstallation = performInstallation;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
-const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
-const installing_page_1 = __webpack_require__(/*! ../pages/installing_page */ "./src/pages/installing_page.ts");
-const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function performInstallation() {
-    (0, helpers_1.it)("should start installation", async function () {
-        const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
-        const installing = new installing_page_1.InstallingPage(helpers_1.page);
-        const overview = new overview_page_1.OverviewPage(helpers_1.page);
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToOverview();
-        await overview.install();
-        await confirmInstallation.continue();
-        await installing.wait();
-    });
-    (0, helpers_1.it)("should finish installation", async function () {
-        const congratulation = new congratulation_page_1.CongratulationPage(helpers_1.page);
-        await congratulation.wait(40 * 60 * 1000);
-    }, 40 * 60 * 1000);
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/software_selection.ts":
 /*!******************************************!*\
   !*** ./src/checks/software_selection.ts ***!
@@ -83,19 +82,13 @@ const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/p
 const software_page_1 = __webpack_require__(/*! ../pages/software_page */ "./src/pages/software_page.ts");
 const software_selection_page_1 = __webpack_require__(/*! ../pages/software_selection_page */ "./src/pages/software_selection_page.ts");
 function selectSinglePattern(pattern) {
-    const patternMap = {
-        "gnome": "GNOME Desktop Environment (Wayland)",
-        "kde": "KDE Appications and Plasma Desktop",
-        "xfce": "XFCE Desktop Environment",
-        "basic": "A basic desktop (based on IceWM)"
-    };
     (0, helpers_1.it)(`should select pattern ${pattern}`, async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         const software = new software_page_1.SoftwarePage(helpers_1.page);
         const softwareSelection = new software_selection_page_1.SoftwareSelectionPage(helpers_1.page);
         await sidebar.goToSoftware();
         await software.changeSelection();
-        await softwareSelection.selectPattern(patternMap[pattern]);
+        await softwareSelection.selectPattern(pattern);
         await softwareSelection.close();
     });
 }
@@ -212,7 +205,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.page = void 0;
+exports.Desktop = exports.ProductId = exports.page = void 0;
 exports.startBrowser = startBrowser;
 exports.finishBrowser = finishBrowser;
 exports.test_init = test_init;
@@ -373,6 +366,27 @@ async function it(label, test, timeout) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+// for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
+var ProductId;
+(function (ProductId) {
+    ProductId["Leap_16.0"] = "Leap 16.0 Alpha";
+    ProductId["MicroOS"] = "openSUSE MicroOS";
+    ProductId["SLES_16.0"] = "SUSE Linux Enterprise Server 16.0 Alpha";
+    ProductId["SLES_SAP_16.0"] = "SUSE Linux Enterprise Server for SAP Applications 16.0 Alpha";
+    ProductId["Slowroll"] = "Slowroll";
+    ProductId["Tumbleweed"] = "openSUSE Tumbleweed";
+    ProductId["None"] = "none";
+})(ProductId || (exports.ProductId = ProductId = {}));
+;
+var Desktop;
+(function (Desktop) {
+    Desktop["gnome"] = "GNOME Desktop Environment (Wayland)";
+    Desktop["kde"] = "KDE Appications and Plasma Desktop";
+    Desktop["xfce"] = "XFCE Desktop Environment";
+    Desktop["basic"] = "A basic desktop (based on IceWM)";
+    Desktop["none"] = "None";
+})(Desktop || (exports.Desktop = Desktop = {}));
+;
 
 
 /***/ }),
@@ -515,7 +529,7 @@ exports.OverviewPage = OverviewPage;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SidebarPage = void 0;
+exports.SidebarWithRegistrationPage = exports.SidebarPage = void 0;
 class SidebarPage {
     page;
     overviewLink = () => this.page.locator("a[href='#/overview']");
@@ -551,6 +565,17 @@ class SidebarPage {
     }
 }
 exports.SidebarPage = SidebarPage;
+function RegistrationNavigable(Base) {
+    return class extends Base {
+        registrationLink = () => this.page.locator("a[href='#/registration']");
+        async goToRegistration() {
+            await this.registrationLink().click();
+        }
+    };
+}
+class SidebarWithRegistrationPage extends RegistrationNavigable(SidebarPage) {
+}
+exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 
 /***/ }),
@@ -628,11 +653,11 @@ const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const perform_installation_1 = __webpack_require__(/*! ./checks/perform_installation */ "./src/checks/perform_installation.ts");
+const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const software_selection_1 = __webpack_require__(/*! ./checks/software_selection */ "./src/checks/software_selection.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Option("--desktop <name>", "Desktop to install")
-    .choices(["gnome", "kde", "xfc", "basic", "none"])
+    .choices(Object.values(helpers_1.Desktop))
     .default("none"))
     .option("--install", "Proceed to install the system (the default is not to install it)"));
 (0, node_test_1.describe)("Installation with a graphical environment", function () {
@@ -640,7 +665,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Opti
     (0, login_1.logIn)(options.password);
     (0, software_selection_1.selectSinglePattern)(options.desktop);
     if (options.install)
-        (0, perform_installation_1.performInstallation)();
+        (0, installation_1.performInstallation)();
 });
 
 

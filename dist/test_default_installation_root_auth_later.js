@@ -2,10 +2,10 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/checks/create_first_user.ts":
-/*!*****************************************!*\
-  !*** ./src/checks/create_first_user.ts ***!
-  \*****************************************/
+/***/ "./src/checks/first_user.ts":
+/*!**********************************!*\
+  !*** ./src/checks/first_user.ts ***!
+  \**********************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -31,6 +31,41 @@ function createFirstUser(fullName, userName, password) {
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
         await (0, helpers_1.sleep)(2000);
     });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/installation.ts":
+/*!************************************!*\
+  !*** ./src/checks/installation.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.performInstallation = performInstallation;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
+const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
+const installing_page_1 = __webpack_require__(/*! ../pages/installing_page */ "./src/pages/installing_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+function performInstallation() {
+    (0, helpers_1.it)("should start installation", async function () {
+        const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
+        const installing = new installing_page_1.InstallingPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToOverview();
+        await overview.install();
+        await confirmInstallation.continue();
+        await installing.wait();
+    });
+    (0, helpers_1.it)("should finish installation", async function () {
+        await new congratulation_page_1.CongratulationPage(helpers_1.page).wait(40 * 60 * 1000);
+    }, 40 * 60 * 1000);
 }
 
 
@@ -66,46 +101,78 @@ function logIn(password) {
 
 /***/ }),
 
-/***/ "./src/checks/perform_installation.ts":
-/*!********************************************!*\
-  !*** ./src/checks/perform_installation.ts ***!
-  \********************************************/
+/***/ "./src/checks/product_selection.ts":
+/*!*****************************************!*\
+  !*** ./src/checks/product_selection.ts ***!
+  \*****************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.performInstallation = performInstallation;
+exports.productSelection = productSelection;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
-const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
-const installing_page_1 = __webpack_require__(/*! ../pages/installing_page */ "./src/pages/installing_page.ts");
-const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function performInstallation() {
-    (0, helpers_1.it)("should start installation", async function () {
-        const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
-        const installing = new installing_page_1.InstallingPage(helpers_1.page);
-        const overview = new overview_page_1.OverviewPage(helpers_1.page);
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToOverview();
-        await overview.install();
-        await confirmInstallation.continue();
-        await installing.wait();
+const configuring_product_page_1 = __webpack_require__(/*! ../pages/configuring_product_page */ "./src/pages/configuring_product_page.ts");
+const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
+function productSelection(productName) {
+    (0, helpers_1.it)(`should allow to select product ${productName}`, async function () {
+        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectProduct(productName);
     });
-    (0, helpers_1.it)("should finish installation", async function () {
-        const congratulation = new congratulation_page_1.CongratulationPage(helpers_1.page);
-        await congratulation.wait(40 * 60 * 1000);
-    }, 40 * 60 * 1000);
+    (0, helpers_1.it)("should start configuring the product", async function () {
+        await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
+    });
 }
 
 
 /***/ }),
 
-/***/ "./src/checks/prepare_dasd_storage.ts":
-/*!********************************************!*\
-  !*** ./src/checks/prepare_dasd_storage.ts ***!
-  \********************************************/
+/***/ "./src/checks/root_authentication.ts":
+/*!*******************************************!*\
+  !*** ./src/checks/root_authentication.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.setupRootPasswordAtALaterStage = setupRootPasswordAtALaterStage;
+exports.setupRootPassword = setupRootPassword;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const setup_root_user_authentication_page_1 = __webpack_require__(/*! ../pages/setup_root_user_authentication_page */ "./src/pages/setup_root_user_authentication_page.ts");
+const root_password_page_1 = __webpack_require__(/*! ../pages/root_password_page */ "./src/pages/root_password_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
+function setupRootPasswordAtALaterStage(password) {
+    (0, helpers_1.it)("should allow setting the root password", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_password_page_1.SetARootPasswordPage(helpers_1.page);
+        await sidebar.goToUsers();
+        await users.setAPassword();
+        await setARootPassword.fillPassword(password);
+        await setARootPassword.fillPasswordConfirmation(password);
+        await setARootPassword.confirm();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+    });
+}
+function setupRootPassword(password) {
+    (0, helpers_1.it)("should setup root user authentication password", async function () {
+        const setupRootuserAuthentication = new setup_root_user_authentication_page_1.SetupRootUserAuthenticationPage(helpers_1.page);
+        // longer timeout to refresh repos when coming from product selection
+        await setupRootuserAuthentication.wait(2 * 60 * 1000);
+        await setupRootuserAuthentication.fillPassword(password);
+        await setupRootuserAuthentication.submit();
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/storage_dasd.ts":
+/*!************************************!*\
+  !*** ./src/checks/storage_dasd.ts ***!
+  \************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -130,71 +197,6 @@ function prepareDasdStorage() {
         await helpers_1.page.locator("a[href='#/storage/target-device']").click({ delay: 1000 });
         await helpers_1.page.locator("input[aria-label='Select row 0']").click();
         await helpers_1.page.locator("button[form='targetSelection']").click();
-    });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/product_selection.ts":
-/*!*****************************************!*\
-  !*** ./src/checks/product_selection.ts ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.productSelection = productSelection;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const configuring_product_page_1 = __webpack_require__(/*! ../pages/configuring_product_page */ "./src/pages/configuring_product_page.ts");
-const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-function productSelection(productId) {
-    const productIdMap = {
-        "Leap_16.0": "Leap 16.0 Alpha",
-        "MicroOS": "openSUSE MicroOS",
-        "SLES_16.0": "SUSE Linux Enterprise Server 16.0 Alpha",
-        "SLES_SAP_16.0": "SUSE Linux Enterprise Server for SAP Applications 16.0 Alpha",
-        "Slowroll": "Slowroll",
-        "Tumbleweed": "openSUSE Tumbleweed"
-    };
-    (0, helpers_1.it)("should allow to select a product", async function () {
-        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectProduct(productIdMap[productId]);
-    });
-    (0, helpers_1.it)("should start configuring the product", async function () {
-        await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
-    });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/set_root_password.ts":
-/*!*****************************************!*\
-  !*** ./src/checks/set_root_password.ts ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setRootPassword = setRootPassword;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const root_password_page_1 = __webpack_require__(/*! ../pages/root_password_page */ "./src/pages/root_password_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
-function setRootPassword(password) {
-    (0, helpers_1.it)("should allow setting the root password", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const setARootPassword = new root_password_page_1.SetARootPasswordPage(helpers_1.page);
-        await sidebar.goToUsers();
-        await users.setAPassword();
-        await setARootPassword.fillPassword(password);
-        await setARootPassword.fillPasswordConfirmation(password);
-        await setARootPassword.confirm();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
     });
 }
 
@@ -310,7 +312,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.page = void 0;
+exports.Desktop = exports.ProductId = exports.page = void 0;
 exports.startBrowser = startBrowser;
 exports.finishBrowser = finishBrowser;
 exports.test_init = test_init;
@@ -471,6 +473,27 @@ async function it(label, test, timeout) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+// for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
+var ProductId;
+(function (ProductId) {
+    ProductId["Leap_16.0"] = "Leap 16.0 Alpha";
+    ProductId["MicroOS"] = "openSUSE MicroOS";
+    ProductId["SLES_16.0"] = "SUSE Linux Enterprise Server 16.0 Alpha";
+    ProductId["SLES_SAP_16.0"] = "SUSE Linux Enterprise Server for SAP Applications 16.0 Alpha";
+    ProductId["Slowroll"] = "Slowroll";
+    ProductId["Tumbleweed"] = "openSUSE Tumbleweed";
+    ProductId["None"] = "none";
+})(ProductId || (exports.ProductId = ProductId = {}));
+;
+var Desktop;
+(function (Desktop) {
+    Desktop["gnome"] = "GNOME Desktop Environment (Wayland)";
+    Desktop["kde"] = "KDE Appications and Plasma Desktop";
+    Desktop["xfce"] = "XFCE Desktop Environment";
+    Desktop["basic"] = "A basic desktop (based on IceWM)";
+    Desktop["none"] = "None";
+})(Desktop || (exports.Desktop = Desktop = {}));
+;
 
 
 /***/ }),
@@ -712,7 +735,6 @@ class SetARootPasswordPage {
     passwordInput = () => this.page.locator("input#password");
     passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
     confirmText = () => this.page.locator("button::-p-text(Confirm)");
-    cancelText = () => this.page.locator("button::-p-text(Cancel)");
     constructor(page) {
         this.page = page;
     }
@@ -731,6 +753,38 @@ exports.SetARootPasswordPage = SetARootPasswordPage;
 
 /***/ }),
 
+/***/ "./src/pages/setup_root_user_authentication_page.ts":
+/*!**********************************************************!*\
+  !*** ./src/pages/setup_root_user_authentication_page.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SetupRootUserAuthenticationPage = void 0;
+class SetupRootUserAuthenticationPage {
+    page;
+    rootPasswordInput = () => this.page.locator("input#rootPassword");
+    submitButton = () => this.page.locator("button[type='submit']");
+    constructor(page) {
+        this.page = page;
+    }
+    async wait(timeout) {
+        await this.rootPasswordInput().setTimeout(timeout).wait();
+    }
+    async fillPassword(password) {
+        await this.rootPasswordInput().fill(password);
+    }
+    async submit() {
+        await this.submitButton().click();
+    }
+}
+exports.SetupRootUserAuthenticationPage = SetupRootUserAuthenticationPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/sidebar_page.ts":
 /*!***********************************!*\
   !*** ./src/pages/sidebar_page.ts ***!
@@ -740,7 +794,7 @@ exports.SetARootPasswordPage = SetARootPasswordPage;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SidebarPage = void 0;
+exports.SidebarWithRegistrationPage = exports.SidebarPage = void 0;
 class SidebarPage {
     page;
     overviewLink = () => this.page.locator("a[href='#/overview']");
@@ -776,6 +830,17 @@ class SidebarPage {
     }
 }
 exports.SidebarPage = SidebarPage;
+function RegistrationNavigable(Base) {
+    return class extends Base {
+        registrationLink = () => this.page.locator("a[href='#/registration']");
+        async goToRegistration() {
+            await this.registrationLink().click();
+        }
+    };
+}
+class SidebarWithRegistrationPage extends RegistrationNavigable(SidebarPage) {
+}
+exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 
 /***/ }),
@@ -828,16 +893,14 @@ const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
+const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
+const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
+const storage_dasd_1 = __webpack_require__(/*! ./checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
-const set_root_password_1 = __webpack_require__(/*! ./checks/set_root_password */ "./src/checks/set_root_password.ts");
-const create_first_user_1 = __webpack_require__(/*! ./checks/create_first_user */ "./src/checks/create_first_user.ts");
-const perform_installation_1 = __webpack_require__(/*! ./checks/perform_installation */ "./src/checks/perform_installation.ts");
-const prepare_dasd_storage_1 = __webpack_require__(/*! ./checks/prepare_dasd_storage */ "./src/checks/prepare_dasd_storage.ts");
+const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 // parse options from the command line
-const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(
-// for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
-new commander_1.Option("--product-id <id>", "Product id to select a product to install")
-    .choices(["Leap_16.0", "MicroOS", "SLES_16.0", "SLES_SAP_16.0", "Slowroll", "Tumbleweed", "none"])
+const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Option("--product-id <id>", "Product id to select a product to install")
+    .choices(Object.keys(helpers_1.ProductId))
     .default("none"))
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
@@ -845,13 +908,13 @@ new commander_1.Option("--product-id <id>", "Product id to select a product to i
     (0, helpers_1.test_init)(options);
     (0, login_1.logIn)(options.password);
     if (options.productId !== "none")
-        (0, product_selection_1.productSelection)(options.productId);
-    (0, create_first_user_1.createFirstUser)("Bernhard M. Wiedemann", "bernhard", options.password);
-    (0, set_root_password_1.setRootPassword)(options.password);
+        (0, product_selection_1.productSelection)(helpers_1.ProductId[options.productId]);
+    (0, first_user_1.createFirstUser)("Bernhard M. Wiedemann", "bernhard", options.password);
+    (0, root_authentication_1.setupRootPasswordAtALaterStage)(options.password);
     if (options.dasd)
-        (0, prepare_dasd_storage_1.prepareDasdStorage)();
+        (0, storage_dasd_1.prepareDasdStorage)();
     if (options.install)
-        (0, perform_installation_1.performInstallation)();
+        (0, installation_1.performInstallation)();
 });
 
 

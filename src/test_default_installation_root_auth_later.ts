@@ -8,21 +8,20 @@ import { describe } from "node:test";
 
 import { parse } from "./lib/cmdline";
 import { Option } from "commander";
-import { test_init } from "./lib/helpers";
+import { test_init, ProductId } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
+import { createFirstUser } from "./checks/first_user";
+import { performInstallation } from "./checks/installation";
+import { prepareDasdStorage } from "./checks/storage_dasd";
 import { productSelection } from "./checks/product_selection";
-import { setRootPassword } from "./checks/set_root_password";
-import { createFirstUser } from "./checks/create_first_user";
-import { performInstallation } from "./checks/perform_installation";
-import { prepareDasdStorage } from "./checks/prepare_dasd_storage";
+import { setupRootPasswordAtALaterStage } from "./checks/root_authentication";
 
 // parse options from the command line
 const options = parse((cmd) =>
     cmd.addOption(
-        // for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
         new Option("--product-id <id>", "Product id to select a product to install")
-            .choices(["Leap_16.0", "MicroOS", "SLES_16.0", "SLES_SAP_16.0", "Slowroll", "Tumbleweed", "none"])
+            .choices(Object.keys(ProductId))
             .default("none"))
         .option("--install", "Proceed to install the system (the default is not to install it)")
         .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
@@ -31,9 +30,9 @@ describe("Installation with default values", function () {
     test_init(options);
 
     logIn(options.password);
-    if (options.productId !== "none") productSelection(options.productId);
+    if (options.productId !== "none") productSelection(ProductId[options.productId]);
     createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
-    setRootPassword(options.password);
+    setupRootPasswordAtALaterStage(options.password);
     if (options.dasd) prepareDasdStorage();
     if (options.install) performInstallation();
 });
