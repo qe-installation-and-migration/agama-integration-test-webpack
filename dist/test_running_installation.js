@@ -574,17 +574,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
-const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(
-// for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
-new commander_1.Option("--product-id <id>", "Product id to select a product to install")
-    .choices(["Leap_16.0", "MicroOS", "SLES_16.0", "SLES_SAP_16.0", "Slowroll", "Tumbleweed", "none"])
-    .default("none"))
-    .option("--install", "Proceed to install the system (the default is not to install it)")
-    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
+const options = (0, cmdline_1.parse)();
 (0, node_test_1.describe)("Running installation", function () {
     (0, helpers_1.test_init)(options);
     (0, login_1.logIn)(options.password);
