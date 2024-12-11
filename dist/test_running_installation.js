@@ -2,40 +2,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/checks/first_user.ts":
-/*!**********************************!*\
-  !*** ./src/checks/first_user.ts ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createFirstUser = createFirstUser;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const create_user_page_1 = __webpack_require__(/*! ../pages/create_user_page */ "./src/pages/create_user_page.ts");
-const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function createFirstUser(fullName, userName, password) {
-    (0, helpers_1.it)("should create first user", async function () {
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToUsers();
-        await users.defineAUserNow();
-        await createFirstUser.fillFullName(fullName);
-        await createFirstUser.fillUserName(userName);
-        await createFirstUser.fillPassword(password);
-        await createFirstUser.fillPasswordConfirmation(password);
-        await createFirstUser.accept();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/installation.ts":
 /*!************************************!*\
   !*** ./src/checks/installation.ts ***!
@@ -102,108 +68,6 @@ function logIn(password) {
         const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
         await loginAsRoot.fillPassword(password);
         await loginAsRoot.logIn();
-    });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/product_selection.ts":
-/*!*****************************************!*\
-  !*** ./src/checks/product_selection.ts ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.productSelection = productSelection;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const configuring_product_page_1 = __webpack_require__(/*! ../pages/configuring_product_page */ "./src/pages/configuring_product_page.ts");
-const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-function productSelection(productName) {
-    (0, helpers_1.it)(`should allow to select product ${productName}`, async function () {
-        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectProduct(productName);
-    });
-    (0, helpers_1.it)("should start configuring the product", async function () {
-        await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
-    });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/root_authentication.ts":
-/*!*******************************************!*\
-  !*** ./src/checks/root_authentication.ts ***!
-  \*******************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setupRootPasswordAtALaterStage = setupRootPasswordAtALaterStage;
-exports.setupRootPassword = setupRootPassword;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const setup_root_user_authentication_page_1 = __webpack_require__(/*! ../pages/setup_root_user_authentication_page */ "./src/pages/setup_root_user_authentication_page.ts");
-const root_password_page_1 = __webpack_require__(/*! ../pages/root_password_page */ "./src/pages/root_password_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
-function setupRootPasswordAtALaterStage(password) {
-    (0, helpers_1.it)("should allow setting the root password", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const setARootPassword = new root_password_page_1.SetARootPasswordPage(helpers_1.page);
-        await sidebar.goToUsers();
-        await users.setAPassword();
-        await setARootPassword.fillPassword(password);
-        await setARootPassword.fillPasswordConfirmation(password);
-        await setARootPassword.confirm();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
-    });
-}
-function setupRootPassword(password) {
-    (0, helpers_1.it)("should setup root user authentication password", async function () {
-        const setupRootuserAuthentication = new setup_root_user_authentication_page_1.SetupRootUserAuthenticationPage(helpers_1.page);
-        // longer timeout to refresh repos when coming from product selection
-        await setupRootuserAuthentication.wait(2 * 60 * 1000);
-        await setupRootuserAuthentication.fillPassword(password);
-        await setupRootuserAuthentication.submit();
-    });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/storage_dasd.ts":
-/*!************************************!*\
-  !*** ./src/checks/storage_dasd.ts ***!
-  \************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.prepareDasdStorage = prepareDasdStorage;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-function prepareDasdStorage() {
-    (0, helpers_1.it)("should prepare DASD storage", async function () {
-        // Workaround, sometimes the UI seems not responsive
-        await helpers_1.page.locator("a[href='#/storage']").click({ delay: 1000 });
-        await helpers_1.page.locator("a[href='#/storage']").click({ delay: 1000 });
-        await helpers_1.page.locator("a[href='#/storage/target-device']").click();
-        await helpers_1.page.locator("span::-p-text('storage techs')").click();
-        await helpers_1.page.locator("span::-p-text('DASD')").click({ delay: 1000 });
-        // Enabling DASD device, by default it is always disabled
-        await helpers_1.page.locator("input[name='checkrow0']").click({ delay: 1000 });
-        await helpers_1.page.locator("span::-p-text('Perform an action')").click({ delay: 1000 });
-        await helpers_1.page.locator("span::-p-text('Activate')").click();
-        // Selecting installation device
-        await helpers_1.page.locator("a[href='#/storage']").click();
-        await helpers_1.page.locator("a[href='#/storage/target-device']").click({ delay: 1000 });
-        await helpers_1.page.locator("input[aria-label='Select row 0']").click();
-        await helpers_1.page.locator("button[form='targetSelection']").click();
     });
 }
 
@@ -505,31 +369,6 @@ var Desktop;
 
 /***/ }),
 
-/***/ "./src/pages/configuring_product_page.ts":
-/*!***********************************************!*\
-  !*** ./src/pages/configuring_product_page.ts ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ConfiguringProductPage = void 0;
-class ConfiguringProductPage {
-    page;
-    configuringTheProductText = () => this.page.locator("::-p-text(Configuring the product)");
-    constructor(page) {
-        this.page = page;
-    }
-    async wait() {
-        await this.configuringTheProductText().wait();
-    }
-}
-exports.ConfiguringProductPage = ConfiguringProductPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/confirm_installation_page.ts":
 /*!************************************************!*\
   !*** ./src/pages/confirm_installation_page.ts ***!
@@ -576,47 +415,6 @@ class CongratulationPage {
     }
 }
 exports.CongratulationPage = CongratulationPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/create_user_page.ts":
-/*!***************************************!*\
-  !*** ./src/pages/create_user_page.ts ***!
-  \***************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CreateFirstUserPage = void 0;
-class CreateFirstUserPage {
-    page;
-    fullNameInput = () => this.page.locator("input#userFullName");
-    usernameInput = () => this.page.locator("input#userName");
-    passwordInput = () => this.page.locator("input#password");
-    passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
-    acceptButton = () => this.page.locator("button[form='firstUserForm']");
-    constructor(page) {
-        this.page = page;
-    }
-    async fillFullName(fullName) {
-        await this.fullNameInput().fill(fullName);
-    }
-    async fillUserName(userName) {
-        await this.usernameInput().fill(userName);
-    }
-    async fillPassword(password) {
-        await this.passwordInput().fill(password);
-    }
-    async fillPasswordConfirmation(password) {
-        await this.passwordConfirmationInput().fill(password);
-    }
-    async accept() {
-        await this.acceptButton().click();
-    }
-}
-exports.CreateFirstUserPage = CreateFirstUserPage;
 
 
 /***/ }),
@@ -700,98 +498,6 @@ exports.OverviewPage = OverviewPage;
 
 /***/ }),
 
-/***/ "./src/pages/product_selection_page.ts":
-/*!*********************************************!*\
-  !*** ./src/pages/product_selection_page.ts ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProductSelectionPage = void 0;
-class ProductSelectionPage {
-    page;
-    productText = (product) => this.page.locator(`::-p-text('${product}')`);
-    selectButton = () => this.page.locator("button[form='productSelectionForm']");
-    constructor(page) {
-        this.page = page;
-    }
-    async selectProduct(product) {
-        await this.productText(product).click();
-        await this.selectButton().click();
-    }
-}
-exports.ProductSelectionPage = ProductSelectionPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/root_password_page.ts":
-/*!*****************************************!*\
-  !*** ./src/pages/root_password_page.ts ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SetARootPasswordPage = void 0;
-class SetARootPasswordPage {
-    page;
-    passwordInput = () => this.page.locator("input#password");
-    passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
-    confirmText = () => this.page.locator("button::-p-text(Confirm)");
-    constructor(page) {
-        this.page = page;
-    }
-    async fillPassword(password) {
-        await this.passwordInput().fill(password);
-    }
-    async fillPasswordConfirmation(password) {
-        await this.passwordConfirmationInput().fill(password);
-    }
-    async confirm() {
-        await this.confirmText().click();
-    }
-}
-exports.SetARootPasswordPage = SetARootPasswordPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/setup_root_user_authentication_page.ts":
-/*!**********************************************************!*\
-  !*** ./src/pages/setup_root_user_authentication_page.ts ***!
-  \**********************************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SetupRootUserAuthenticationPage = void 0;
-class SetupRootUserAuthenticationPage {
-    page;
-    rootPasswordInput = () => this.page.locator("input#rootPassword");
-    submitButton = () => this.page.locator("button[type='submit']");
-    constructor(page) {
-        this.page = page;
-    }
-    async wait(timeout) {
-        await this.rootPasswordInput().setTimeout(timeout).wait();
-    }
-    async fillPassword(password) {
-        await this.rootPasswordInput().fill(password);
-    }
-    async submit() {
-        await this.submitButton().click();
-    }
-}
-exports.SetupRootUserAuthenticationPage = SetupRootUserAuthenticationPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/sidebar_page.ts":
 /*!***********************************!*\
   !*** ./src/pages/sidebar_page.ts ***!
@@ -852,39 +558,10 @@ exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 /***/ }),
 
-/***/ "./src/pages/users_page.ts":
-/*!*********************************!*\
-  !*** ./src/pages/users_page.ts ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UsersPage = void 0;
-class UsersPage {
-    page;
-    firstUserLink = () => this.page.locator("a[href='#/users/first']");
-    setAPasswordButton = () => this.page.locator("button::-p-text(Set a password)");
-    constructor(page) {
-        this.page = page;
-    }
-    async defineAUserNow() {
-        await this.firstUserLink().click();
-    }
-    async setAPassword() {
-        await this.setAPasswordButton().click();
-    }
-}
-exports.UsersPage = UsersPage;
-
-
-/***/ }),
-
-/***/ "./src/test_default_installation_root_auth_later.ts":
-/*!**********************************************************!*\
-  !*** ./src/test_default_installation_root_auth_later.ts ***!
-  \**********************************************************/
+/***/ "./src/test_running_installation.ts":
+/*!******************************************!*\
+  !*** ./src/test_running_installation.ts ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -899,29 +576,19 @@ const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
-const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
-const storage_dasd_1 = __webpack_require__(/*! ./checks/storage_dasd */ "./src/checks/storage_dasd.ts");
-const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
-const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
-// parse options from the command line
-const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Option("--product-id <id>", "Product id to select a product to install")
-    .choices(Object.keys(helpers_1.ProductId))
+const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
+const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(
+// for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
+new commander_1.Option("--product-id <id>", "Product id to select a product to install")
+    .choices(["Leap_16.0", "MicroOS", "SLES_16.0", "SLES_SAP_16.0", "Slowroll", "Tumbleweed", "none"])
     .default("none"))
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
-(0, node_test_1.describe)("Installation with default values", function () {
+(0, node_test_1.describe)("Running installation", function () {
     (0, helpers_1.test_init)(options);
     (0, login_1.logIn)(options.password);
-    if (options.productId !== "none")
-        (0, product_selection_1.productSelection)(helpers_1.ProductId[options.productId]);
-    (0, first_user_1.createFirstUser)("Bernhard M. Wiedemann", "bernhard", options.password);
-    (0, root_authentication_1.setupRootPasswordAtALaterStage)(options.password);
-    if (options.dasd)
-        (0, storage_dasd_1.prepareDasdStorage)();
-    if (options.install)
-        (0, installation_1.performInstallation)();
+    (0, installation_1.finishInstallation)();
 });
 
 
@@ -1320,7 +987,7 @@ module.exports = require("zlib");
 /******/ 	// the startup function
 /******/ 	__webpack_require__.x = () => {
 /******/ 		// Load entry module and return exports
-/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_default_installation_root_auth_later.ts")))
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_running_installation.ts")))
 /******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 		return __webpack_exports__;
 /******/ 	};
@@ -1424,7 +1091,7 @@ module.exports = require("zlib");
 /******/ 		// object to store loaded chunks
 /******/ 		// "1" means "loaded", otherwise not loaded yet
 /******/ 		var installedChunks = {
-/******/ 			"test_default_installation_root_auth_later": 1
+/******/ 			"test_running_installation": 1
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.O.require = (chunkId) => (installedChunks[chunkId]);
@@ -1476,4 +1143,4 @@ module.exports = require("zlib");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=test_default_installation_root_auth_later.js.map
+//# sourceMappingURL=test_running_installation.js.map

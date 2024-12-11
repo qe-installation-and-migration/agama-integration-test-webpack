@@ -41,6 +41,7 @@ function enableEncryption(password) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.performInstallation = performInstallation;
+exports.finishInstallation = finishInstallation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
 const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
@@ -60,6 +61,12 @@ function performInstallation() {
     });
     (0, helpers_1.it)("should finish installation", async function () {
         await new congratulation_page_1.CongratulationPage(helpers_1.page).wait(40 * 60 * 1000);
+    }, 40 * 60 * 1000);
+}
+function finishInstallation() {
+    (0, helpers_1.it)("should finish", async function () {
+        const congratulation = new congratulation_page_1.CongratulationPage(helpers_1.page);
+        await congratulation.wait(40 * 60 * 1000);
     }, 40 * 60 * 1000);
 }
 
