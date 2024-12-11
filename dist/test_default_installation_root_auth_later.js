@@ -147,13 +147,8 @@ function setupRootPasswordAtALaterStage(password) {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         const users = new users_page_1.UsersPage(helpers_1.page);
         const setARootPassword = new root_password_page_1.SetARootPasswordPage(helpers_1.page);
-        await sidebar.goToUsers();
-        await users.setAPassword();
         await setARootPassword.fillPassword(password);
-        await setARootPassword.fillPasswordConfirmation(password);
         await setARootPassword.confirm();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
     });
 }
 function setupRootPassword(password) {
@@ -735,14 +730,13 @@ class SetARootPasswordPage {
     passwordInput = () => this.page.locator("input#password");
     passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
     confirmText = () => this.page.locator("button::-p-text(Confirm)");
+    //private readonly passwordInput = () => this.page.locator("input[id='rootPassword']");
+    //private readonly confirmButton = () => this.page.locator("button[form='rootAuthMethods']");
     constructor(page) {
         this.page = page;
     }
     async fillPassword(password) {
         await this.passwordInput().fill(password);
-    }
-    async fillPasswordConfirmation(password) {
-        await this.passwordConfirmationInput().fill(password);
     }
     async confirm() {
         await this.confirmText().click();

@@ -14,10 +14,6 @@ export class SetARootPasswordPage {
         await this.passwordInput().fill(password);
     }
 
-    async fillPasswordConfirmation(password: string) {
-        await this.passwordConfirmationInput().fill(password);
-    }
-
     async confirm() {
         await this.confirmText().click();
     }

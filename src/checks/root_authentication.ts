@@ -10,13 +10,8 @@ export function setupRootPasswordAtALaterStage(password: string) {
         const users = new UsersPage(page);
         const setARootPassword = new SetARootPasswordPage(page);
 
-        await sidebar.goToUsers();
-        await users.setAPassword();
         await setARootPassword.fillPassword(password);
-        await setARootPassword.fillPasswordConfirmation(password);
         await setARootPassword.confirm();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await sleep(2000);
     });
 }
 
