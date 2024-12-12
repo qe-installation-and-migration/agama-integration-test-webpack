@@ -39,4 +39,3 @@ describe("Installation with default values", function () {
     if (options.dasd) prepareDasdStorage();
     if (options.install) performInstallation();
 });
-

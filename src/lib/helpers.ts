@@ -59,7 +59,7 @@ export async function startBrowser(
         slowMo,
         defaultViewport: {
             width: 1280,
-            height: 768,
+            height: 800,
         },
         ...browserSettings(agamaBrowser),
     });

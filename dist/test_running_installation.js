@@ -235,7 +235,7 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         slowMo,
         defaultViewport: {
             width: 1280,
-            height: 768,
+            height: 800,
         },
         ...browserSettings(agamaBrowser),
     });
