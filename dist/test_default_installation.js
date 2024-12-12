@@ -743,7 +743,7 @@ exports.ProductSelectionPage = void 0;
 class ProductSelectionPage {
     page;
     productText = (product) => this.page.locator(`::-p-text('${product}')`);
-    selectButton = () => this.page.locator("button[form='productSelectionForm']");
+    selectButton = () => this.page.locator("button[aria-disabled=\"false\"]::-p-text('Select')");
     constructor(page) {
         this.page = page;
     }
