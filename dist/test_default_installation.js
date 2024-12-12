@@ -200,7 +200,7 @@ function setupRootPassword(password) {
         await setupRootuserAuthentication.wait(2 * 60 * 1000);
         await setupRootuserAuthentication.fillPassword(password);
         await setupRootuserAuthentication.submit();
-    });
+    }, 2 * 60 * 1000);
 }
 
 
