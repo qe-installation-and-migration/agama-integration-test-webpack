@@ -401,7 +401,7 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         slowMo,
         defaultViewport: {
             width: 1280,
-            height: 768,
+            height: 800,
         },
         ...browserSettings(agamaBrowser),
     });
@@ -742,12 +742,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProductSelectionPage = void 0;
 class ProductSelectionPage {
     page;
-    productText = (product) => this.page.locator(`::-p-text('${product}')`);
+    productText = (product) => this.page.locator(`::-p-text(${product})`);
     selectButton = () => this.page.locator("button[form='productSelectionForm']");
     constructor(page) {
         this.page = page;
     }
     async selectProduct(product) {
+        await this.productText(product).scroll();
         await this.productText(product).click();
         await this.selectButton().click();
     }
