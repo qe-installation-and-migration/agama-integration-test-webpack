@@ -1,5 +1,6 @@
 import { program, Option } from "commander";
 import * as commander from "commander";
+import { setContinueOnError } from "./helpers";
 
 // parse command line argument as an integer
 function getInt(value: string) {
@@ -44,12 +45,15 @@ export function parse(callback?: (cmd: commander.Command) => void) {
     )
     .option(
       "-c, --continue",
-      "Continue the test after a failure (the default is abort on error)"
+      "Continue the test after a failure (the default is abort on error)",
+      false
     );
 
   if (callback) callback(prg);
 
   prg.parse(process.argv);
+
+  setContinueOnError(program.opts().continue);
 
   // parse options from the command line
   return program.opts();

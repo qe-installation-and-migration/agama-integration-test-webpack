@@ -94,11 +94,16 @@ export function test_init(options) {
 }
 
 let failed = false;
+
 let continueOnError = false;
+
+export function setContinueOnError(enabled:boolean) {
+  continueOnError = enabled;  
+}
 
 // helper function, dump the index.css file so the HTML dump can properly displayed
 async function dumpCSS() {
-  let cssData = [];
+  const cssData = [];
   const downloader = url.startsWith("https://") ? https : http;
 
   return new Promise((resolve, reject) => {

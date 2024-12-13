@@ -1,17 +1,18 @@
 import { it, page } from "../lib/helpers";
+import { ElementHandle } from "puppeteer-core";
 
 export function setRootPassword(password: string) {
   it("allows setting the root password", async function () {
     await page.locator("a[href='#/users']").click();
 
-    let button: any = await Promise.any([
+    const button: ElementHandle = await Promise.any([
       page.waitForSelector("button::-p-text(Set a password)"),
       page.waitForSelector("button#actions-for-root-password"),
     ]);
 
     await button!.click();
 
-    const id = await button!.evaluate((x: { id: any }) => x.id);
+    const id = await button!.evaluate((x) => x.id);
     // drop the handler to avoid memory leaks
     button!.dispose();
 
@@ -26,10 +27,7 @@ export function setRootPassword(password: string) {
     await page.locator("button::-p-text(Confirm)").click();
 
     // wait until the password popup disappears
-    await page
-      .locator("input#passwordConfirmation")
-      .setVisibility("hidden")
-      .wait();
+    await page.locator("input#passwordConfirmation").setVisibility("hidden").wait();
   });
 }
 

@@ -5,7 +5,7 @@ export function optionalProductSelection(product: string) {
   it("should optionally display the product selection dialog", async function () {
     // Either the main page is displayed (with the storage link) or there is
     // the product selection page.
-    let productSelectionDisplayed = await Promise.any([
+    const productSelectionDisplayed = await Promise.any([
       page.waitForSelector("a[href='#/storage']").then((s) => {
         s!.dispose();
         return false;

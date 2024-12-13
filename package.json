@@ -7,9 +7,20 @@
   "scripts": {
     "build": "webpack --mode production",
     "devel": "webpack --mode development",
-    "watch": "webpack --mode development --watch"
+    "watch": "webpack --mode development --watch",
+    "eslint": "eslint src/",
+    "eslint:fix": "eslint --fix src/"
   },
   "devDependencies": {
+    "eslint": "^9.16.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import-x": "^4.5.0",
+    "eslint-plugin-n": "^17.15.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-webpack-plugin": "^4.2.0",
+    "neostandard": "^0.12.0",
+    "prettier": "^3.4.2",
     "ts-loader": "^9.5.1",
     "typescript": "^5.5.4",
     "webpack": "^5.93.0",

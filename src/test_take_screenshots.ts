@@ -16,11 +16,10 @@ import { parse } from "./lib/cmdline";
 import { it, test_init, page } from "./lib/helpers";
 
 import { loginCheck } from "./checks/login";
-import { setInitialRootPassword, setRootPassword } from "./checks/set_root_password";
-
+import { setInitialRootPassword } from "./checks/set_root_password";
 
 // parse options from the command line
-const options = parse(c => c.description("Automatically take the Agama screenshots"));
+const options = parse((c) => c.description("Automatically take the Agama screenshots"));
 
 // the selected product to install
 const selectedProduct = "openSUSE Tumbleweed";
