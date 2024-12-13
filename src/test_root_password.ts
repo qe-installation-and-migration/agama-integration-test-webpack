@@ -13,7 +13,7 @@ import { it, test_init, page } from "./lib/helpers";
 
 import { loginCheck } from "./checks/login";
 import { optionalProductSelection } from "./checks/optional_product_selection";
-import { setRootPassword } from "./checks/set_root_password";
+import { setInitialRootPassword, setRootPassword } from "./checks/set_root_password";
 
 // parse options from the command line
 const options = parse();
@@ -28,6 +28,8 @@ describe("Agama test", function () {
   loginCheck(options.password);
 
   optionalProductSelection("openSUSE Tumbleweed");
+
+  setInitialRootPassword(options.rootPassword);
 
   it("should display overview card", async function () {
     await page.waitForSelector("h3::-p-text('Overview')");

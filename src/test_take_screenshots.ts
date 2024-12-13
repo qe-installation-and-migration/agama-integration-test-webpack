@@ -16,7 +16,8 @@ import { parse } from "./lib/cmdline";
 import { it, test_init, page } from "./lib/helpers";
 
 import { loginCheck } from "./checks/login";
-import { setRootPassword } from "./checks/set_root_password";
+import { setInitialRootPassword, setRootPassword } from "./checks/set_root_password";
+
 
 // parse options from the command line
 const options = parse(c => c.description("Automatically take the Agama screenshots"));
@@ -50,6 +51,8 @@ describe("Agama screenshots", function () {
       .click();
   });
 
+  setInitialRootPassword(options.rootPassword);
+
   it("should take overview page screenshot", async function () {
     // refreshing the repositories might take long time
     await page.locator("h3::-p-text('Overview')").setTimeout(60000).wait();
@@ -78,14 +81,5 @@ describe("Agama screenshots", function () {
     await page.locator("a[href='#/users']").click();
     await page.locator("h3::-p-text('First user')").wait();
     await screenshot("users");
-  });
-
-  // set a root password to dismiss the warning in the overview
-  setRootPassword("test");
-
-  it("should take overview ready screenshot", async function () {
-    await page.locator("a[href='#/overview']").click();
-    await page.locator("h3::-p-text('Overview')").wait();
-    await screenshot("install-button");
   });
 });

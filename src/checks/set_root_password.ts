@@ -26,6 +26,18 @@ export function setRootPassword(password: string) {
     await page.locator("button::-p-text(Confirm)").click();
 
     // wait until the password popup disappears
-    await page.locator("input#passwordConfirmation").setVisibility("hidden").wait();
+    await page
+      .locator("input#passwordConfirmation")
+      .setVisibility("hidden")
+      .wait();
+  });
+}
+
+export function setInitialRootPassword(password: string) {
+  it("should require setting the root password in the initial dialog", async function () {
+    await page.waitForSelector("input#rootPassword");
+    // for simplicity just set the current password
+    await page.type("input#rootPassword", password);
+    await page.click("button[type='submit']");
   });
 }
