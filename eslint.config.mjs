@@ -5,6 +5,7 @@ import tsEslint from "typescript-eslint";
 import tsEslintParser from "@typescript-eslint/parser";
 import globals from "globals";
 import tsEslintPlugin from "@typescript-eslint/eslint-plugin";
+import stylistic from "@stylistic/eslint-plugin";
 
 const neostandardConfig = neostandard({ semi: true, noStyle: true });
 
@@ -28,10 +29,13 @@ export default [
   {
     plugins: {
       "typescript-eslint": tsEslintPlugin,
+      "@stylistic": stylistic,
     },
   },
   {
     rules: {
+      "@stylistic/indent": ["error", 2],
+      "@stylistic/no-trailing-spaces": "error",
       "no-var": "error",
       "no-multi-str": "off",
       "no-use-before-define": "off",

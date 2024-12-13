@@ -98,7 +98,7 @@ let failed = false;
 let continueOnError = false;
 
 export function setContinueOnError(enabled:boolean) {
-  continueOnError = enabled;  
+  continueOnError = enabled;
 }
 
 // helper function, dump the index.css file so the HTML dump can properly displayed

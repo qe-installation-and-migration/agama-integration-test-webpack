@@ -12,6 +12,7 @@
     "eslint:fix": "eslint --fix src/"
   },
   "devDependencies": {
+    "@stylistic/eslint-plugin": "^2.12.1",
     "eslint": "^9.16.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import-x": "^4.5.0",
