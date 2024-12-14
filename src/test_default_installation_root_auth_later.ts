@@ -19,20 +19,23 @@ import { setupRootPasswordAtALaterStage } from "./checks/root_authentication";
 
 // parse options from the command line
 const options = parse((cmd) =>
-    cmd.addOption(
-        new Option("--product-id <id>", "Product id to select a product to install")
-            .choices(Object.keys(ProductId))
-            .default("none"))
-        .option("--install", "Proceed to install the system (the default is not to install it)")
-        .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
+  cmd
+    .addOption(
+      new Option("--product-id <id>", "Product id to select a product to install")
+        .choices(Object.keys(ProductId))
+        .default("none"),
+    )
+    .option("--install", "Proceed to install the system (the default is not to install it)")
+    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"),
+);
 
 describe("Installation with default values", function () {
-    test_init(options);
+  test_init(options);
 
-    logIn(options.password);
-    if (options.productId !== "none") productSelection(ProductId[options.productId]);
-    createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
-    setupRootPasswordAtALaterStage(options.password);
-    if (options.dasd) prepareDasdStorage();
-    if (options.install) performInstallation();
+  logIn(options.password);
+  if (options.productId !== "none") productSelection(ProductId[options.productId]);
+  createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
+  setupRootPasswordAtALaterStage(options.password);
+  if (options.dasd) prepareDasdStorage();
+  if (options.install) performInstallation();
 });
