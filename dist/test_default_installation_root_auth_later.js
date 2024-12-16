@@ -167,10 +167,10 @@ function setupRootPassword(password) {
     (0, helpers_1.it)("should setup root user authentication password", async function () {
         const setupRootuserAuthentication = new setup_root_user_authentication_page_1.SetupRootUserAuthenticationPage(helpers_1.page);
         // longer timeout to refresh repos when coming from product selection
-        await setupRootuserAuthentication.wait(2 * 60 * 1000);
+        await setupRootuserAuthentication.wait(3 * 60 * 1000);
         await setupRootuserAuthentication.fillPassword(password);
         await setupRootuserAuthentication.submit();
-    }, 2 * 60 * 1000);
+    }, 3 * 60 * 1000);
 }
 
 
