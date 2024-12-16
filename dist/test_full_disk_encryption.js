@@ -630,10 +630,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StoragePage = void 0;
 class StoragePage {
     page;
+    changeTargetDevice = () => this.page.locator("a[href='#/storage/target-device']");
     enableButton = () => this.page.locator("button::-p-text(Enable)");
     enabledDiv = () => this.page.locator("div::-p-text(enabled)");
     constructor(page) {
         this.page = page;
+    }
+    async changeInstallationDevice() {
+        await this.changeTargetDevice().click();
     }
     async enableEncryption() {
         await this.enableButton().click();

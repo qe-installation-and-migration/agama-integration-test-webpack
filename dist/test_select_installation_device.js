@@ -2,40 +2,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/checks/first_user.ts":
-/*!**********************************!*\
-  !*** ./src/checks/first_user.ts ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createFirstUser = createFirstUser;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const create_user_page_1 = __webpack_require__(/*! ../pages/create_user_page */ "./src/pages/create_user_page.ts");
-const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function createFirstUser(fullName, userName, password) {
-    (0, helpers_1.it)("should create first user", async function () {
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToUsers();
-        await users.defineAUserNow();
-        await createFirstUser.fillFullName(fullName);
-        await createFirstUser.fillUserName(userName);
-        await createFirstUser.fillPassword(password);
-        await createFirstUser.fillPasswordConfirmation(password);
-        await createFirstUser.accept();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/installation.ts":
 /*!************************************!*\
   !*** ./src/checks/installation.ts ***!
@@ -176,34 +142,28 @@ function setupRootPassword(password) {
 
 /***/ }),
 
-/***/ "./src/checks/storage_dasd.ts":
-/*!************************************!*\
-  !*** ./src/checks/storage_dasd.ts ***!
-  \************************************/
+/***/ "./src/checks/select_installation_device.ts":
+/*!**************************************************!*\
+  !*** ./src/checks/select_installation_device.ts ***!
+  \**************************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.prepareDasdStorage = prepareDasdStorage;
+exports.selectInstallationDevice = selectInstallationDevice;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-function prepareDasdStorage() {
-    (0, helpers_1.it)("should prepare DASD storage", async function () {
-        // Workaround, sometimes the UI seems not responsive
-        await helpers_1.page.locator("a[href='#/storage']").click({ delay: 1000 });
-        await helpers_1.page.locator("a[href='#/storage']").click({ delay: 1000 });
-        await helpers_1.page.locator("a[href='#/storage/target-device']").click();
-        await helpers_1.page.locator("span::-p-text('storage techs')").click();
-        await helpers_1.page.locator("span::-p-text('DASD')").click({ delay: 1000 });
-        // Enabling DASD device, by default it is always disabled
-        await helpers_1.page.locator("input[name='checkrow0']").click({ delay: 1000 });
-        await helpers_1.page.locator("span::-p-text('Perform an action')").click({ delay: 1000 });
-        await helpers_1.page.locator("span::-p-text('Activate')").click();
-        // Selecting installation device
-        await helpers_1.page.locator("a[href='#/storage']").click();
-        await helpers_1.page.locator("a[href='#/storage/target-device']").click({ delay: 1000 });
-        await helpers_1.page.locator("input[aria-label='Select row 0']").click();
-        await helpers_1.page.locator("button[form='targetSelection']").click();
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_select_installation_device_page_1 = __webpack_require__(/*! ../pages/storage_select_installation_device_page */ "./src/pages/storage_select_installation_device_page.ts");
+const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+function selectInstallationDevice() {
+    (0, helpers_1.it)("should select installation device", async function () {
+        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const StorageSelectInstallationDevice = new storage_select_installation_device_page_1.SelectInstallationDevicePage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.changeInstallationDevice();
+        await StorageSelectInstallationDevice.createLvmDevice();
     });
 }
 
@@ -580,47 +540,6 @@ exports.CongratulationPage = CongratulationPage;
 
 /***/ }),
 
-/***/ "./src/pages/create_user_page.ts":
-/*!***************************************!*\
-  !*** ./src/pages/create_user_page.ts ***!
-  \***************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CreateFirstUserPage = void 0;
-class CreateFirstUserPage {
-    page;
-    fullNameInput = () => this.page.locator("input#userFullName");
-    usernameInput = () => this.page.locator("input#userName");
-    passwordInput = () => this.page.locator("input#password");
-    passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
-    acceptButton = () => this.page.locator("button[form='firstUserForm']");
-    constructor(page) {
-        this.page = page;
-    }
-    async fillFullName(fullName) {
-        await this.fullNameInput().fill(fullName);
-    }
-    async fillUserName(userName) {
-        await this.usernameInput().fill(userName);
-    }
-    async fillPassword(password) {
-        await this.passwordInput().fill(password);
-    }
-    async fillPasswordConfirmation(password) {
-        await this.passwordConfirmationInput().fill(password);
-    }
-    async accept() {
-        await this.acceptButton().click();
-    }
-}
-exports.CreateFirstUserPage = CreateFirstUserPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/installing_page.ts":
 /*!**************************************!*\
   !*** ./src/pages/installing_page.ts ***!
@@ -853,6 +772,77 @@ exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 /***/ }),
 
+/***/ "./src/pages/storage_page.ts":
+/*!***********************************!*\
+  !*** ./src/pages/storage_page.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StoragePage = void 0;
+class StoragePage {
+    page;
+    changeTargetDevice = () => this.page.locator("a[href='#/storage/target-device']");
+    enableButton = () => this.page.locator("button::-p-text(Enable)");
+    enabledDiv = () => this.page.locator("div::-p-text(enabled)");
+    constructor(page) {
+        this.page = page;
+    }
+    async changeInstallationDevice() {
+        await this.changeTargetDevice().click();
+    }
+    async enableEncryption() {
+        await this.enableButton().click();
+    }
+    async verifyEncryptionEnabled() {
+        await this.enabledDiv().wait();
+    }
+}
+exports.StoragePage = StoragePage;
+
+
+/***/ }),
+
+/***/ "./src/pages/storage_select_installation_device_page.ts":
+/*!**************************************************************!*\
+  !*** ./src/pages/storage_select_installation_device_page.ts ***!
+  \**************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SelectInstallationDevicePage = void 0;
+class SelectInstallationDevicePage {
+    page;
+    //private readonly createLvm = () => this.page.locator("label[class='pf-v5-c-radio__input'] > input[type='radio']");
+    //private readonly createLvm = () => this.page.locator('::-p-aria(A new LVM Volume Group)');
+    //private readonly createLvm = () => this.page.locator('#create-lvm');
+    //private readonly createLvm = () => this.page.locator('label[for="create-lvm"] input');
+    //private readonly createLvm = () => this.page.locator(('span:has-text("A new LVM Volume Group")').locator('../input');
+    //private readonly createLvm = () => this.page.locator("a[href='#create-lvm']");
+    //private readonly createLvm = () => this.page.locator("label[class='pf-v5-c-radio' for='create-lvm'] > input[value='2']");
+    //private readonly createLvm = () => this.page.locator("span[class='pf-v5-c-radio__input', has-text('A new LVM Volume Group')] > input[type='radio']");
+    //private readonly createLvm = () => this.page.locator("span:has-text('A new LVM Volume Group') > input[type='radio']");
+    createLvm = () => this.page.locator('::-p-xpath(//*[@id=\\"create-lvm\\"])');
+    selectRow0 = () => this.page.locator("label[class='pf-v5-c-table__td pf-v5-c-table__check'] > input[type='checkbox']");
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async createLvmDevice() {
+        await this.createLvm().click();
+        await this.selectRow0().click();
+        await this.acceptButton().click();
+    }
+}
+exports.SelectInstallationDevicePage = SelectInstallationDevicePage;
+
+
+/***/ }),
+
 /***/ "./src/pages/users_page.ts":
 /*!*********************************!*\
   !*** ./src/pages/users_page.ts ***!
@@ -882,10 +872,10 @@ exports.UsersPage = UsersPage;
 
 /***/ }),
 
-/***/ "./src/test_default_installation_root_auth_later.ts":
-/*!**********************************************************!*\
-  !*** ./src/test_default_installation_root_auth_later.ts ***!
-  \**********************************************************/
+/***/ "./src/test_select_installation_device.ts":
+/*!************************************************!*\
+  !*** ./src/test_select_installation_device.ts ***!
+  \************************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -901,26 +891,22 @@ const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
-const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
-const storage_dasd_1 = __webpack_require__(/*! ./checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
+const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
+const select_installation_device_1 = __webpack_require__(/*! ./checks/select_installation_device */ "./src/checks/select_installation_device.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Option("--product-id <id>", "Product id to select a product to install")
     .choices(Object.keys(helpers_1.ProductId))
     .default("none"))
-    .option("--install", "Proceed to install the system (the default is not to install it)")
-    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
-(0, node_test_1.describe)("Installation with default values", function () {
+    .option("--install", "Proceed to install the system (the default is not to install it)"));
+(0, node_test_1.describe)("Installation with LVM)", function () {
     (0, helpers_1.test_init)(options);
     (0, login_1.logIn)(options.password);
     if (options.productId !== "none")
         (0, product_selection_1.productSelection)(helpers_1.ProductId[options.productId]);
-    (0, first_user_1.createFirstUser)("Bernhard M. Wiedemann", "bernhard", options.password);
-    (0, root_authentication_1.setupRootPasswordAtALaterStage)(options.password);
-    if (options.dasd)
-        (0, storage_dasd_1.prepareDasdStorage)();
+    (0, root_authentication_1.setupRootPassword)(options.password);
+    (0, select_installation_device_1.selectInstallationDevice)();
     if (options.install)
         (0, installation_1.performInstallation)();
 });
@@ -1321,7 +1307,7 @@ module.exports = require("zlib");
 /******/ 	// the startup function
 /******/ 	__webpack_require__.x = () => {
 /******/ 		// Load entry module and return exports
-/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_default_installation_root_auth_later.ts")))
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_select_installation_device.ts")))
 /******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 		return __webpack_exports__;
 /******/ 	};
@@ -1425,7 +1411,7 @@ module.exports = require("zlib");
 /******/ 		// object to store loaded chunks
 /******/ 		// "1" means "loaded", otherwise not loaded yet
 /******/ 		var installedChunks = {
-/******/ 			"test_default_installation_root_auth_later": 1
+/******/ 			"test_select_installation_device": 1
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.O.require = (chunkId) => (installedChunks[chunkId]);
@@ -1477,4 +1463,4 @@ module.exports = require("zlib");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=test_default_installation_root_auth_later.js.map
+//# sourceMappingURL=test_select_installation_device.js.map

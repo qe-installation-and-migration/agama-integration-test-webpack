@@ -25,8 +25,8 @@ export function setupRootPassword(password: string) {
         const setupRootuserAuthentication = new SetupRootUserAuthenticationPage(page);
 
         // longer timeout to refresh repos when coming from product selection
-        await setupRootuserAuthentication.wait(2 * 60 * 1000);
+        await setupRootuserAuthentication.wait(6 * 60 * 1000);
         await setupRootuserAuthentication.fillPassword(password);
         await setupRootuserAuthentication.submit();
-    }, 2 * 60 * 1000);
+    }, 10 * 60 * 1000);
 }
