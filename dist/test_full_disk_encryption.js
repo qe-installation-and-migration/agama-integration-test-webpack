@@ -630,6 +630,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StoragePage = void 0;
 class StoragePage {
     page;
+    changeInstallationDeviceButton = () => this.page.locator("a[href='#/storage/target-device']");
     enableButton = () => this.page.locator("button::-p-text(Enable)");
     enabledDiv = () => this.page.locator("div::-p-text(enabled)");
     constructor(page) {
@@ -637,6 +638,9 @@ class StoragePage {
     }
     async enableEncryption() {
         await this.enableButton().click();
+    }
+    async changeInstallationDevice() {
+        await this.changeInstallationDeviceButton().click();
     }
     async verifyEncryptionEnabled() {
         await this.enabledDiv().wait();
