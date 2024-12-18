@@ -20,7 +20,7 @@ Version:        0
 Release:        0
 Summary:        Support for running Agama integration tests
 License:        GPL-2.0-or-later
-URL:            https://github.com/openSUSE/agama
+URL:            https://github.com/agama-project/agama-integration-tests
 # source_validator insists that if obscpio has no version then
 # tarball must neither
 Source0:        agama-integration-tests.tar
@@ -36,7 +36,7 @@ Requires:       nodejs(engine) >= 18
 This package provides infrastructure and tooling needed to run the Agama
 integration tests. It includes the Puppeteer framework with all dependencies.
 
-The package includes only one example test, the real tests should be added from
+The package includes only example tests, the real tests should be added from
 outside.
 
 %prep
@@ -51,9 +51,6 @@ npm run build
 %install
 install -D -d -m 0755 %{buildroot}%{_datadir}/agama/integration-tests
 cp -aR %{_builddir}/agama-integration-tests/dist/* %{buildroot}%{_datadir}/agama/integration-tests
-# delete the huge vendor.js.map file, we usually do not need backtrace locations from the node packages
-rm %{buildroot}%{_datadir}/agama/integration-tests/vendor.js.map
-rm %{buildroot}%{_datadir}/agama/integration-tests/vendor.js.LICENSE.txt
 
 %files
 %defattr(-,root,root,-)
