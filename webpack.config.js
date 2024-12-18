@@ -32,7 +32,8 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     clean: true,
   },
-  devtool: "source-map",
+  // source maps are configured using the SourceMapDevToolPlugin below
+  devtool: false,
   optimization: {
     splitChunks: {
       cacheGroups: {
@@ -55,7 +56,12 @@ module.exports = {
       extensions: ["js", "jsx", "ts", "tsx"],
       failOnWarning: true,
     }),
-
+    new webpack.SourceMapDevToolPlugin({
+      filename: "[file].map",
+      // skip the source maps for the vendor.js bundle, it is huge and in most cases (all?) we do
+      // not need detailed backtrace in the puppeteer sources and its dependencies
+      exclude: "vendor.js",
+    }),
     // ignore the webpack warnings about the dynamic imports in yargs module,
     // it is used in the browser download code in puppeteer which is never used
     // by the integration tests as we use the system browser
