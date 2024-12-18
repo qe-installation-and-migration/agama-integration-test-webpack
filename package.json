@@ -1,7 +1,7 @@
 {
-  "name": "agama-webpack-test",
+  "name": "agama-integration-tests",
   "version": "0.0.1",
-  "description": "Bundling the Agama integration tests using Webpack",
+  "description": "Agama integration tests",
   "private": true,
   "license": "GPLv2",
   "scripts": {
