@@ -33,9 +33,14 @@ export function setRootPassword(password: string) {
 
 export function setInitialRootPassword(password: string) {
   it("should require setting the root password in the initial dialog", async function () {
-    await page.waitForSelector("input#rootPassword");
-    // for simplicity just set the current password
-    await page.type("input#rootPassword", password);
-    await page.click("button[type='submit']");
+    await page
+      .locator("input#rootPassword")
+      // refreshing the repositories before showing the password configuration might take long time
+      .setTimeout(60000)
+      .waitHandle()
+      // type the new password
+      .then((h) => h.type(password));
+
+    await page.locator("button[type='submit']").setWaitForEnabled(true).click();
   });
 }

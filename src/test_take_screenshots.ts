@@ -42,7 +42,11 @@ describe("Agama screenshots", function () {
     await page.locator("button[form='productSelectionForm']").wait();
     await screenshot("product-selection");
 
-    await page.locator(`::-p-text('${selectedProduct}')`).click();
+    const product = await page.locator(`::-p-text('${selectedProduct}')`).waitHandle();
+    // scroll the page so the product is visible
+    await product.scrollIntoView();
+    await product.click();
+
     await page
       .locator("button[form='productSelectionForm']")
       // wait until the button is enabled
@@ -53,8 +57,7 @@ describe("Agama screenshots", function () {
   setInitialRootPassword(options.rootPassword);
 
   it("should take overview page screenshot", async function () {
-    // refreshing the repositories might take long time
-    await page.locator("h3::-p-text('Overview')").setTimeout(60000).wait();
+    await page.locator("h3::-p-text('Overview')").wait();
     await screenshot("overview");
   });
 
