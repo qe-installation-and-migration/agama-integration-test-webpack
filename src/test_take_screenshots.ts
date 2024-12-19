@@ -15,7 +15,7 @@ import path from "path";
 import { parse } from "./lib/cmdline";
 import { it, test_init, page } from "./lib/helpers";
 
-import { loginCheck } from "./checks/login";
+import { logIn } from "./checks/login";
 import { setInitialRootPassword } from "./checks/set_root_password";
 
 // parse options from the command line
@@ -36,7 +36,7 @@ async function screenshot(file: string) {
 describe("Agama screenshots", function () {
   test_init(options);
 
-  loginCheck(options.password);
+  logIn(options.password);
 
   it("should take product selection screenshot", async function () {
     await page.locator("button[form='productSelectionForm']").wait();

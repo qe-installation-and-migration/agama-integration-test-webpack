@@ -25,12 +25,12 @@ export function parse(callback?: (cmd: commander.Command) => void) {
     .description("Run a simple Agama integration test")
     .option("-u, --url <url>", "Agama server URL", "http://localhost")
     .option("-p, --password <password>", "Agama login password", "linux")
-    .option("-r, --root-password <password>", "Target root login password", "linux")
     .addOption(
       new Option("-b, --browser <browser>", "Browser used for running the test")
         .choices(["firefox", "chrome", "chromium"])
         .default("firefox")
     )
+    .option("-r, --root-password <password>", "Target root login password", "linux")
     .option(
       "-h, --headed",
       "Run the browser in headed mode with UI (the default is headless mode)"

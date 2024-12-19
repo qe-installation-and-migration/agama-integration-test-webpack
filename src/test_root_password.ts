@@ -11,7 +11,7 @@ import assert from "node:assert/strict";
 import { parse } from "./lib/cmdline";
 import { it, test_init, page } from "./lib/helpers";
 
-import { loginCheck } from "./checks/login";
+import { logIn } from "./checks/login";
 import { optionalProductSelection } from "./checks/optional_product_selection";
 import { setInitialRootPassword, setRootPassword } from "./checks/set_root_password";
 
@@ -25,7 +25,7 @@ describe("Agama test", function () {
     assert.deepEqual(await page.title(), "Agama");
   });
 
-  loginCheck(options.password);
+  logIn(options.password);
 
   optionalProductSelection("openSUSE Tumbleweed");
 
