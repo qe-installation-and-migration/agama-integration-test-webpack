@@ -755,7 +755,7 @@ class ProductSelectionPage {
         this.page = page;
     }
     async selectProduct(product) {
-        await this.productText(product).scroll();
+        (await this.productText(product).waitHandle()).scrollIntoView();
         await this.productText(product).click();
         await this.selectButton().click();
     }

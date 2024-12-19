@@ -10,7 +10,7 @@ export class ProductSelectionPage {
   }
 
   async selectProduct(product: string) {
-    await this.productText(product).scroll();
+    (await this.productText(product).waitHandle()).scrollIntoView();
     await this.productText(product).click();
     await this.selectButton().click();
   }
