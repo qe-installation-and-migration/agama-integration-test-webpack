@@ -15,8 +15,8 @@ import { logIn } from "./checks/login";
 const options = parse();
 
 describe("Running installation", function () {
-    test_init(options);
+  test_init(options);
 
-    logIn(options.password);
-    finishInstallation();
+  logIn(options.password);
+  finishInstallation();
 });

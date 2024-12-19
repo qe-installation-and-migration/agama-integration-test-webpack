@@ -147,7 +147,7 @@ const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.t
 const registration_enter_code_page_1 = __webpack_require__(/*! ../pages/registration_enter_code_page */ "./src/pages/registration_enter_code_page.ts");
 const registration_product_registered_page_1 = __webpack_require__(/*! ../pages/registration_product_registered_page */ "./src/pages/registration_product_registered_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function enterRegistration(code, email) {
+function enterRegistration(code) {
     (0, helpers_1.it)("should allow setting registration", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const registration = new registration_enter_code_page_1.RegistrationEnterCodePage(helpers_1.page);
@@ -275,6 +275,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parse = parse;
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const commander = __importStar(__webpack_require__(/*! commander */ "./node_modules/commander/index.js"));
+const helpers_1 = __webpack_require__(/*! ./helpers */ "./src/lib/helpers.ts");
 // parse command line argument as an integer
 function getInt(value) {
     // parse the value as a decimal number (base 10)
@@ -299,14 +300,16 @@ function parse(callback) {
         .addOption(new commander_1.Option("-b, --browser <browser>", "Browser used for running the test")
         .choices(["firefox", "chrome", "chromium"])
         .default("firefox"))
+        .option("-r, --root-password <password>", "Target root login password", "linux")
         .option("-h, --headed", "Run the browser in headed mode with UI (the default is headless mode)")
         .addOption(new commander_1.Option("-d, --delay <miliseconds>", "Delay between the browser actions, useful in headed mode")
         .argParser(getInt)
         .default(0))
-        .option("-c, --continue", "Continue the test after a failure (the default is abort on error)");
+        .option("-c, --continue", "Continue the test after a failure (the default is abort on error)", false);
     if (callback)
         callback(prg);
     prg.parse(process.argv);
+    (0, helpers_1.setContinueOnError)(commander_1.program.opts().continue);
     // parse options from the command line
     return commander_1.program.opts();
 }
@@ -353,6 +356,7 @@ exports.Desktop = exports.ProductId = exports.page = void 0;
 exports.startBrowser = startBrowser;
 exports.finishBrowser = finishBrowser;
 exports.test_init = test_init;
+exports.setContinueOnError = setContinueOnError;
 exports.dumpPage = dumpPage;
 exports.it = it;
 exports.sleep = sleep;
@@ -429,9 +433,12 @@ function test_init(options) {
 }
 let failed = false;
 let continueOnError = false;
+function setContinueOnError(enabled) {
+    continueOnError = enabled;
+}
 // helper function, dump the index.css file so the HTML dump can properly displayed
 async function dumpCSS() {
-    let cssData = [];
+    const cssData = [];
     const downloader = url.startsWith("https://") ? https_1.default : http_1.default;
     return new Promise((resolve, reject) => {
         downloader
@@ -992,7 +999,8 @@ const product_selection_1 = __webpack_require__(/*! ./checks/product_selection *
 const storage_dasd_1 = __webpack_require__(/*! ./checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 // parse options from the command line
-const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Option("--product-id <id>", "Product id to select a product to install")
+const options = (0, cmdline_1.parse)((cmd) => cmd
+    .addOption(new commander_1.Option("--product-id <id>", "Product id to select a product to install")
     .choices(Object.keys(helpers_1.ProductId))
     .default("none"))
     .option("--registration-code <code>", "Registration code")
@@ -1003,7 +1011,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Opti
     (0, login_1.logIn)(options.password);
     if (options.productId !== "none")
         (0, product_selection_1.productSelection)(helpers_1.ProductId[options.productId]);
-    (0, root_authentication_1.setupRootPassword)(options.password);
+    (0, root_authentication_1.setupRootPassword)(options.rootPassword);
     if (options.registrationCode)
         (0, registration_1.enterRegistration)(options.registrationCode);
     (0, first_user_1.createFirstUser)("Bernhard M. Wiedemann", "bernhard", options.password);

@@ -245,6 +245,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parse = parse;
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const commander = __importStar(__webpack_require__(/*! commander */ "./node_modules/commander/index.js"));
+const helpers_1 = __webpack_require__(/*! ./helpers */ "./src/lib/helpers.ts");
 // parse command line argument as an integer
 function getInt(value) {
     // parse the value as a decimal number (base 10)
@@ -269,14 +270,16 @@ function parse(callback) {
         .addOption(new commander_1.Option("-b, --browser <browser>", "Browser used for running the test")
         .choices(["firefox", "chrome", "chromium"])
         .default("firefox"))
+        .option("-r, --root-password <password>", "Target root login password", "linux")
         .option("-h, --headed", "Run the browser in headed mode with UI (the default is headless mode)")
         .addOption(new commander_1.Option("-d, --delay <miliseconds>", "Delay between the browser actions, useful in headed mode")
         .argParser(getInt)
         .default(0))
-        .option("-c, --continue", "Continue the test after a failure (the default is abort on error)");
+        .option("-c, --continue", "Continue the test after a failure (the default is abort on error)", false);
     if (callback)
         callback(prg);
     prg.parse(process.argv);
+    (0, helpers_1.setContinueOnError)(commander_1.program.opts().continue);
     // parse options from the command line
     return commander_1.program.opts();
 }
@@ -323,6 +326,7 @@ exports.Desktop = exports.ProductId = exports.page = void 0;
 exports.startBrowser = startBrowser;
 exports.finishBrowser = finishBrowser;
 exports.test_init = test_init;
+exports.setContinueOnError = setContinueOnError;
 exports.dumpPage = dumpPage;
 exports.it = it;
 exports.sleep = sleep;
@@ -399,9 +403,12 @@ function test_init(options) {
 }
 let failed = false;
 let continueOnError = false;
+function setContinueOnError(enabled) {
+    continueOnError = enabled;
+}
 // helper function, dump the index.css file so the HTML dump can properly displayed
 async function dumpCSS() {
-    let cssData = [];
+    const cssData = [];
     const downloader = url.startsWith("https://") ? https_1.default : http_1.default;
     return new Promise((resolve, reject) => {
         downloader
@@ -907,7 +914,8 @@ const storage_dasd_1 = __webpack_require__(/*! ./checks/storage_dasd */ "./src/c
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 // parse options from the command line
-const options = (0, cmdline_1.parse)((cmd) => cmd.addOption(new commander_1.Option("--product-id <id>", "Product id to select a product to install")
+const options = (0, cmdline_1.parse)((cmd) => cmd
+    .addOption(new commander_1.Option("--product-id <id>", "Product id to select a product to install")
     .choices(Object.keys(helpers_1.ProductId))
     .default("none"))
     .option("--install", "Proceed to install the system (the default is not to install it)")

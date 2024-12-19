@@ -2,6 +2,8 @@ const path = require("path");
 const fs = require("fs");
 const webpack = require("webpack");
 
+const ESLintPlugin = require("eslint-webpack-plugin");
+
 // process all ./src/test_*.ts files
 const entry = {}
 fs.readdirSync("./src").filter(f => f.startsWith("test_") && f.endsWith(".ts")).forEach(
@@ -46,16 +48,19 @@ module.exports = {
     ignored: /node_modules/,
   },
   plugins: [
+    process.env.ESLINT !== "0" && new ESLintPlugin({
+      configType: "flat",
+      extensions: ["js", "jsx", "ts", "tsx"],
+      failOnWarning: true,
+    }),
+
     // ignore the webpack warnings about the dynamic imports in yargs module,
     // it is used in the browser download code in puppeteer which is never used
     // by the integration tests as we use the system browser
-    new webpack.ContextReplacementPlugin(
-      /\/(yargs|yargs-parser)\//,
-      (data) => {
-        data.dependencies.forEach((d) => delete d.critical);
-        return data;
-      },
-    ),
+    new webpack.ContextReplacementPlugin(/\/(yargs|yargs-parser)\//, (data) => {
+      data.dependencies.forEach((d) => delete d.critical);
+      return data;
+    }),
     // prepend a hashbang at the beginning of the generated file
     new webpack.BannerPlugin({ banner: "#! /usr/bin/env node", raw: true, test: /^test_.*\.js$/ }),
     // make the test JS files executable

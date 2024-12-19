@@ -41,6 +41,9 @@ To rebuild the tests during development automatically you can run:
 
 This builds the tests in development mode to have faster builds.
 
+By default the ESlint checks are enabled, if you want to disable them set
+`ESLINT=0` environment variable. For example use `ESLINT=0 npm run watch`.
+
 ## Executing the Test
 
 The generated test is executable, simply run it (this connects to the locally
@@ -65,23 +68,26 @@ https://www.nearform.com/insights/writing-a-node-js-test-reporter/).
 The test currently accepts several optional arguments, run
 `./dist/test_root_password.js --help`:
 
-    Usage: test_root_password [options]
-
-    Run a simple Agama integration test
-
-    Options:
-      -u, --url <url>            Agama server URL (default: "http://localhost")
-      -p, --password <password>  Agama login password (default: "linux")
-      -b, --browser <browser>    Browser used for running the test (choices:
-                                 "firefox", "chrome", "chromium", default:
-                                 "firefox")
-      -h, --headed               Run the browser in headed mode with UI (the
-                                 default is headless mode)
-      -d, --delay <miliseconds>  Delay between the browser actions, useful in
-                                 headed mode (default: 0)
-      -c, --continue             Continue the test after a failure (the default is
-                                 abort on error)
-      --help                     display help for command
+```
+Usage: test_root_password [options]
+Run a simple Agama integration test
+Options:
+  -u, --url <url>                 Agama server URL (default:
+                                  "http://localhost")
+  -p, --password <password>       Agama login password (default: "linux")
+  -r, --root-password <password>  Target root login password (default:
+                                  "linux")
+  -b, --browser <browser>         Browser used for running the test (choices:
+                                  "firefox", "chrome", "chromium", default:
+                                  "firefox")
+  -h, --headed                    Run the browser in headed mode with UI (the
+                                  default is headless mode)
+  -d, --delay <miliseconds>       Delay between the browser actions, useful
+                                  in headed mode (default: 0)
+  -c, --continue                  Continue the test after a failure (the
+                                  default is abort on error)
+  --help                          display help for command
+```
 
 Full example for running the browser in the English locale, using local Chrome
 browser in headed mode and connecting to a remote Agama instance:
