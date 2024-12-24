@@ -202,7 +202,7 @@ export enum ProductId {
 
 export enum Desktop {
   gnome = "GNOME Desktop Environment (Wayland)",
-  kde = "KDE Appications and Plasma Desktop",
+  kde = "KDE Applications and Plasma Desktop",
   xfce = "XFCE Desktop Environment",
   basic = "A basic desktop (based on IceWM)",
   none = "None"

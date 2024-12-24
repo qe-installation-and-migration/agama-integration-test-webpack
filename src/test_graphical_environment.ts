@@ -19,7 +19,7 @@ const options = parse((cmd) =>
   cmd
     .addOption(
       new Option("--desktop <name>", "Desktop to install")
-        .choices(Object.values(Desktop))
+        .choices(Object.keys(Desktop))
         .default("none"),
     )
     .option("--install", "Proceed to install the system (the default is not to install it)"),
@@ -29,6 +29,6 @@ describe("Installation with a graphical environment", function () {
   test_init(options);
 
   logIn(options.password);
-  selectSinglePattern(options.desktop);
+  selectSinglePattern(Desktop[options.desktop]);
   if (options.install) performInstallation();
 });

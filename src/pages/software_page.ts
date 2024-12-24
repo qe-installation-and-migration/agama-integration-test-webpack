@@ -2,8 +2,7 @@ import { type Page } from "puppeteer-core";
 
 export class SoftwarePage {
   private readonly page: Page;
-  private readonly changeSelectionButton = () =>
-    this.page.locator("button::-p-text(ChangeSelection)");
+  private readonly changeSelectionButton = () => this.page.locator("::-p-text(Change selection)");
 
   constructor(page: Page) {
     this.page = page;
