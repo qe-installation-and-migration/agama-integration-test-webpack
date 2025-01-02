@@ -10,9 +10,17 @@ require "yast/rake"
 
 Rake::Task["install"].clear
 task :install do
-    destdir = ENV["DESTDIR"] || "/"
+    destination_directory = ENV["DESTDIR"] || "/"
+    test_bundle_name = ENV["AGAMA_TEST"] || ""
 
-    puts "Installing the integration tests..."
-    FileUtils.mkdir_p(File.join(destdir, "/usr/share/agama/system-tests"))
-    FileUtils.cp_r("dist/.", File.join(destdir, "/usr/share/agama/system-tests"))
+    puts "Creating installation directory ..."
+    FileUtils.mkdir_p(File.join(destination_directory, "/usr/share/agama/system-tests"))
+
+    puts "Installing vendor bundle with puppeteer and its dependencies ..."
+    FileUtils.cp("dist/vendor.js", File.join(destination_directory, "/usr/share/agama/system-tests"))
+
+    puts "Installing integration test bundle and its source map ..."
+    Dir.glob("dist/#{test_bundle_name}.*").each do |file|
+      FileUtils.cp(file, File.join(destination_directory, "/usr/share/agama/system-tests"))
+    end
 end
