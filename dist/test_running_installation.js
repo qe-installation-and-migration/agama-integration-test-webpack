@@ -386,7 +386,7 @@ var ProductId;
 var Desktop;
 (function (Desktop) {
     Desktop["gnome"] = "GNOME Desktop Environment (Wayland)";
-    Desktop["kde"] = "KDE Appications and Plasma Desktop";
+    Desktop["kde"] = "KDE Applications and Plasma Desktop";
     Desktop["xfce"] = "XFCE Desktop Environment";
     Desktop["basic"] = "A basic desktop (based on IceWM)";
     Desktop["none"] = "None";

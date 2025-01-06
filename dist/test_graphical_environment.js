@@ -415,7 +415,7 @@ var ProductId;
 var Desktop;
 (function (Desktop) {
     Desktop["gnome"] = "GNOME Desktop Environment (Wayland)";
-    Desktop["kde"] = "KDE Appications and Plasma Desktop";
+    Desktop["kde"] = "KDE Applications and Plasma Desktop";
     Desktop["xfce"] = "XFCE Desktop Environment";
     Desktop["basic"] = "A basic desktop (based on IceWM)";
     Desktop["none"] = "None";
@@ -626,7 +626,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoftwarePage = void 0;
 class SoftwarePage {
     page;
-    changeSelectionButton = () => this.page.locator("button::-p-text(ChangeSelection)");
+    changeSelectionButton = () => this.page.locator("::-p-text(Change selection)");
     constructor(page) {
         this.page = page;
     }
@@ -651,7 +651,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoftwareSelectionPage = void 0;
 class SoftwareSelectionPage {
     page;
-    patternText = (pattern) => this.page.locator(`::-p-text('${pattern}')`);
+    patternText = (pattern) => this.page.locator(`::-p-aria(Select ${pattern})`);
     closeButton = () => this.page.locator("button::-p-text(Close)");
     constructor(page) {
         this.page = page;
@@ -692,13 +692,13 @@ const software_selection_1 = __webpack_require__(/*! ./checks/software_selection
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .addOption(new commander_1.Option("--desktop <name>", "Desktop to install")
-    .choices(Object.values(helpers_1.Desktop))
+    .choices(Object.keys(helpers_1.Desktop))
     .default("none"))
     .option("--install", "Proceed to install the system (the default is not to install it)"));
 (0, node_test_1.describe)("Installation with a graphical environment", function () {
     (0, helpers_1.test_init)(options);
     (0, login_1.logIn)(options.password);
-    (0, software_selection_1.selectSinglePattern)(options.desktop);
+    (0, software_selection_1.selectSinglePattern)(helpers_1.Desktop[options.desktop]);
     if (options.install)
         (0, installation_1.performInstallation)();
 });
