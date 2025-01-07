@@ -374,10 +374,10 @@ function sleep(ms) {
 // for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
 var ProductId;
 (function (ProductId) {
-    ProductId["Leap_16.0"] = "Leap 16.0 Alpha";
+    ProductId["Leap_16.0"] = "Leap 16.0";
     ProductId["MicroOS"] = "openSUSE MicroOS";
-    ProductId["SLES_16.0"] = "SUSE Linux Enterprise Server 16.0 Alpha";
-    ProductId["SLES_SAP_16.0"] = "SUSE Linux Enterprise Server for SAP Applications 16.0 Alpha";
+    ProductId["SLES_16.0"] = "SUSE Linux Enterprise Server 16.0";
+    ProductId["SLES_SAP_16.0"] = "SUSE Linux Enterprise Server for SAP Applications 16.0";
     ProductId["Slowroll"] = "Slowroll";
     ProductId["Tumbleweed"] = "openSUSE Tumbleweed";
     ProductId["None"] = "none";

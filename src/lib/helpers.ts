@@ -191,10 +191,10 @@ export type GConstructor<T = {}> = new (...args: any[]) => T;
 
 // for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
 export enum ProductId {
-  'Leap_16.0' = "Leap 16.0 Alpha",
+  'Leap_16.0' = "Leap 16.0",
   MicroOS = "openSUSE MicroOS",
-  'SLES_16.0' = "SUSE Linux Enterprise Server 16.0 Alpha",
-  'SLES_SAP_16.0' = "SUSE Linux Enterprise Server for SAP Applications 16.0 Alpha",
+  'SLES_16.0' = "SUSE Linux Enterprise Server 16.0",
+  'SLES_SAP_16.0' = "SUSE Linux Enterprise Server for SAP Applications 16.0",
   Slowroll = "Slowroll",
   Tumbleweed = "openSUSE Tumbleweed",
   None = "none"
