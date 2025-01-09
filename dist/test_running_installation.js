@@ -517,8 +517,8 @@ class OverviewPage {
     constructor(page) {
         this.page = page;
     }
-    async waitWarningAlertToDisappear() {
-        await this.warningAlert().setVisibility("hidden").wait();
+    async waitWarningAlertToDisappear(timeout) {
+        await this.warningAlert().setVisibility("hidden").setTimeout(timeout).wait();
     }
     async install() {
         await this.installButton().click();

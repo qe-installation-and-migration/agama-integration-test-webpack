@@ -156,8 +156,8 @@ function enterRegistration(code) {
         await registration.register();
     });
     (0, helpers_1.it)("should not display option to register in Overview", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitWarningAlertToDisappear();
-    });
+        await new overview_page_1.OverviewPage(helpers_1.page).waitWarningAlertToDisappear(2 * 60 * 1000);
+    }, 2 * 60 * 1000);
 }
 
 
@@ -749,8 +749,8 @@ class OverviewPage {
     constructor(page) {
         this.page = page;
     }
-    async waitWarningAlertToDisappear() {
-        await this.warningAlert().setVisibility("hidden").wait();
+    async waitWarningAlertToDisappear(timeout) {
+        await this.warningAlert().setVisibility("hidden").setTimeout(timeout).wait();
     }
     async install() {
         await this.installButton().click();

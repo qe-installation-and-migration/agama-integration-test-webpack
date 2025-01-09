@@ -9,8 +9,8 @@ export class OverviewPage {
     this.page = page;
   }
 
-  async waitWarningAlertToDisappear() {
-    await this.warningAlert().setVisibility("hidden").wait();
+  async waitWarningAlertToDisappear(timeout: number) {
+    await this.warningAlert().setVisibility("hidden").setTimeout(timeout).wait();
   }
 
   async install() {
