@@ -541,9 +541,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OverviewPage = void 0;
 class OverviewPage {
     page;
+    warningAlert = () => this.page.locator("::-p-text(Warning alert)");
     installButton = () => this.page.locator("button::-p-text(Install)");
     constructor(page) {
         this.page = page;
+    }
+    async waitWarningAlertToDisappear() {
+        await this.warningAlert().setVisibility("hidden").wait();
     }
     async install() {
         await this.installButton().click();
