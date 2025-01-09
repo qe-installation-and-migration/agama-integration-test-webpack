@@ -1,6 +1,6 @@
 import { it, page } from "../lib/helpers";
+import { OverviewPage } from "../pages/overview_page";
 import { RegistrationEnterCodePage } from "../pages/registration_enter_code_page";
-import { RegistrationProductRegisteredPage } from "../pages/registration_product_registered_page";
 import { SidebarWithRegistrationPage } from "../pages/sidebar_page";
 
 export function enterRegistration(code: string) {
@@ -13,7 +13,7 @@ export function enterRegistration(code: string) {
     await registration.register();
   });
 
-  it("should display the product is registered", async function () {
-    new RegistrationProductRegisteredPage(page).wait(2 * 60 * 1000);
+  it("should not display option to register in Overview", async function () {
+    await new OverviewPage(page).waitWarningAlertToDisappear();
   });
 }

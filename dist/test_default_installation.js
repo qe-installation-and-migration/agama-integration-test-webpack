@@ -144,8 +144,8 @@ function productSelection(productName) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterRegistration = enterRegistration;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const registration_enter_code_page_1 = __webpack_require__(/*! ../pages/registration_enter_code_page */ "./src/pages/registration_enter_code_page.ts");
-const registration_product_registered_page_1 = __webpack_require__(/*! ../pages/registration_product_registered_page */ "./src/pages/registration_product_registered_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 function enterRegistration(code) {
     (0, helpers_1.it)("should allow setting registration", async function () {
@@ -155,8 +155,8 @@ function enterRegistration(code) {
         await registration.fillCode(code);
         await registration.register();
     });
-    (0, helpers_1.it)("should display the product is registered", async function () {
-        new registration_product_registered_page_1.RegistrationProductRegisteredPage(helpers_1.page).wait(2 * 60 * 1000);
+    (0, helpers_1.it)("should not display option to register in Overview", async function () {
+        await new overview_page_1.OverviewPage(helpers_1.page).waitWarningAlertToDisappear();
     });
 }
 
@@ -744,9 +744,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OverviewPage = void 0;
 class OverviewPage {
     page;
+    warningAlert = () => this.page.locator("::-p-text(Warning alert)");
     installButton = () => this.page.locator("button::-p-text(Install)");
     constructor(page) {
         this.page = page;
+    }
+    async waitWarningAlertToDisappear() {
+        await this.warningAlert().setVisibility("hidden").wait();
     }
     async install() {
         await this.installButton().click();
@@ -810,31 +814,6 @@ class RegistrationEnterCodePage {
     }
 }
 exports.RegistrationEnterCodePage = RegistrationEnterCodePage;
-
-
-/***/ }),
-
-/***/ "./src/pages/registration_product_registered_page.ts":
-/*!***********************************************************!*\
-  !*** ./src/pages/registration_product_registered_page.ts ***!
-  \***********************************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RegistrationProductRegisteredPage = void 0;
-class RegistrationProductRegisteredPage {
-    page;
-    productRegisteredText = () => this.page.locator("::-p-text('Product registered')");
-    constructor(page) {
-        this.page = page;
-    }
-    async wait(timeout) {
-        await this.productRegisteredText().setTimeout(timeout).wait();
-    }
-}
-exports.RegistrationProductRegisteredPage = RegistrationProductRegisteredPage;
 
 
 /***/ }),
