@@ -7,8 +7,7 @@
 import { describe } from "node:test";
 
 import { parse } from "./lib/cmdline";
-import { Option } from "commander";
-import { test_init, ProductId } from "./lib/helpers";
+import { test_init } from "./lib/helpers";
 
 import { createFirstUser } from "./checks/first_user";
 import { enterRegistration } from "./checks/registration";
@@ -21,11 +20,7 @@ import { setupRootPassword } from "./checks/root_authentication";
 // parse options from the command line
 const options = parse((cmd) =>
   cmd
-    .addOption(
-      new Option("--product-id <id>", "Product id to select a product to install")
-        .choices(Object.keys(ProductId))
-        .default("none"),
-    )
+    .option("--product-id <id>", "Product id to select a product to install", "none")
     .option("--registration-code <code>", "Registration code")
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"),
@@ -35,7 +30,7 @@ describe("Installation with default values", function () {
   test_init(options);
 
   logIn(options.password);
-  if (options.productId !== "none") productSelection(ProductId[options.productId]);
+  if (options.productId !== "none") productSelection(options.productId);
   setupRootPassword(options.rootPassword);
   if (options.registrationCode) enterRegistration(options.registrationCode);
   createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
