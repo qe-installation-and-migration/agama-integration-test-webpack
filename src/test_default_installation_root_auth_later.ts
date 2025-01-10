@@ -14,7 +14,7 @@ import { logIn } from "./checks/login";
 import { createFirstUser } from "./checks/first_user";
 import { performInstallation } from "./checks/installation";
 import { prepareDasdStorage } from "./checks/storage_dasd";
-import { productSelection } from "./checks/product_selection";
+import { productSelectionByName } from "./checks/product_selection";
 import { setupRootPasswordAtALaterStage } from "./checks/root_authentication";
 
 // parse options from the command line
@@ -33,7 +33,7 @@ describe("Installation with default values", function () {
   test_init(options);
 
   logIn(options.password);
-  if (options.productId !== "none") productSelection(ProductId[options.productId]);
+  if (options.productId !== "none") productSelectionByName(ProductId[options.productId]);
   createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
   setupRootPasswordAtALaterStage(options.password);
   if (options.dasd) prepareDasdStorage();

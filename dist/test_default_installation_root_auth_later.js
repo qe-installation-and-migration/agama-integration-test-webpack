@@ -117,13 +117,22 @@ function logIn(password) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.productSelectionByName = productSelectionByName;
 exports.productSelection = productSelection;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const configuring_product_page_1 = __webpack_require__(/*! ../pages/configuring_product_page */ "./src/pages/configuring_product_page.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-function productSelection(productName) {
+function productSelectionByName(productName) {
     (0, helpers_1.it)(`should allow to select product ${productName}`, async function () {
-        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectProduct(productName);
+        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectProductByName(productName);
+    });
+    (0, helpers_1.it)("should start configuring the product", async function () {
+        await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
+    });
+}
+function productSelection(productId) {
+    (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
+        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectProduct(productId);
     });
     (0, helpers_1.it)("should start configuring the product", async function () {
         await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
@@ -743,14 +752,20 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ProductSelectionPage = void 0;
 class ProductSelectionPage {
     page;
-    productText = (product) => this.page.locator(`::-p-text(${product})`);
+    productText = (name) => this.page.locator(`::-p-text(${name})`);
+    productId = (id) => this.page.locator(`input#${id}`);
     selectButton = () => this.page.locator("button[form='productSelectionForm']");
     constructor(page) {
         this.page = page;
     }
-    async selectProduct(product) {
-        (await this.productText(product).waitHandle()).scrollIntoView();
-        await this.productText(product).click();
+    async selectProduct(id) {
+        (await this.productId(id).waitHandle()).scrollIntoView();
+        await this.productId(id).click();
+        await this.selectButton().click();
+    }
+    async selectProductByName(name) {
+        (await this.productText(name).waitHandle()).scrollIntoView();
+        await this.productText(name).click();
         await this.selectButton().click();
     }
 }
@@ -948,7 +963,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     (0, helpers_1.test_init)(options);
     (0, login_1.logIn)(options.password);
     if (options.productId !== "none")
-        (0, product_selection_1.productSelection)(helpers_1.ProductId[options.productId]);
+        (0, product_selection_1.productSelectionByName)(helpers_1.ProductId[options.productId]);
     (0, first_user_1.createFirstUser)("Bernhard M. Wiedemann", "bernhard", options.password);
     (0, root_authentication_1.setupRootPasswordAtALaterStage)(options.password);
     if (options.dasd)
