@@ -31,8 +31,24 @@ export function finishInstallation() {
   it(
     "should finish",
     async function () {
+      const installing = new InstallingPage(page);
       const congratulation = new CongratulationPage(page);
-      await congratulation.wait(40 * 60 * 1000);
+      await installing.wait();
+      while (true) {
+        try {
+          await congratulation.wait(30 * 1000);
+          break;
+        } catch (error) {
+          if (error.constructor.name !== "TimeoutError") throw error;
+        }
+        // at this point no congratulation screen in this iteration, 30 seconds gone
+        // so check if we're still seeing the "installation is ongoing" screen
+        try {
+          await installing.wait();
+        } catch (error) {
+          if (error.constructor.name !== "TimeoutError") throw error;
+        }
+      }
     },
     40 * 60 * 1000,
   );
