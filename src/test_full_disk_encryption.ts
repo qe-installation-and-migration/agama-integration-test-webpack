@@ -4,6 +4,7 @@
 // file.
 
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
+import { describe } from "node:test";
 
 import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
@@ -17,7 +18,10 @@ const options = parse((cmd) =>
   cmd.option("--install", "Proceed to install the system (the default is not to install it)"),
 );
 
-test_init(options);
-logIn(options.password);
-enableEncryption(options.password);
-if (options.install) performInstallation();
+describe("Installation with Full Disk Encryption (FDE)", function () {
+  test_init(options);
+
+  logIn(options.password);
+  enableEncryption(options.password);
+  if (options.install) performInstallation();
+});
