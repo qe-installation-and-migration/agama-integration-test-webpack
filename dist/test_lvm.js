@@ -693,7 +693,6 @@ exports.StoragePage = StoragePage;
 // file.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
-const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
@@ -701,13 +700,11 @@ const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/c
 const storage_select_installation_device_1 = __webpack_require__(/*! ./checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd.option("--install", "Proceed to install the system (the default is not to install it)"));
-(0, node_test_1.describe)("Installation with LVM)", function () {
-    (0, helpers_1.test_init)(options);
-    (0, login_1.logIn)(options.password);
-    (0, storage_select_installation_device_1.changeInstallationDeviceToLvm)();
-    if (options.install)
-        (0, installation_1.performInstallation)();
-});
+(0, helpers_1.test_init)(options);
+(0, login_1.logIn)(options.password);
+(0, storage_select_installation_device_1.changeInstallationDeviceToLvm)();
+if (options.install)
+    (0, installation_1.performInstallation)();
 
 
 /***/ }),
