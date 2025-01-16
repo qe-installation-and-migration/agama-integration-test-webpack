@@ -4,7 +4,6 @@
 // file.
 
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
-import { describe } from "node:test";
 
 import { parse } from "./lib/cmdline";
 import { Option } from "commander";
@@ -29,13 +28,10 @@ const options = parse((cmd) =>
     .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"),
 );
 
-describe("Installation with default values", function () {
-  test_init(options);
-
-  logIn(options.password);
-  if (options.productId !== "none") productSelectionByName(ProductId[options.productId]);
-  createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
-  setupRootPasswordAtALaterStage(options.password);
-  if (options.dasd) prepareDasdStorage();
-  if (options.install) performInstallation();
-});
+test_init(options);
+logIn(options.password);
+if (options.productId !== "none") productSelectionByName(ProductId[options.productId]);
+createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
+setupRootPasswordAtALaterStage(options.password);
+if (options.dasd) prepareDasdStorage();
+if (options.install) performInstallation();
