@@ -686,7 +686,6 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 // file.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
-const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
@@ -699,13 +698,11 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .choices(Object.keys(helpers_1.Desktop))
     .default("none"))
     .option("--install", "Proceed to install the system (the default is not to install it)"));
-(0, node_test_1.describe)("Installation with a graphical environment", function () {
-    (0, helpers_1.test_init)(options);
-    (0, login_1.logIn)(options.password);
-    (0, software_selection_1.selectSinglePattern)(helpers_1.Desktop[options.desktop]);
-    if (options.install)
-        (0, installation_1.performInstallation)();
-});
+(0, helpers_1.test_init)(options);
+(0, login_1.logIn)(options.password);
+(0, software_selection_1.selectSinglePattern)(helpers_1.Desktop[options.desktop]);
+if (options.install)
+    (0, installation_1.performInstallation)();
 
 
 /***/ }),

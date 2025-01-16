@@ -4,7 +4,6 @@
 // file.
 
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
-import { describe } from "node:test";
 
 import { parse } from "./lib/cmdline";
 import { Option } from "commander";
@@ -25,10 +24,7 @@ const options = parse((cmd) =>
     .option("--install", "Proceed to install the system (the default is not to install it)"),
 );
 
-describe("Installation with a graphical environment", function () {
-  test_init(options);
-
-  logIn(options.password);
-  selectSinglePattern(Desktop[options.desktop]);
-  if (options.install) performInstallation();
-});
+test_init(options);
+logIn(options.password);
+selectSinglePattern(Desktop[options.desktop]);
+if (options.install) performInstallation();
