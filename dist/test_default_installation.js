@@ -16,15 +16,15 @@ const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.t
 const create_user_page_1 = __webpack_require__(/*! ../pages/create_user_page */ "./src/pages/create_user_page.ts");
 const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function createFirstUser(fullName, userName, password) {
+function createFirstUser(password) {
     (0, helpers_1.it)("should create first user", async function () {
         const users = new users_page_1.UsersPage(helpers_1.page);
         const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToUsers();
         await users.defineAUserNow();
-        await createFirstUser.fillFullName(fullName);
-        await createFirstUser.fillUserName(userName);
+        await createFirstUser.fillFullName("Bernhard M. Wiedemann");
+        await createFirstUser.fillUserName("bernhard");
         await createFirstUser.fillPassword(password);
         await createFirstUser.fillPasswordConfirmation(password);
         await createFirstUser.accept();
@@ -119,24 +119,32 @@ function logIn(password) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.productSelectionByName = productSelectionByName;
 exports.productSelection = productSelection;
+exports.productSelectionWithLicense = productSelectionWithLicense;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const configuring_product_page_1 = __webpack_require__(/*! ../pages/configuring_product_page */ "./src/pages/configuring_product_page.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-function productSelectionByName(productName) {
-    (0, helpers_1.it)(`should allow to select product ${productName}`, async function () {
-        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectProductByName(productName);
-    });
+function configuringProductStarted() {
     (0, helpers_1.it)("should start configuring the product", async function () {
         await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
     });
 }
+function productSelectionByName(productName) {
+    (0, helpers_1.it)(`should allow to select product ${productName}`, async function () {
+        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectByName(productName);
+    });
+    configuringProductStarted();
+}
 function productSelection(productId) {
     (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
-        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectProduct(productId);
+        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).select(productId);
     });
-    (0, helpers_1.it)("should start configuring the product", async function () {
-        await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
+    configuringProductStarted();
+}
+function productSelectionWithLicense(productId) {
+    (0, helpers_1.it)(`should allow to select product ${productId} accepting its license`, async function () {
+        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select(productId);
     });
+    configuringProductStarted();
 }
 
 
@@ -779,7 +787,7 @@ exports.OverviewPage = OverviewPage;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProductSelectionPage = void 0;
+exports.ProductSelectionWithRegistrationPage = exports.ProductSelectionPage = void 0;
 class ProductSelectionPage {
     page;
     productText = (name) => this.page.locator(`::-p-text(${name})`);
@@ -788,18 +796,36 @@ class ProductSelectionPage {
     constructor(page) {
         this.page = page;
     }
-    async selectProduct(id) {
+    async choose(id) {
         (await this.productId(id).waitHandle()).scrollIntoView();
         await this.productId(id).click();
+    }
+    async select(id) {
+        await this.choose(id);
         await this.selectButton().click();
     }
-    async selectProductByName(name) {
-        (await this.productText(name).waitHandle()).scrollIntoView();
-        await this.productText(name).click();
+    async selectByName(name) {
+        await this.choose(name);
         await this.selectButton().click();
     }
 }
 exports.ProductSelectionPage = ProductSelectionPage;
+function LicenseAcceptable(Base) {
+    return class extends Base {
+        licenseAcceptanceCheckbox = () => this.page.locator("::-p-text(I have read and)");
+        async acceptLicense() {
+            await this.licenseAcceptanceCheckbox().click();
+        }
+        async select(id) {
+            await this.choose(id);
+            await this.acceptLicense();
+            await this.selectButton().click();
+        }
+    };
+}
+class ProductSelectionWithRegistrationPage extends LicenseAcceptable(ProductSelectionPage) {
+}
+exports.ProductSelectionWithRegistrationPage = ProductSelectionWithRegistrationPage;
 
 
 /***/ }),
@@ -1013,17 +1039,21 @@ const root_authentication_1 = __webpack_require__(/*! ./checks/root_authenticati
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
+    .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
     .option("--registration-code <code>", "Registration code")
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
-    (0, product_selection_1.productSelection)(options.productId);
+    if (options.acceptLicense)
+        (0, product_selection_1.productSelectionWithLicense)(options.productId);
+    else
+        (0, product_selection_1.productSelection)(options.productId);
 (0, root_authentication_1.setupRootPassword)(options.rootPassword);
 if (options.registrationCode)
     (0, registration_1.enterRegistration)(options.registrationCode);
-(0, first_user_1.createFirstUser)("Bernhard M. Wiedemann", "bernhard", options.password);
+(0, first_user_1.createFirstUser)(options.password);
 if (options.dasd)
     (0, storage_dasd_1.prepareDasdStorage)();
 if (options.install)

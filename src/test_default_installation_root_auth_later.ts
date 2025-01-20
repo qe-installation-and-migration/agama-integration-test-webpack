@@ -31,7 +31,7 @@ const options = parse((cmd) =>
 test_init(options);
 logIn(options.password);
 if (options.productId !== "none") productSelectionByName(ProductId[options.productId]);
-createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
+createFirstUser(options.password);
 setupRootPasswordAtALaterStage(options.password);
 if (options.dasd) prepareDasdStorage();
 if (options.install) performInstallation();

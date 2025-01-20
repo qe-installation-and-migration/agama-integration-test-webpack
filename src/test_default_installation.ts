@@ -12,7 +12,7 @@ import { createFirstUser } from "./checks/first_user";
 import { enterRegistration } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
-import { productSelection } from "./checks/product_selection";
+import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { prepareDasdStorage } from "./checks/storage_dasd";
 import { setupRootPassword } from "./checks/root_authentication";
 
@@ -20,6 +20,10 @@ import { setupRootPassword } from "./checks/root_authentication";
 const options = parse((cmd) =>
   cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
+    .option(
+      "--accept-license",
+      "Accept license for a product with license (the default is a product without license)",
+    )
     .option("--registration-code <code>", "Registration code")
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"),
@@ -27,9 +31,11 @@ const options = parse((cmd) =>
 
 test_init(options);
 logIn(options.password);
-if (options.productId !== "none") productSelection(options.productId);
+if (options.productId !== "none")
+  if (options.acceptLicense) productSelectionWithLicense(options.productId);
+  else productSelection(options.productId);
 setupRootPassword(options.rootPassword);
 if (options.registrationCode) enterRegistration(options.registrationCode);
-createFirstUser("Bernhard M. Wiedemann", "bernhard", options.password);
+createFirstUser(options.password);
 if (options.dasd) prepareDasdStorage();
 if (options.install) performInstallation();
