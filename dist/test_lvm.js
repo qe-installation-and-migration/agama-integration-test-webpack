@@ -561,23 +561,37 @@ exports.OverviewPage = OverviewPage;
 /*!******************************************************!*\
   !*** ./src/pages/select_installation_device_page.ts ***!
   \******************************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SelectInstallationDevicePage = void 0;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 class SelectInstallationDevicePage {
     page;
     newLvmVolumeGroupInput = () => this.page.locator("::-p-text(A new LVM Volume Group)");
-    selectDiskInput = () => this.page.locator('::-p-aria(Select row 0[role=\\"checkbox\\"])');
+    deviceCheckbox = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
+    deviceRadio = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"radio\\"])`);
+    storageTechsToggleButton = () => this.page.locator("::-p-text('storage techs')");
+    deviceType = () => this.page.locator("a[href='#/storage/dasd']");
     acceptButton = () => this.page.locator("button::-p-text(Accept)");
     constructor(page) {
         this.page = page;
     }
     async installOnNewLvm() {
         await this.newLvmVolumeGroupInput().click();
-        await this.selectDiskInput().click();
+        await this.deviceCheckbox(0).click();
+        await this.acceptButton().click();
+    }
+    async prepareDasd() {
+        await this.storageTechsToggleButton().click();
+        await this.deviceType().click();
+    }
+    async selectDevice(index) {
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+        await this.deviceRadio(index).click();
         await this.acceptButton().click();
     }
 }
