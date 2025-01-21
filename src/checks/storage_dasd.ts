@@ -1,23 +1,21 @@
 import { it, page } from "../lib/helpers";
+import { SidebarPage } from "../pages/sidebar_page";
+import { StoragePage } from "../pages/storage_page";
+import { SelectInstallationDevicePage } from "../pages/select_installation_device_page";
+import { DasdPage } from "../pages/dasd_page";
 
 export function prepareDasdStorage() {
   it("should prepare DASD storage", async function () {
-    // Workaround, sometimes the UI seems not responsive
-    await page.locator("a[href='#/storage']").click({ delay: 1000 });
-    await page.locator("a[href='#/storage']").click({ delay: 1000 });
-    await page.locator("a[href='#/storage/target-device']").click();
-    await page.locator("span::-p-text('storage techs')").click();
-    await page.locator("span::-p-text('DASD')").click({ delay: 1000 });
+    const storage = new StoragePage(page);
+    const selectInstallationDevice = new SelectInstallationDevicePage(page);
+    const dasd = new DasdPage(page);
+    const sidebar = new SidebarPage(page);
 
-    // Enabling DASD device, by default it is always disabled
-    await page.locator("input[name='checkrow0']").click({ delay: 1000 });
-    await page.locator("span::-p-text('Perform an action')").click({ delay: 1000 });
-    await page.locator("span::-p-text('Activate')").click();
-
-    // Selecting installation device
-    await page.locator("a[href='#/storage']").click();
-    await page.locator("a[href='#/storage/target-device']").click({ delay: 1000 });
-    await page.locator("input[aria-label='Select row 0']").click();
-    await page.locator("button[form='targetSelection']").click();
+    await sidebar.goToStorage();
+    await storage.changeInstallationDevice();
+    await selectInstallationDevice.prepareDasd();
+    await dasd.activateDevice();
+    await dasd.backToDeviceSelection();
+    await selectInstallationDevice.selectDevice(0);
   });
 }
