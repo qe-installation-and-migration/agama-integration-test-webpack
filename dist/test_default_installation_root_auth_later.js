@@ -50,19 +50,16 @@ exports.finishInstallation = finishInstallation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
 const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
-const installing_page_1 = __webpack_require__(/*! ../pages/installing_page */ "./src/pages/installing_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 function performInstallation() {
     (0, helpers_1.it)("should start installation", async function () {
         const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
-        const installing = new installing_page_1.InstallingPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToOverview();
         await overview.install();
         await confirmInstallation.continue();
-        await installing.wait();
     });
     (0, helpers_1.it)("should finish installation", async function () {
         await new congratulation_page_1.CongratulationPage(helpers_1.page).wait(40 * 60 * 1000);
@@ -693,31 +690,6 @@ class DasdPage {
     }
 }
 exports.DasdPage = DasdPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/installing_page.ts":
-/*!**************************************!*\
-  !*** ./src/pages/installing_page.ts ***!
-  \**************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.InstallingPage = void 0;
-class InstallingPage {
-    page;
-    installingTheSystemText = () => this.page.locator("::-p-text(Installing the)");
-    constructor(page) {
-        this.page = page;
-    }
-    async wait() {
-        await this.installingTheSystemText().wait();
-    }
-}
-exports.InstallingPage = InstallingPage;
 
 
 /***/ }),
