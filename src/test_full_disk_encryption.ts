@@ -15,7 +15,9 @@ import { prepareDasdStorage } from "./checks/storage_dasd";
 
 // parse options from the command line
 const options = parse((cmd) =>
-  cmd.option("--install", "Proceed to install the system (the default is not to install it)"),
+  cmd
+    .option("--install", "Proceed to install the system (the default is not to install it)")
+    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"),
 );
 
 test_init(options);
