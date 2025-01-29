@@ -784,7 +784,9 @@ const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const storage_dasd_1 = __webpack_require__(/*! ./checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 // parse options from the command line
-const options = (0, cmdline_1.parse)((cmd) => cmd.option("--install", "Proceed to install the system (the default is not to install it)"));
+const options = (0, cmdline_1.parse)((cmd) => cmd
+    .option("--install", "Proceed to install the system (the default is not to install it)")
+    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 if (options.dasd)
