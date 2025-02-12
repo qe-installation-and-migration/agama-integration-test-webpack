@@ -18,9 +18,9 @@ export function performInstallation() {
   it(
     "should finish installation",
     async function () {
-      await new CongratulationPage(page).wait(40 * 60 * 1000);
+      await new CongratulationPage(page).wait(14 * 60 * 1000);
     },
-    40 * 60 * 1000,
+    15 * 60 * 1000,
   );
 }
 
@@ -29,8 +29,8 @@ export function finishInstallation() {
     "should finish",
     async function () {
       const congratulation = new CongratulationPage(page);
-      await congratulation.wait(40 * 60 * 1000);
+      await congratulation.wait(14 * 60 * 1000);
     },
-    40 * 60 * 1000,
+    15 * 60 * 1000,
   );
 }
