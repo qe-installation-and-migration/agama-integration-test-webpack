@@ -578,13 +578,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OverviewPage = void 0;
 class OverviewPage {
     page;
-    warningAlert = () => this.page.locator("::-p-text(Warning alert)");
     installButton = () => this.page.locator("button::-p-text(Install)");
+    mustBeRegisteredText = () => this.page.locator("::-p-text(must be registered)");
     constructor(page) {
         this.page = page;
     }
     async waitWarningAlertToDisappear() {
-        await this.warningAlert().setVisibility("hidden").wait();
+        await this.mustBeRegisteredText().setVisibility("hidden").wait();
     }
     async install() {
         await this.installButton().click();
@@ -711,19 +711,19 @@ exports.StoragePage = void 0;
 class StoragePage {
     page;
     changeInstallationDeviceButton = () => this.page.locator("a[href='#/storage/target-device']");
-    enableButton = () => this.page.locator("button::-p-text(Enable)");
-    enabledDiv = () => this.page.locator("div::-p-text(enabled)");
+    editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
+    encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     constructor(page) {
         this.page = page;
-    }
-    async enableEncryption() {
-        await this.enableButton().click();
     }
     async changeInstallationDevice() {
         await this.changeInstallationDeviceButton().click();
     }
+    async editEncryption() {
+        await this.editEncryptionButton().click();
+    }
     async verifyEncryptionEnabled() {
-        await this.enabledDiv().wait();
+        await this.encryptionIsEnabledText().wait();
     }
 }
 exports.StoragePage = StoragePage;

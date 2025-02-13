@@ -13,17 +13,20 @@
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enableEncryption = enableEncryption;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const encryption_settings_page_1 = __webpack_require__(/*! ../pages/encryption_settings_page */ "./src/pages/encryption_settings_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_encryption_page_1 = __webpack_require__(/*! ../pages/storage_encryption_page */ "./src/pages/storage_encryption_page.ts");
 const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
 function enableEncryption(password) {
     (0, helpers_1.it)("should enable encryption", async function () {
         const storage = new storage_page_1.StoragePage(helpers_1.page);
-        const storageEncryption = new storage_encryption_page_1.StorageEncryptionPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.enableEncryption();
-        await storageEncryption.encrypt(password);
+        await storage.editEncryption();
+        await encryptionSettings.encryptTheSystem();
+        await encryptionSettings.fillPassword(password);
+        await encryptionSettings.fillPasswordConfirmation(password);
+        await encryptionSettings.accept();
         await storage.verifyEncryptionEnabled();
     });
 }
@@ -45,29 +48,26 @@ exports.finishInstallation = finishInstallation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
 const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
-const installing_page_1 = __webpack_require__(/*! ../pages/installing_page */ "./src/pages/installing_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 function performInstallation() {
     (0, helpers_1.it)("should start installation", async function () {
         const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
-        const installing = new installing_page_1.InstallingPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToOverview();
         await overview.install();
         await confirmInstallation.continue();
-        await installing.wait();
     });
     (0, helpers_1.it)("should finish installation", async function () {
-        await new congratulation_page_1.CongratulationPage(helpers_1.page).wait(40 * 60 * 1000);
-    }, 40 * 60 * 1000);
+        await new congratulation_page_1.CongratulationPage(helpers_1.page).wait(14 * 60 * 1000);
+    }, 15 * 60 * 1000);
 }
 function finishInstallation() {
     (0, helpers_1.it)("should finish", async function () {
         const congratulation = new congratulation_page_1.CongratulationPage(helpers_1.page);
-        await congratulation.wait(40 * 60 * 1000);
-    }, 40 * 60 * 1000);
+        await congratulation.wait(14 * 60 * 1000);
+    }, 15 * 60 * 1000);
 }
 
 
@@ -503,27 +503,39 @@ exports.CongratulationPage = CongratulationPage;
 
 /***/ }),
 
-/***/ "./src/pages/installing_page.ts":
-/*!**************************************!*\
-  !*** ./src/pages/installing_page.ts ***!
-  \**************************************/
+/***/ "./src/pages/encryption_settings_page.ts":
+/*!***********************************************!*\
+  !*** ./src/pages/encryption_settings_page.ts ***!
+  \***********************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.InstallingPage = void 0;
-class InstallingPage {
+exports.EncryptionSettingsPage = void 0;
+class EncryptionSettingsPage {
     page;
-    installingTheSystemText = () => this.page.locator("::-p-text(Installing the)");
+    encryptTheSystemToggle = () => this.page.locator("::-p-text(Encrypt the system)");
+    passwordInput = () => this.page.locator("#password");
+    passwordConfirmationInput = () => this.page.locator("#passwordConfirmation");
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
     constructor(page) {
         this.page = page;
     }
-    async wait() {
-        await this.installingTheSystemText().wait();
+    async encryptTheSystem() {
+        await this.encryptTheSystemToggle().click();
+    }
+    async fillPassword(password) {
+        await this.passwordInput().fill(password);
+    }
+    async fillPasswordConfirmation(password) {
+        await this.passwordConfirmationInput().fill(password);
+    }
+    async accept() {
+        await this.acceptButton().click();
     }
 }
-exports.InstallingPage = InstallingPage;
+exports.EncryptionSettingsPage = EncryptionSettingsPage;
 
 
 /***/ }),
@@ -569,13 +581,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OverviewPage = void 0;
 class OverviewPage {
     page;
-    warningAlert = () => this.page.locator("::-p-text(Warning alert)");
     installButton = () => this.page.locator("button::-p-text(Install)");
+    mustBeRegisteredText = () => this.page.locator("::-p-text(must be registered)");
     constructor(page) {
         this.page = page;
     }
     async waitWarningAlertToDisappear() {
-        await this.warningAlert().setVisibility("hidden").wait();
+        await this.mustBeRegisteredText().setVisibility("hidden").wait();
     }
     async install() {
         await this.installButton().click();
@@ -590,23 +602,37 @@ exports.OverviewPage = OverviewPage;
 /*!******************************************************!*\
   !*** ./src/pages/select_installation_device_page.ts ***!
   \******************************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SelectInstallationDevicePage = void 0;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 class SelectInstallationDevicePage {
     page;
     newLvmVolumeGroupInput = () => this.page.locator("::-p-text(A new LVM Volume Group)");
-    selectDiskInput = () => this.page.locator('::-p-aria(Select row 0[role=\\"checkbox\\"])');
+    deviceCheckbox = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
+    deviceRadio = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"radio\\"])`);
+    storageTechsToggleButton = () => this.page.locator("::-p-text('storage techs')");
+    deviceType = () => this.page.locator("a[href='#/storage/dasd']");
     acceptButton = () => this.page.locator("button::-p-text(Accept)");
     constructor(page) {
         this.page = page;
     }
     async installOnNewLvm() {
         await this.newLvmVolumeGroupInput().click();
-        await this.selectDiskInput().click();
+        await this.deviceCheckbox(0).click();
+        await this.acceptButton().click();
+    }
+    async prepareDasd() {
+        await this.storageTechsToggleButton().click();
+        await this.deviceType().click();
+    }
+    async selectDevice(index) {
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+        await this.deviceRadio(index).click();
         await this.acceptButton().click();
     }
 }
@@ -675,37 +701,6 @@ exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 /***/ }),
 
-/***/ "./src/pages/storage_encryption_page.ts":
-/*!**********************************************!*\
-  !*** ./src/pages/storage_encryption_page.ts ***!
-  \**********************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StorageEncryptionPage = void 0;
-class StorageEncryptionPage {
-    page;
-    encryptTheSystemCheckbox = () => this.page.locator("label[class='pf-v5-c-switch'] > input[type='checkbox']");
-    passwordInput = () => this.page.locator("#password");
-    passwordConfirmationInput = () => this.page.locator("#passwordConfirmation");
-    acceptButton = () => this.page.locator("button::-p-text(Accept)");
-    constructor(page) {
-        this.page = page;
-    }
-    async encrypt(password) {
-        await this.encryptTheSystemCheckbox().click();
-        await this.passwordInput().fill(password);
-        await this.passwordConfirmationInput().fill(password);
-        await this.acceptButton().click();
-    }
-}
-exports.StorageEncryptionPage = StorageEncryptionPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/storage_page.ts":
 /*!***********************************!*\
   !*** ./src/pages/storage_page.ts ***!
@@ -719,19 +714,19 @@ exports.StoragePage = void 0;
 class StoragePage {
     page;
     changeInstallationDeviceButton = () => this.page.locator("a[href='#/storage/target-device']");
-    enableButton = () => this.page.locator("button::-p-text(Enable)");
-    enabledDiv = () => this.page.locator("div::-p-text(enabled)");
+    editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
+    encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     constructor(page) {
         this.page = page;
-    }
-    async enableEncryption() {
-        await this.enableButton().click();
     }
     async changeInstallationDevice() {
         await this.changeInstallationDeviceButton().click();
     }
+    async editEncryption() {
+        await this.editEncryptionButton().click();
+    }
     async verifyEncryptionEnabled() {
-        await this.enabledDiv().wait();
+        await this.encryptionIsEnabledText().wait();
     }
 }
 exports.StoragePage = StoragePage;

@@ -7,6 +7,8 @@ export class StoragePage {
 
   private readonly enableButton = () => this.page.locator("button::-p-text(Enable)");
   private readonly enabledDiv = () => this.page.locator("div::-p-text(enabled)");
+  private readonly decryptDestructiveActions = () =>
+    this.page.locator("h4::-p-text(There are 6 destructive actions planned)");
 
   constructor(page: Page) {
     this.page = page;
@@ -22,5 +24,9 @@ export class StoragePage {
 
   async verifyEncryptionEnabled() {
     await this.enabledDiv().wait();
+  }
+
+  async verifyDecrytDestructiveActions() {
+    await this.decryptDestructiveActions().wait();
   }
 }
