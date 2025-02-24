@@ -874,6 +874,10 @@ class SelectInstallationDevicePage {
         await this.deviceRadio(index).click();
         await this.acceptButton().click();
     }
+    async selectStorageTechs() {
+        await this.storageTechsToggleButton().click();
+        await this.deviceType().click();
+    }
 }
 exports.SelectInstallationDevicePage = SelectInstallationDevicePage;
 

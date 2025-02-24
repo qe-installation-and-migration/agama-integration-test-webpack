@@ -14,6 +14,7 @@ import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { prepareDasdStorage } from "./checks/storage_dasd";
+import { discoverIscsiTargets } from "./checks/iscsi_targets_discover";
 import { setupRootPassword } from "./checks/root_authentication";
 
 // parse options from the command line
@@ -26,7 +27,8 @@ const options = parse((cmd) =>
     )
     .option("--registration-code <code>", "Registration code")
     .option("--install", "Proceed to install the system (the default is not to install it)")
-    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"),
+    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)")
+    .option("--iscsi", "Prepare iscsi storage (the default is not to prepare it)"),
 );
 
 test_init(options);
@@ -38,4 +40,5 @@ setupRootPassword(options.rootPassword);
 if (options.registrationCode) enterRegistration(options.registrationCode);
 createFirstUser(options.password);
 if (options.dasd) prepareDasdStorage();
+if (options.iscsi) discoverIscsiTargets(options.ipAddress);
 if (options.install) performInstallation();

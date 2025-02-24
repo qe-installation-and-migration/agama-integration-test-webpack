@@ -45,29 +45,26 @@ exports.finishInstallation = finishInstallation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
 const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
-const installing_page_1 = __webpack_require__(/*! ../pages/installing_page */ "./src/pages/installing_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 function performInstallation() {
     (0, helpers_1.it)("should start installation", async function () {
         const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
-        const installing = new installing_page_1.InstallingPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToOverview();
         await overview.install();
         await confirmInstallation.continue();
-        await installing.wait();
     });
     (0, helpers_1.it)("should finish installation", async function () {
-        await new congratulation_page_1.CongratulationPage(helpers_1.page).wait(40 * 60 * 1000);
-    }, 40 * 60 * 1000);
+        await new congratulation_page_1.CongratulationPage(helpers_1.page).wait(14 * 60 * 1000);
+    }, 15 * 60 * 1000);
 }
 function finishInstallation() {
     (0, helpers_1.it)("should finish", async function () {
         const congratulation = new congratulation_page_1.CongratulationPage(helpers_1.page);
-        await congratulation.wait(40 * 60 * 1000);
-    }, 40 * 60 * 1000);
+        await congratulation.wait(14 * 60 * 1000);
+    }, 15 * 60 * 1000);
 }
 
 
@@ -503,31 +500,6 @@ exports.CongratulationPage = CongratulationPage;
 
 /***/ }),
 
-/***/ "./src/pages/installing_page.ts":
-/*!**************************************!*\
-  !*** ./src/pages/installing_page.ts ***!
-  \**************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.InstallingPage = void 0;
-class InstallingPage {
-    page;
-    installingTheSystemText = () => this.page.locator("::-p-text(Installing the)");
-    constructor(page) {
-        this.page = page;
-    }
-    async wait() {
-        await this.installingTheSystemText().wait();
-    }
-}
-exports.InstallingPage = InstallingPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/login_as_root_page.ts":
 /*!*****************************************!*\
   !*** ./src/pages/login_as_root_page.ts ***!
@@ -590,24 +562,42 @@ exports.OverviewPage = OverviewPage;
 /*!******************************************************!*\
   !*** ./src/pages/select_installation_device_page.ts ***!
   \******************************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SelectInstallationDevicePage = void 0;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 class SelectInstallationDevicePage {
     page;
     newLvmVolumeGroupInput = () => this.page.locator("::-p-text(A new LVM Volume Group)");
-    selectDiskInput = () => this.page.locator('::-p-aria(Select row 0[role=\\"checkbox\\"])');
+    deviceCheckbox = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
+    deviceRadio = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"radio\\"])`);
+    storageTechsToggleButton = () => this.page.locator("::-p-text('storage techs')");
+    deviceType = () => this.page.locator("a[href='#/storage/dasd']");
     acceptButton = () => this.page.locator("button::-p-text(Accept)");
     constructor(page) {
         this.page = page;
     }
     async installOnNewLvm() {
         await this.newLvmVolumeGroupInput().click();
-        await this.selectDiskInput().click();
+        await this.deviceCheckbox(0).click();
         await this.acceptButton().click();
+    }
+    async prepareDasd() {
+        await this.storageTechsToggleButton().click();
+        await this.deviceType().click();
+    }
+    async selectDevice(index) {
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+        await this.deviceRadio(index).click();
+        await this.acceptButton().click();
+    }
+    async selectStorageTechs() {
+        await this.storageTechsToggleButton().click();
+        await this.deviceType().click();
     }
 }
 exports.SelectInstallationDevicePage = SelectInstallationDevicePage;

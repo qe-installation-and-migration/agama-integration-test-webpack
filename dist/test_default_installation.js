@@ -75,6 +75,41 @@ function finishInstallation() {
 
 /***/ }),
 
+/***/ "./src/checks/iscsi_targets_discover.ts":
+/*!**********************************************!*\
+  !*** ./src/checks/iscsi_targets_discover.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.discoverIscsiTargets = discoverIscsiTargets;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+const select_installation_device_page_1 = __webpack_require__(/*! ../pages/select_installation_device_page */ "./src/pages/select_installation_device_page.ts");
+const iscsi_page_1 = __webpack_require__(/*! ../pages/iscsi_page */ "./src/pages/iscsi_page.ts");
+const discover_iscsi_target_page_1 = __webpack_require__(/*! ../pages/discover_iscsi_target_page */ "./src/pages/discover_iscsi_target_page.ts");
+function discoverIscsiTargets(ipAddress) {
+    (0, helpers_1.it)("should discover iSCSI Targets", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const selectInstallationDevice = new select_installation_device_page_1.SelectInstallationDevicePage(helpers_1.page);
+        const iscsi = new iscsi_page_1.IscsiPage(helpers_1.page);
+        const discoverIscsiTargets = new discover_iscsi_target_page_1.DiscoverIscsiTargetsPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.changeInstallationDevice();
+        await selectInstallationDevice.selectStorageTechs();
+        await iscsi.discoverTargets();
+        await discoverIscsiTargets.fillIpAddress(ipAddress);
+        await discoverIscsiTargets.confirm();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/login.ts":
 /*!*****************************!*\
   !*** ./src/checks/login.ts ***!
@@ -724,6 +759,61 @@ exports.DasdPage = DasdPage;
 
 /***/ }),
 
+/***/ "./src/pages/discover_iscsi_target_page.ts":
+/*!*************************************************!*\
+  !*** ./src/pages/discover_iscsi_target_page.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DiscoverIscsiTargetsPage = void 0;
+class DiscoverIscsiTargetsPage {
+    page;
+    ipAddressInput = () => this.page.locator("input#ipAddress");
+    cancelButton = () => this.page.locator("button::-p-text(Cancel)");
+    confirmButton = () => this.page.locator("button::-p-text(Confirm)");
+    constructor(page) {
+        this.page = page;
+    }
+    async fillIpAddress(ipAddress) {
+        await this.ipAddressInput().fill(ipAddress);
+    }
+    async confirm() {
+        await this.confirmButton().click();
+    }
+}
+exports.DiscoverIscsiTargetsPage = DiscoverIscsiTargetsPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/iscsi_page.ts":
+/*!*********************************!*\
+  !*** ./src/pages/iscsi_page.ts ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.IscsiPage = void 0;
+class IscsiPage {
+    page;
+    discoverIscsiTargetsButton = () => this.page.locator("button::-p-text(DiscoverIscsiTargets)");
+    constructor(page) {
+        this.page = page;
+    }
+    async discoverTargets() {
+        await this.discoverIscsiTargetsButton().click();
+    }
+}
+exports.IscsiPage = IscsiPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/login_as_root_page.ts":
 /*!*****************************************!*\
   !*** ./src/pages/login_as_root_page.ts ***!
@@ -933,6 +1023,10 @@ class SelectInstallationDevicePage {
         await this.deviceRadio(index).click();
         await this.acceptButton().click();
     }
+    async selectStorageTechs() {
+        await this.storageTechsToggleButton().click();
+        await this.deviceType().click();
+    }
 }
 exports.SelectInstallationDevicePage = SelectInstallationDevicePage;
 
@@ -1115,6 +1209,7 @@ const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const storage_dasd_1 = __webpack_require__(/*! ./checks/storage_dasd */ "./src/checks/storage_dasd.ts");
+const iscsi_targets_discover_1 = __webpack_require__(/*! ./checks/iscsi_targets_discover */ "./src/checks/iscsi_targets_discover.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
@@ -1122,7 +1217,8 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
     .option("--registration-code <code>", "Registration code")
     .option("--install", "Proceed to install the system (the default is not to install it)")
-    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
+    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)")
+    .option("--iscsi", "Prepare iscsi storage (the default is not to prepare it)"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
@@ -1136,6 +1232,8 @@ if (options.registrationCode)
 (0, first_user_1.createFirstUser)(options.password);
 if (options.dasd)
     (0, storage_dasd_1.prepareDasdStorage)();
+if (options.iscsi)
+    (0, iscsi_targets_discover_1.discoverIscsiTargets)(options.ipAddress);
 if (options.install)
     (0, installation_1.performInstallation)();
 
