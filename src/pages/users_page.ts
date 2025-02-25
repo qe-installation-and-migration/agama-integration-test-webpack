@@ -3,7 +3,9 @@ import { type Page } from "puppeteer-core";
 export class UsersPage {
   private readonly page: Page;
   private readonly firstUserLink = () => this.page.locator("a[href='#/users/first']");
-  private readonly setAPasswordButton = () => this.page.locator("button::-p-text(Set a password)");
+  private readonly editRootUserButton = () => this.page.locator("a[href='#/users/root/edit']");
+  private readonly defineTheFirstUserButton = () =>
+    this.page.locator("a[href='#/users/first/edit']");
 
   constructor(page: Page) {
     this.page = page;
@@ -13,7 +15,11 @@ export class UsersPage {
     await this.firstUserLink().click();
   }
 
-  async setAPassword() {
-    await this.setAPasswordButton().click();
+  async editRootUser() {
+    await this.editRootUserButton().click();
+  }
+
+  async defineTheFirstUser() {
+    await this.defineTheFirstUserButton().click();
   }
 }
