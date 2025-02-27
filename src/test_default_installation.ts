@@ -9,12 +9,12 @@ import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
 import { createFirstUser } from "./checks/first_user";
+import { editRootUser } from "./checks/root_authentication";
 import { enterRegistration } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { prepareDasdStorage } from "./checks/storage_dasd";
-import { setupRootPassword } from "./checks/root_authentication";
 
 // parse options from the command line
 const options = parse((cmd) =>
@@ -34,8 +34,8 @@ logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
-setupRootPassword(options.rootPassword);
 if (options.registrationCode) enterRegistration(options.registrationCode);
 createFirstUser(options.password);
+editRootUser(options.rootPassword);
 if (options.dasd) prepareDasdStorage();
 if (options.install) performInstallation();

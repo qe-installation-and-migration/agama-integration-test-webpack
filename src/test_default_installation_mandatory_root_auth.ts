@@ -6,32 +6,36 @@
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 
 import { parse } from "./lib/cmdline";
-import { Option } from "commander";
-import { test_init, ProductId } from "./lib/helpers";
+import { test_init } from "./lib/helpers";
 
-import { logIn } from "./checks/login";
 import { createFirstUser } from "./checks/first_user";
+import { enterRegistration } from "./checks/registration";
+import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
+import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { prepareDasdStorage } from "./checks/storage_dasd";
-import { productSelectionByName } from "./checks/product_selection";
-import { setupRootPasswordAtALaterStage } from "./checks/root_authentication";
+import { setupMandatoryRootAuth } from "./checks/root_authentication";
 
 // parse options from the command line
 const options = parse((cmd) =>
   cmd
-    .addOption(
-      new Option("--product-id <id>", "Product id to select a product to install")
-        .choices(Object.keys(ProductId))
-        .default("none"),
+    .option("--product-id <id>", "Product id to select a product to install", "none")
+    .option(
+      "--accept-license",
+      "Accept license for a product with license (the default is a product without license)",
     )
+    .option("--registration-code <code>", "Registration code")
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"),
 );
 
 test_init(options);
 logIn(options.password);
-if (options.productId !== "none") productSelectionByName(ProductId[options.productId]);
+if (options.productId !== "none")
+  if (options.acceptLicense) productSelectionWithLicense(options.productId);
+  else productSelection(options.productId);
+setupMandatoryRootAuth(options.rootPassword);
+if (options.registrationCode) enterRegistration(options.registrationCode);
 createFirstUser(options.password);
-setupRootPasswordAtALaterStage(options.password);
 if (options.dasd) prepareDasdStorage();
 if (options.install) performInstallation();

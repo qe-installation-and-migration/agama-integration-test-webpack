@@ -147,6 +147,36 @@ function productSelectionWithLicense(productId) {
 
 /***/ }),
 
+/***/ "./src/checks/registration.ts":
+/*!************************************!*\
+  !*** ./src/checks/registration.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.enterRegistration = enterRegistration;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const registration_enter_code_page_1 = __webpack_require__(/*! ../pages/registration_enter_code_page */ "./src/pages/registration_enter_code_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+function enterRegistration(code) {
+    (0, helpers_1.it)("should allow setting registration", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const registration = new registration_enter_code_page_1.RegistrationEnterCodePage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await registration.fillCode(code);
+        await registration.register();
+    });
+    (0, helpers_1.it)("should not display option to register in Overview", async function () {
+        await new overview_page_1.OverviewPage(helpers_1.page).waitWarningAlertToDisappear();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/root_authentication.ts":
 /*!*******************************************!*\
   !*** ./src/checks/root_authentication.ts ***!
@@ -156,28 +186,29 @@ function productSelectionWithLicense(productId) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setupRootPasswordAtALaterStage = setupRootPasswordAtALaterStage;
-exports.setupRootPassword = setupRootPassword;
+exports.editRootUser = editRootUser;
+exports.setupMandatoryRootAuth = setupMandatoryRootAuth;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const setup_root_user_authentication_page_1 = __webpack_require__(/*! ../pages/setup_root_user_authentication_page */ "./src/pages/setup_root_user_authentication_page.ts");
-const root_password_page_1 = __webpack_require__(/*! ../pages/root_password_page */ "./src/pages/root_password_page.ts");
+const root_authentication_methods_1 = __webpack_require__(/*! ../pages/root_authentication_methods */ "./src/pages/root_authentication_methods.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
-function setupRootPasswordAtALaterStage(password) {
-    (0, helpers_1.it)("should allow setting the root password", async function () {
+function editRootUser(password) {
+    (0, helpers_1.it)("should edit the root user", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         const users = new users_page_1.UsersPage(helpers_1.page);
-        const setARootPassword = new root_password_page_1.SetARootPasswordPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
         await sidebar.goToUsers();
-        await users.setAPassword();
+        await users.editRootUser();
+        await setARootPassword.usePassword();
         await setARootPassword.fillPassword(password);
         await setARootPassword.fillPasswordConfirmation(password);
-        await setARootPassword.confirm();
+        await setARootPassword.accept();
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
         await (0, helpers_1.sleep)(2000);
     });
 }
-function setupRootPassword(password) {
+function setupMandatoryRootAuth(password) {
     (0, helpers_1.it)("should setup root user authentication password", async function () {
         const setupRootuserAuthentication = new setup_root_user_authentication_page_1.SetupRootUserAuthenticationPage(helpers_1.page);
         // longer timeout to refresh repos when coming from product selection
@@ -735,13 +766,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OverviewPage = void 0;
 class OverviewPage {
     page;
-    warningAlert = () => this.page.locator("::-p-text(Warning alert)");
     installButton = () => this.page.locator("button::-p-text(Install)");
+    mustBeRegisteredText = () => this.page.locator("::-p-text(must be registered)");
     constructor(page) {
         this.page = page;
     }
     async waitWarningAlertToDisappear() {
-        await this.warningAlert().setVisibility("hidden").wait();
+        await this.mustBeRegisteredText().setVisibility("hidden").wait();
     }
     async install() {
         await this.installButton().click();
@@ -804,10 +835,39 @@ exports.ProductSelectionWithRegistrationPage = ProductSelectionWithRegistrationP
 
 /***/ }),
 
-/***/ "./src/pages/root_password_page.ts":
-/*!*****************************************!*\
-  !*** ./src/pages/root_password_page.ts ***!
-  \*****************************************/
+/***/ "./src/pages/registration_enter_code_page.ts":
+/*!***************************************************!*\
+  !*** ./src/pages/registration_enter_code_page.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RegistrationEnterCodePage = void 0;
+class RegistrationEnterCodePage {
+    page;
+    codeInput = () => this.page.locator("input#key");
+    registertButton = () => this.page.locator("button[form='productRegistration']");
+    constructor(page) {
+        this.page = page;
+    }
+    async fillCode(code) {
+        await this.codeInput().fill(code);
+    }
+    async register() {
+        await this.registertButton().click();
+    }
+}
+exports.RegistrationEnterCodePage = RegistrationEnterCodePage;
+
+
+/***/ }),
+
+/***/ "./src/pages/root_authentication_methods.ts":
+/*!**************************************************!*\
+  !*** ./src/pages/root_authentication_methods.ts ***!
+  \**************************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -816,11 +876,19 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SetARootPasswordPage = void 0;
 class SetARootPasswordPage {
     page;
+    acceptText = () => this.page.locator("button::-p-text(Accept)");
+    confirmText = () => this.page.locator("button::-p-text(Confirm)");
     passwordInput = () => this.page.locator("input#password");
     passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
-    confirmText = () => this.page.locator("button::-p-text(Confirm)");
+    usePasswordToggle = () => this.page.locator("::-p-text(Use password)");
     constructor(page) {
         this.page = page;
+    }
+    async accept() {
+        await this.acceptText().click();
+    }
+    async confirm() {
+        await this.confirmText().click();
     }
     async fillPassword(password) {
         await this.passwordInput().fill(password);
@@ -828,8 +896,8 @@ class SetARootPasswordPage {
     async fillPasswordConfirmation(password) {
         await this.passwordConfirmationInput().fill(password);
     }
-    async confirm() {
-        await this.confirmText().click();
+    async usePassword() {
+        await this.usePasswordToggle().click();
     }
 }
 exports.SetARootPasswordPage = SetARootPasswordPage;
@@ -1018,15 +1086,19 @@ exports.UsersPage = void 0;
 class UsersPage {
     page;
     firstUserLink = () => this.page.locator("a[href='#/users/first']");
-    setAPasswordButton = () => this.page.locator("button::-p-text(Set a password)");
+    editRootUserButton = () => this.page.locator("a[href='#/users/root/edit']");
+    defineTheFirstUserButton = () => this.page.locator("a[href='#/users/first/edit']");
     constructor(page) {
         this.page = page;
     }
     async defineAUserNow() {
         await this.firstUserLink().click();
     }
-    async setAPassword() {
-        await this.setAPasswordButton().click();
+    async editRootUser() {
+        await this.editRootUserButton().click();
+    }
+    async defineTheFirstUser() {
+        await this.defineTheFirstUserButton().click();
     }
 }
 exports.UsersPage = UsersPage;
@@ -1034,10 +1106,10 @@ exports.UsersPage = UsersPage;
 
 /***/ }),
 
-/***/ "./src/test_default_installation_root_auth_later.ts":
-/*!**********************************************************!*\
-  !*** ./src/test_default_installation_root_auth_later.ts ***!
-  \**********************************************************/
+/***/ "./src/test_default_installation_mandatory_root_auth.ts":
+/*!**************************************************************!*\
+  !*** ./src/test_default_installation_mandatory_root_auth.ts ***!
+  \**************************************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -1049,27 +1121,32 @@ exports.UsersPage = UsersPage;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
-const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
-const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
+const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
+const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
-const storage_dasd_1 = __webpack_require__(/*! ./checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
+const storage_dasd_1 = __webpack_require__(/*! ./checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
-    .addOption(new commander_1.Option("--product-id <id>", "Product id to select a product to install")
-    .choices(Object.keys(helpers_1.ProductId))
-    .default("none"))
+    .option("--product-id <id>", "Product id to select a product to install", "none")
+    .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
+    .option("--registration-code <code>", "Registration code")
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
-    (0, product_selection_1.productSelectionByName)(helpers_1.ProductId[options.productId]);
+    if (options.acceptLicense)
+        (0, product_selection_1.productSelectionWithLicense)(options.productId);
+    else
+        (0, product_selection_1.productSelection)(options.productId);
+(0, root_authentication_1.setupMandatoryRootAuth)(options.rootPassword);
+if (options.registrationCode)
+    (0, registration_1.enterRegistration)(options.registrationCode);
 (0, first_user_1.createFirstUser)(options.password);
-(0, root_authentication_1.setupRootPasswordAtALaterStage)(options.password);
 if (options.dasd)
     (0, storage_dasd_1.prepareDasdStorage)();
 if (options.install)
@@ -1460,7 +1537,7 @@ module.exports = require("zlib");
 /******/ 	// the startup function
 /******/ 	__webpack_require__.x = () => {
 /******/ 		// Load entry module and return exports
-/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_default_installation_root_auth_later.ts")))
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_default_installation_mandatory_root_auth.ts")))
 /******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 		return __webpack_exports__;
 /******/ 	};
@@ -1564,7 +1641,7 @@ module.exports = require("zlib");
 /******/ 		// object to store loaded chunks
 /******/ 		// "1" means "loaded", otherwise not loaded yet
 /******/ 		var installedChunks = {
-/******/ 			"test_default_installation_root_auth_later": 1
+/******/ 			"test_default_installation_mandatory_root_auth": 1
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.O.require = (chunkId) => (installedChunks[chunkId]);
@@ -1616,4 +1693,4 @@ module.exports = require("zlib");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=test_default_installation_root_auth_later.js.map
+//# sourceMappingURL=test_default_installation_mandatory_root_auth.js.map
