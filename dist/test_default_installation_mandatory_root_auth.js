@@ -1053,19 +1053,19 @@ exports.StoragePage = void 0;
 class StoragePage {
     page;
     changeInstallationDeviceButton = () => this.page.locator("a[href='#/storage/target-device']");
-    enableButton = () => this.page.locator("button::-p-text(Enable)");
-    enabledDiv = () => this.page.locator("div::-p-text(enabled)");
+    editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
+    encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     constructor(page) {
         this.page = page;
-    }
-    async enableEncryption() {
-        await this.enableButton().click();
     }
     async changeInstallationDevice() {
         await this.changeInstallationDeviceButton().click();
     }
+    async editEncryption() {
+        await this.editEncryptionButton().click();
+    }
     async verifyEncryptionEnabled() {
-        await this.enabledDiv().wait();
+        await this.encryptionIsEnabledText().wait();
     }
 }
 exports.StoragePage = StoragePage;
