@@ -13,17 +13,20 @@
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enableEncryption = enableEncryption;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const encryption_settings_page_1 = __webpack_require__(/*! ../pages/encryption_settings_page */ "./src/pages/encryption_settings_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_encryption_page_1 = __webpack_require__(/*! ../pages/storage_encryption_page */ "./src/pages/storage_encryption_page.ts");
 const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
 function enableEncryption(password) {
     (0, helpers_1.it)("should enable encryption", async function () {
         const storage = new storage_page_1.StoragePage(helpers_1.page);
-        const storageEncryption = new storage_encryption_page_1.StorageEncryptionPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.enableEncryption();
-        await storageEncryption.encrypt(password);
+        await storage.editEncryption();
+        await encryptionSettings.encryptTheSystem();
+        await encryptionSettings.fillPassword(password);
+        await encryptionSettings.fillPasswordConfirmation(password);
+        await encryptionSettings.accept();
         await storage.verifyEncryptionEnabled();
     });
 }
@@ -500,6 +503,43 @@ exports.CongratulationPage = CongratulationPage;
 
 /***/ }),
 
+/***/ "./src/pages/encryption_settings_page.ts":
+/*!***********************************************!*\
+  !*** ./src/pages/encryption_settings_page.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EncryptionSettingsPage = void 0;
+class EncryptionSettingsPage {
+    page;
+    encryptTheSystemToggle = () => this.page.locator("::-p-text(Encrypt the system)");
+    passwordInput = () => this.page.locator("#password");
+    passwordConfirmationInput = () => this.page.locator("#passwordConfirmation");
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async encryptTheSystem() {
+        await this.encryptTheSystemToggle().click();
+    }
+    async fillPassword(password) {
+        await this.passwordInput().fill(password);
+    }
+    async fillPasswordConfirmation(password) {
+        await this.passwordConfirmationInput().fill(password);
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.EncryptionSettingsPage = EncryptionSettingsPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/login_as_root_page.ts":
 /*!*****************************************!*\
   !*** ./src/pages/login_as_root_page.ts ***!
@@ -661,37 +701,6 @@ exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 /***/ }),
 
-/***/ "./src/pages/storage_encryption_page.ts":
-/*!**********************************************!*\
-  !*** ./src/pages/storage_encryption_page.ts ***!
-  \**********************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StorageEncryptionPage = void 0;
-class StorageEncryptionPage {
-    page;
-    encryptTheSystemCheckbox = () => this.page.locator("label[class='pf-v5-c-switch'] > input[type='checkbox']");
-    passwordInput = () => this.page.locator("#password");
-    passwordConfirmationInput = () => this.page.locator("#passwordConfirmation");
-    acceptButton = () => this.page.locator("button::-p-text(Accept)");
-    constructor(page) {
-        this.page = page;
-    }
-    async encrypt(password) {
-        await this.encryptTheSystemCheckbox().click();
-        await this.passwordInput().fill(password);
-        await this.passwordConfirmationInput().fill(password);
-        await this.acceptButton().click();
-    }
-}
-exports.StorageEncryptionPage = StorageEncryptionPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/storage_page.ts":
 /*!***********************************!*\
   !*** ./src/pages/storage_page.ts ***!
@@ -705,19 +714,19 @@ exports.StoragePage = void 0;
 class StoragePage {
     page;
     changeInstallationDeviceButton = () => this.page.locator("a[href='#/storage/target-device']");
-    enableButton = () => this.page.locator("button::-p-text(Enable)");
-    enabledDiv = () => this.page.locator("div::-p-text(enabled)");
+    editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
+    encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     constructor(page) {
         this.page = page;
-    }
-    async enableEncryption() {
-        await this.enableButton().click();
     }
     async changeInstallationDevice() {
         await this.changeInstallationDeviceButton().click();
     }
+    async editEncryption() {
+        await this.editEncryptionButton().click();
+    }
     async verifyEncryptionEnabled() {
-        await this.enabledDiv().wait();
+        await this.encryptionIsEnabledText().wait();
     }
 }
 exports.StoragePage = StoragePage;

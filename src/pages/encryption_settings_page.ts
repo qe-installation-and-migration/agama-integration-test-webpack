@@ -1,9 +1,9 @@
 import { type Page } from "puppeteer-core";
 
-export class StorageEncryptionPage {
+export class EncryptionSettingsPage {
   private readonly page: Page;
-  private readonly encryptTheSystemCheckbox = () =>
-    this.page.locator("label[class='pf-v5-c-switch'] > input[type='checkbox']");
+  private readonly encryptTheSystemToggle = () =>
+    this.page.locator("::-p-text(Encrypt the system)");
 
   private readonly passwordInput = () => this.page.locator("#password");
   private readonly passwordConfirmationInput = () => this.page.locator("#passwordConfirmation");
@@ -13,10 +13,19 @@ export class StorageEncryptionPage {
     this.page = page;
   }
 
-  async encrypt(password: string) {
-    await this.encryptTheSystemCheckbox().click();
+  async encryptTheSystem() {
+    await this.encryptTheSystemToggle().click();
+  }
+
+  async fillPassword(password: string) {
     await this.passwordInput().fill(password);
+  }
+
+  async fillPasswordConfirmation(password: string) {
     await this.passwordConfirmationInput().fill(password);
+  }
+
+  async accept() {
     await this.acceptButton().click();
   }
 }
