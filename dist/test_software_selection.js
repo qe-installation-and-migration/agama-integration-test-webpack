@@ -80,19 +80,20 @@ function logIn(password) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.selectSinglePattern = selectSinglePattern;
+exports.selectPatterns = selectPatterns;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const software_page_1 = __webpack_require__(/*! ../pages/software_page */ "./src/pages/software_page.ts");
 const software_selection_page_1 = __webpack_require__(/*! ../pages/software_selection_page */ "./src/pages/software_selection_page.ts");
-function selectSinglePattern(pattern) {
-    (0, helpers_1.it)(`should select pattern ${pattern}`, async function () {
+function selectPatterns(patterns) {
+    (0, helpers_1.it)(`should select patterns ${patterns.join(", ")}`, async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         const software = new software_page_1.SoftwarePage(helpers_1.page);
         const softwareSelection = new software_selection_page_1.SoftwareSelectionPage(helpers_1.page);
         await sidebar.goToSoftware();
         await software.changeSelection();
-        await softwareSelection.selectPattern(pattern);
+        for (const pattern of patterns)
+            await softwareSelection.selectPattern(pattern);
         await softwareSelection.close();
     });
 }
@@ -142,6 +143,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.commaSeparatedList = commaSeparatedList;
 exports.parse = parse;
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const commander = __importStar(__webpack_require__(/*! commander */ "./node_modules/commander/index.js"));
@@ -154,6 +156,9 @@ function getInt(value) {
         throw new commander.InvalidArgumentError("Enter a valid number.");
     }
     return parsed;
+}
+function commaSeparatedList(value) {
+    return value.split(',');
 }
 /**
  * Parse command line options. When an invalid command line option is used the script aborts.
@@ -627,13 +632,19 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoftwareSelectionPage = void 0;
 class SoftwareSelectionPage {
     page;
-    patternText = (pattern) => this.page.locator(`::-p-aria(Select ${pattern})`);
+    patternCheckbox = (pattern) => this.page.locator(`input[type=checkbox][rowid=${pattern}-title]`);
     closeButton = () => this.page.locator("::-p-text(Close)");
     constructor(page) {
         this.page = page;
     }
     async selectPattern(pattern) {
-        await this.patternText(pattern).click();
+        await this.patternCheckbox(pattern)
+            .filter((input) => !input.checked)
+            .click();
+        // ensure selection due to puppeteer might go too fast
+        await this.patternCheckbox(pattern)
+            .filter((input) => input.checked)
+            .wait();
     }
     async close() {
         await this.closeButton().click();
@@ -644,10 +655,10 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 
 /***/ }),
 
-/***/ "./src/test_graphical_environment.ts":
-/*!*******************************************!*\
-  !*** ./src/test_graphical_environment.ts ***!
-  \*******************************************/
+/***/ "./src/test_software_selection.ts":
+/*!****************************************!*\
+  !*** ./src/test_software_selection.ts ***!
+  \****************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -659,20 +670,18 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
-const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const software_selection_1 = __webpack_require__(/*! ./checks/software_selection */ "./src/checks/software_selection.ts");
+const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
-    .addOption(new commander_1.Option("--desktop <name>", "Desktop to install")
-    .choices(Object.keys(helpers_1.Desktop))
-    .default("none"))
+    .option("--patterns <pattern>...", "comma-separated list of patterns", cmdline_1.commaSeparatedList)
     .option("--install", "Proceed to install the system (the default is not to install it)"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
-(0, software_selection_1.selectSinglePattern)(helpers_1.Desktop[options.desktop]);
+if (options.patterns)
+    (0, software_selection_1.selectPatterns)(options.patterns);
 if (options.install)
     (0, installation_1.performInstallation)();
 
@@ -1061,7 +1070,7 @@ module.exports = require("zlib");
 /******/ 	// the startup function
 /******/ 	__webpack_require__.x = () => {
 /******/ 		// Load entry module and return exports
-/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_graphical_environment.ts")))
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_software_selection.ts")))
 /******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 		return __webpack_exports__;
 /******/ 	};
@@ -1165,7 +1174,7 @@ module.exports = require("zlib");
 /******/ 		// object to store loaded chunks
 /******/ 		// "1" means "loaded", otherwise not loaded yet
 /******/ 		var installedChunks = {
-/******/ 			"test_graphical_environment": 1
+/******/ 			"test_software_selection": 1
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.O.require = (chunkId) => (installedChunks[chunkId]);
@@ -1217,4 +1226,4 @@ module.exports = require("zlib");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=test_graphical_environment.js.map
+//# sourceMappingURL=test_software_selection.js.map
