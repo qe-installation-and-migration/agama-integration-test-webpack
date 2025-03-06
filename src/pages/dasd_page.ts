@@ -9,10 +9,9 @@ export class DasdPage {
   private readonly performAnActionToggleButton = () =>
     this.page.locator("::-p-text('Perform an action')");
 
-  private readonly activateDisk = () => this.page.locator("::-p-text('Activate')");
+  private readonly activateDisk = () => this.page.locator("::-p-text(Activate)");
 
-  private readonly backToDeviceSelectionButton = () =>
-    this.page.locator("button::-p-text(Back to device selection)");
+  private readonly backButton = () => this.page.locator("button::-p-text(Back)");
 
   constructor(page: Page) {
     this.page = page;
@@ -24,7 +23,7 @@ export class DasdPage {
     await this.activateDisk().click();
   }
 
-  async backToDeviceSelection() {
-    await this.backToDeviceSelectionButton().click();
+  async back() {
+    await this.backButton().click();
   }
 }

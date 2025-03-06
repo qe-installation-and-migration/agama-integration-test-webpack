@@ -9,6 +9,8 @@ export class StoragePage {
   private readonly encryptionIsEnabledText = () =>
     this.page.locator("::-p-text(Encryption is enabled)");
 
+  private readonly manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
+
   constructor(page: Page) {
     this.page = page;
   }
@@ -23,5 +25,9 @@ export class StoragePage {
 
   async verifyEncryptionEnabled() {
     await this.encryptionIsEnabledText().wait();
+  }
+
+  async manageDasd() {
+    await this.manageDasdLink().click();
   }
 }

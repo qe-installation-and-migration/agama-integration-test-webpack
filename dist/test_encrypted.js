@@ -645,6 +645,7 @@ class StoragePage {
     changeInstallationDeviceButton = () => this.page.locator("a[href='#/storage/target-device']");
     editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
+    manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     constructor(page) {
         this.page = page;
     }
@@ -656,6 +657,9 @@ class StoragePage {
     }
     async verifyEncryptionEnabled() {
         await this.encryptionIsEnabledText().wait();
+    }
+    async manageDasd() {
+        await this.manageDasdLink().click();
     }
 }
 exports.StoragePage = StoragePage;
