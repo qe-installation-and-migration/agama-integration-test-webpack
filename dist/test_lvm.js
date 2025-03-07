@@ -84,20 +84,18 @@ exports.prepareDasdStorage = prepareDasdStorage;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
-const select_installation_device_page_1 = __webpack_require__(/*! ../pages/select_installation_device_page */ "./src/pages/select_installation_device_page.ts");
 const dasd_page_1 = __webpack_require__(/*! ../pages/dasd_page */ "./src/pages/dasd_page.ts");
 function prepareDasdStorage() {
     (0, helpers_1.it)("should prepare DASD storage", async function () {
         const storage = new storage_page_1.StoragePage(helpers_1.page);
-        const selectInstallationDevice = new select_installation_device_page_1.SelectInstallationDevicePage(helpers_1.page);
         const dasd = new dasd_page_1.DasdPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.changeInstallationDevice();
-        await selectInstallationDevice.prepareDasd();
+        await storage.manageDasd();
         await dasd.activateDevice();
-        await dasd.backToDeviceSelection();
-        await selectInstallationDevice.selectDevice(0);
+        await dasd.back();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
     });
 }
 
@@ -518,8 +516,8 @@ class DasdPage {
     page;
     selectRow = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
     performAnActionToggleButton = () => this.page.locator("::-p-text('Perform an action')");
-    activateDisk = () => this.page.locator("::-p-text('Activate')");
-    backToDeviceSelectionButton = () => this.page.locator("button::-p-text(Back to device selection)");
+    activateDisk = () => this.page.locator("::-p-text(Activate)");
+    backButton = () => this.page.locator("button::-p-text(Back)");
     constructor(page) {
         this.page = page;
     }
@@ -528,8 +526,8 @@ class DasdPage {
         await this.performAnActionToggleButton().click();
         await this.activateDisk().click();
     }
-    async backToDeviceSelection() {
-        await this.backToDeviceSelectionButton().click();
+    async back() {
+        await this.backButton().click();
     }
 }
 exports.DasdPage = DasdPage;
@@ -713,6 +711,7 @@ class StoragePage {
     changeInstallationDeviceButton = () => this.page.locator("a[href='#/storage/target-device']");
     editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
+    manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     constructor(page) {
         this.page = page;
     }
@@ -724,6 +723,9 @@ class StoragePage {
     }
     async verifyEncryptionEnabled() {
         await this.encryptionIsEnabledText().wait();
+    }
+    async manageDasd() {
+        await this.manageDasdLink().click();
     }
 }
 exports.StoragePage = StoragePage;
