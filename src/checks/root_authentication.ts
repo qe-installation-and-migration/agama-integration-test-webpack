@@ -15,6 +15,8 @@ export function editRootUser(password: string) {
     await setARootPassword.usePassword();
     await setARootPassword.fillPassword(password);
     await setARootPassword.fillPasswordConfirmation(password);
+    await setARootPassword.usePublicKey();
+    await setARootPassword.fillSshKey("test");
     await setARootPassword.accept();
     // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
     await sleep(2000);

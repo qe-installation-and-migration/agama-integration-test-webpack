@@ -217,6 +217,8 @@ function editRootUser(password) {
         await setARootPassword.usePassword();
         await setARootPassword.fillPassword(password);
         await setARootPassword.fillPasswordConfirmation(password);
+        await setARootPassword.usePublicKey();
+        await setARootPassword.fillSshKey("test");
         await setARootPassword.accept();
         // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
         await (0, helpers_1.sleep)(2000);
@@ -900,8 +902,10 @@ class SetARootPasswordPage {
     acceptText = () => this.page.locator("button::-p-text(Accept)");
     confirmText = () => this.page.locator("button::-p-text(Confirm)");
     passwordInput = () => this.page.locator("input#password");
+    sshKeyInput = () => this.page.locator("textarea#sshkey");
     passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
     usePasswordToggle = () => this.page.locator("::-p-text(Use password)");
+    usePublicKeyToggle = () => this.page.locator("::-p-text(Use public SSH Key)");
     constructor(page) {
         this.page = page;
     }
@@ -919,6 +923,12 @@ class SetARootPasswordPage {
     }
     async usePassword() {
         await this.usePasswordToggle().click();
+    }
+    async usePublicKey() {
+        await this.usePublicKeyToggle().click();
+    }
+    async fillSshKey(key) {
+        await this.sshKeyInput().fill(key);
     }
 }
 exports.SetARootPasswordPage = SetARootPasswordPage;
