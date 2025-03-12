@@ -4,7 +4,9 @@ import { type GConstructor } from "../lib/helpers";
 export class ProductSelectionPage {
   protected readonly page: Page;
   protected readonly productText = (name: string) => this.page.locator(`::-p-text(${name})`);
-  protected readonly productId = (id: string) => this.page.locator(`input#${id}`);
+  protected readonly productId = (id: string) =>
+    this.page.locator("input#" + id.replaceAll(".", "\\."));
+
   protected readonly selectButton = () => this.page.locator("button[form='productSelectionForm']");
 
   constructor(page: Page) {
