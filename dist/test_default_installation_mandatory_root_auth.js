@@ -808,7 +808,7 @@ exports.ProductSelectionWithRegistrationPage = exports.ProductSelectionPage = vo
 class ProductSelectionPage {
     page;
     productText = (name) => this.page.locator(`::-p-text(${name})`);
-    productId = (id) => this.page.locator(`input#${id}`);
+    productId = (id) => this.page.locator("input#" + id.replaceAll(".", "\\."));
     selectButton = () => this.page.locator("button[form='productSelectionForm']");
     constructor(page) {
         this.page = page;
