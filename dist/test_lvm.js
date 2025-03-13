@@ -597,20 +597,21 @@ exports.OverviewPage = OverviewPage;
 /*!******************************************************!*\
   !*** ./src/pages/select_installation_device_page.ts ***!
   \******************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SelectInstallationDevicePage = void 0;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 class SelectInstallationDevicePage {
     page;
     newLvmVolumeGroupInput = () => this.page.locator("::-p-text(A new LVM Volume Group)");
     deviceCheckbox = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
-    deviceRadio = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"radio\\"])`);
+    deviceSelectButton = () => this.page.locator("::-p-aria(Drive)");
+    deviceSelector = (name) => this.page.locator(`::-p-text(${name})`);
     storageTechsToggleButton = () => this.page.locator("::-p-text('storage techs')");
-    deviceType = () => this.page.locator("a[href='#/storage/dasd']");
+    deviceTypeDasdLink = () => this.page.locator("a[href='#/storage/dasd']");
+    deviceTypeZfcpLink = () => this.page.locator("a[href='#/storage/zfcp']");
     acceptButton = () => this.page.locator("button::-p-text(Accept)");
     constructor(page) {
         this.page = page;
@@ -622,13 +623,15 @@ class SelectInstallationDevicePage {
     }
     async prepareDasd() {
         await this.storageTechsToggleButton().click();
-        await this.deviceType().click();
+        await this.deviceTypeDasdLink().click();
     }
-    async selectDevice(index) {
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
-        await this.deviceRadio(index).click();
-        await this.acceptButton().click();
+    async prepareZfcp() {
+        await this.storageTechsToggleButton().click();
+        await this.deviceTypeZfcpLink().click();
+    }
+    async selectDevice(name) {
+        this.deviceSelectButton().click();
+        this.deviceSelector(name).click();
     }
 }
 exports.SelectInstallationDevicePage = SelectInstallationDevicePage;
@@ -712,6 +715,7 @@ class StoragePage {
     editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
+    ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
     constructor(page) {
         this.page = page;
     }
@@ -726,6 +730,12 @@ class StoragePage {
     }
     async manageDasd() {
         await this.manageDasdLink().click();
+    }
+    async activateZfcp() {
+        await this.ActivateZfcpLink().click();
+    }
+    async waitForElement(element, timeout) {
+        await this.page.locator(element).setTimeout(timeout).wait();
     }
 }
 exports.StoragePage = StoragePage;
