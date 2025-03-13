@@ -646,6 +646,7 @@ class StoragePage {
     editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
+    ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
     constructor(page) {
         this.page = page;
     }
@@ -660,6 +661,12 @@ class StoragePage {
     }
     async manageDasd() {
         await this.manageDasdLink().click();
+    }
+    async activateZfcp() {
+        await this.ActivateZfcpLink().click();
+    }
+    async waitForElement(element, timeout) {
+        await this.page.locator(element).setTimeout(timeout).wait();
     }
 }
 exports.StoragePage = StoragePage;

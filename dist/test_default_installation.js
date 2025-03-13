@@ -266,6 +266,39 @@ function prepareDasdStorage() {
 
 /***/ }),
 
+/***/ "./src/checks/storage_zfcp.ts":
+/*!************************************!*\
+  !*** ./src/checks/storage_zfcp.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.prepareZfcpStorage = prepareZfcpStorage;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
+function prepareZfcpStorage() {
+    (0, helpers_1.it)("should prepare zFCP storage", async function () {
+        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.activateZfcp();
+        await zfcp.activateDevice("0.0.fa00");
+        await zfcp.activateDevice("0.0.fc00");
+        await zfcp.back();
+        await zfcp.activateMultipath();
+        // Workaround to wait for page to load, sometimes workers take more than 60 seconds to load storage
+        await storage.waitForElement("::-p-text(Activate zFCP disks)", 80000);
+    }, 3 * 60 * 1000);
+}
+
+
+/***/ }),
+
 /***/ "./src/lib/cmdline.ts":
 /*!****************************!*\
   !*** ./src/lib/cmdline.ts ***!
@@ -1034,6 +1067,7 @@ class StoragePage {
     editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
+    ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
     constructor(page) {
         this.page = page;
     }
@@ -1048,6 +1082,12 @@ class StoragePage {
     }
     async manageDasd() {
         await this.manageDasdLink().click();
+    }
+    async activateZfcp() {
+        await this.ActivateZfcpLink().click();
+    }
+    async waitForElement(element, timeout) {
+        await this.page.locator(element).setTimeout(timeout).wait();
     }
 }
 exports.StoragePage = StoragePage;
@@ -1088,6 +1128,49 @@ exports.UsersPage = UsersPage;
 
 /***/ }),
 
+/***/ "./src/pages/zfcp_page.ts":
+/*!********************************!*\
+  !*** ./src/pages/zfcp_page.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ZfcpPage = void 0;
+class ZfcpPage {
+    page;
+    faDisk = () => this.page.locator("tbody > tr:first-child > td:last-child > button#zfcp_controllers_actions");
+    fcDisk = () => this.page.locator("tbody > tr:last-child > td:last-child > button#zfcp_controllers_actions");
+    activateDisk = () => this.page.locator("::-p-aria(Activate[role='menuitem'])");
+    backButton = () => this.page.locator("button::-p-text(Back)");
+    enableMultipath = () => this.page.locator("::-p-text('Yes')");
+    constructor(page) {
+        this.page = page;
+    }
+    async activateDevice(channelId) {
+        let element;
+        if (channelId === "0.0.fa00")
+            element = this.faDisk();
+        else
+            element = this.fcDisk();
+        await element.click();
+        await this.activateDisk().click();
+        await this.page.locator("::-p-text(WWPN)");
+        await element.setTimeout(90000).wait();
+    }
+    async activateMultipath() {
+        await this.enableMultipath().setTimeout(40000).click();
+    }
+    async back() {
+        await this.backButton().click();
+    }
+}
+exports.ZfcpPage = ZfcpPage;
+
+
+/***/ }),
+
 /***/ "./src/test_default_installation.ts":
 /*!******************************************!*\
   !*** ./src/test_default_installation.ts ***!
@@ -1104,6 +1187,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
+const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
@@ -1111,13 +1195,14 @@ const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const storage_dasd_1 = __webpack_require__(/*! ./checks/storage_dasd */ "./src/checks/storage_dasd.ts");
+const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
     .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
     .option("--registration-code <code>", "Registration code")
     .option("--install", "Proceed to install the system (the default is not to install it)")
-    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)"));
+    .addOption(new commander_1.Option("--prepare-advanced-storage <storage-type>", "Prepare advance storage for installation").choices(["dasd", "zfcp"])));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
@@ -1131,6 +1216,10 @@ if (options.registrationCode)
 (0, root_authentication_1.editRootUser)(options.rootPassword);
 if (options.dasd)
     (0, storage_dasd_1.prepareDasdStorage)();
+if (options.prepareAdvancedStorage === "dasd")
+    (0, storage_dasd_1.prepareDasdStorage)();
+else if (options.prepareAdvancedStorage === "zfcp")
+    (0, storage_zfcp_1.prepareZfcpStorage)();
 if (options.install)
     (0, installation_1.performInstallation)();
 

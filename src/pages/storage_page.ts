@@ -11,6 +11,8 @@ export class StoragePage {
 
   private readonly manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
 
+  private readonly ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
+
   constructor(page: Page) {
     this.page = page;
   }
@@ -29,5 +31,13 @@ export class StoragePage {
 
   async manageDasd() {
     await this.manageDasdLink().click();
+  }
+
+  async activateZfcp() {
+    await this.ActivateZfcpLink().click();
+  }
+
+  async waitForElement(element, timeout) {
+    await this.page.locator(element).setTimeout(timeout).wait();
   }
 }

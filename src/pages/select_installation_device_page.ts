@@ -1,5 +1,4 @@
 import { type Page } from "puppeteer-core";
-import { sleep } from "../lib/helpers";
 
 export class SelectInstallationDevicePage {
   private readonly page: Page;
@@ -9,12 +8,15 @@ export class SelectInstallationDevicePage {
   private readonly deviceCheckbox = (index: number) =>
     this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
 
-  private readonly deviceRadio = (index: number) =>
-    this.page.locator(`::-p-aria(Select row ${index}[role=\\"radio\\"])`);
+  private readonly deviceSelectButton = () => this.page.locator("::-p-aria(Drive)");
+
+  private readonly deviceSelector = (name) => this.page.locator(`::-p-text(${name})`);
 
   private readonly storageTechsToggleButton = () => this.page.locator("::-p-text('storage techs')");
 
-  private readonly deviceType = () => this.page.locator("a[href='#/storage/dasd']");
+  private readonly deviceTypeDasdLink = () => this.page.locator("a[href='#/storage/dasd']");
+
+  private readonly deviceTypeZfcpLink = () => this.page.locator("a[href='#/storage/zfcp']");
 
   private readonly acceptButton = () => this.page.locator("button::-p-text(Accept)");
 
@@ -30,13 +32,16 @@ export class SelectInstallationDevicePage {
 
   async prepareDasd() {
     await this.storageTechsToggleButton().click();
-    await this.deviceType().click();
+    await this.deviceTypeDasdLink().click();
   }
 
-  async selectDevice(index: number) {
-    // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-    await sleep(2000);
-    await this.deviceRadio(index).click();
-    await this.acceptButton().click();
+  async prepareZfcp() {
+    await this.storageTechsToggleButton().click();
+    await this.deviceTypeZfcpLink().click();
+  }
+
+  async selectDevice(name) {
+    this.deviceSelectButton().click();
+    this.deviceSelector(name).click();
   }
 }
