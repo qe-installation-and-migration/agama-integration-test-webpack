@@ -120,16 +120,20 @@ exports.productSelectionWithLicense = productSelectionWithLicense;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const configuring_product_page_1 = __webpack_require__(/*! ../pages/configuring_product_page */ "./src/pages/configuring_product_page.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-function configuringProductStarted() {
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+function ensureProductConfigured() {
     (0, helpers_1.it)("should start configuring the product", async function () {
         await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
+    });
+    (0, helpers_1.it)("should finish configuring the product", async function () {
+        await new sidebar_page_1.SidebarPage(helpers_1.page).waitOverviewVisible(40000);
     });
 }
 function productSelectionByName(productName) {
     (0, helpers_1.it)(`should allow to select product ${productName}`, async function () {
         await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectByName(productName);
     });
-    configuringProductStarted();
+    ensureProductConfigured();
 }
 function productSelection(productId) {
     (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
@@ -137,7 +141,7 @@ function productSelection(productId) {
         await productSelectionPage.choose(productId);
         await productSelectionPage.select();
     });
-    configuringProductStarted();
+    ensureProductConfigured();
 }
 function productSelectionWithLicense(productId) {
     (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
@@ -155,7 +159,7 @@ function productSelectionWithLicense(productId) {
     (0, helpers_1.it)(`should allow to select product`, async function () {
         await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
     });
-    configuringProductStarted();
+    ensureProductConfigured();
 }
 
 
@@ -971,7 +975,7 @@ exports.SidebarWithRegistrationPage = exports.SidebarPage = void 0;
 class SidebarPage {
     page;
     overviewLink = () => this.page.locator("a[href='#/overview']");
-    overviewText = () => this.page.locator("h3::-p-text('Overview')");
+    overviewText = () => this.page.locator("h2::-p-text('Overview')");
     localizationLink = () => this.page.locator("a[href='#/l10n']");
     networkLink = () => this.page.locator("a[href='#/network']");
     storageLink = () => this.page.locator("a[href='#/storage']");

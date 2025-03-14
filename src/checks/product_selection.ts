@@ -4,10 +4,14 @@ import {
   ProductSelectionPage,
   ProductSelectionWithRegistrationPage,
 } from "../pages/product_selection_page";
+import { SidebarPage } from "../pages/sidebar_page";
 
-function configuringProductStarted() {
+function ensureProductConfigured() {
   it("should start configuring the product", async function () {
     await new ConfiguringProductPage(page).wait();
+  });
+  it("should finish configuring the product", async function () {
+    await new SidebarPage(page).waitOverviewVisible(40000);
   });
 }
 
@@ -16,7 +20,7 @@ export function productSelectionByName(productName: string) {
     await new ProductSelectionPage(page).selectByName(productName);
   });
 
-  configuringProductStarted();
+  ensureProductConfigured();
 }
 
 export function productSelection(productId: string) {
@@ -26,7 +30,7 @@ export function productSelection(productId: string) {
     await productSelectionPage.select();
   });
 
-  configuringProductStarted();
+  ensureProductConfigured();
 }
 
 export function productSelectionWithLicense(productId: string) {
@@ -46,5 +50,5 @@ export function productSelectionWithLicense(productId: string) {
     await new ProductSelectionWithRegistrationPage(page).select();
   });
 
-  configuringProductStarted();
+  ensureProductConfigured();
 }

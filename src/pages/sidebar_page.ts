@@ -4,7 +4,7 @@ import { type GConstructor } from "../lib/helpers";
 export class SidebarPage {
   protected readonly page: Page;
   private readonly overviewLink = () => this.page.locator("a[href='#/overview']");
-  private readonly overviewText = () => this.page.locator("h3::-p-text('Overview')");
+  private readonly overviewText = () => this.page.locator("h2::-p-text('Overview')");
   private readonly localizationLink = () => this.page.locator("a[href='#/l10n']");
   private readonly networkLink = () => this.page.locator("a[href='#/network']");
   private readonly storageLink = () => this.page.locator("a[href='#/storage']");

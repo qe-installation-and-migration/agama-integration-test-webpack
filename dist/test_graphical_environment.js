@@ -543,7 +543,7 @@ exports.SidebarWithRegistrationPage = exports.SidebarPage = void 0;
 class SidebarPage {
     page;
     overviewLink = () => this.page.locator("a[href='#/overview']");
-    overviewText = () => this.page.locator("h3::-p-text('Overview')");
+    overviewText = () => this.page.locator("h2::-p-text('Overview')");
     localizationLink = () => this.page.locator("a[href='#/l10n']");
     networkLink = () => this.page.locator("a[href='#/network']");
     storageLink = () => this.page.locator("a[href='#/storage']");
@@ -628,7 +628,7 @@ exports.SoftwareSelectionPage = void 0;
 class SoftwareSelectionPage {
     page;
     patternText = (pattern) => this.page.locator(`::-p-aria(Select ${pattern})`);
-    closeButton = () => this.page.locator("button::-p-text(Close)");
+    closeButton = () => this.page.locator("::-p-text(Close)");
     constructor(page) {
         this.page = page;
     }
