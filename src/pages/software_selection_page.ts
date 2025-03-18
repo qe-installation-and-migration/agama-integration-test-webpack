@@ -5,7 +5,7 @@ export class SoftwareSelectionPage {
   private readonly patternText = (pattern: string) =>
     this.page.locator(`::-p-aria(Select ${pattern})`);
 
-  private readonly closeButton = () => this.page.locator("button::-p-text(Close)");
+  private readonly closeButton = () => this.page.locator("::-p-text(Close)");
 
   constructor(page: Page) {
     this.page = page;
