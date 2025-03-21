@@ -335,7 +335,7 @@ async function finishBrowser() {
 }
 function test_init(options) {
     (0, node_test_1.before)(async function () {
-        ({ page: exports.page } = await startBrowser(!options.headed, options.slowMo, options.browser, options.url));
+        ({ page: exports.page } = await startBrowser(!options.headed, options.delay, options.browser, options.url));
     });
     (0, node_test_1.after)(async function () {
         await finishBrowser();

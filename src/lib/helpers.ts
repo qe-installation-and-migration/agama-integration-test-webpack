@@ -82,7 +82,7 @@ export function test_init(options) {
   before(async function () {
     ({ page } = await startBrowser(
       !options.headed,
-      options.slowMo,
+      options.delay,
       options.browser,
       options.url
     ));
