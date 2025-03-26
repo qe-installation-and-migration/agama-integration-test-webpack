@@ -5,26 +5,21 @@
 
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 
-import { parse } from "./lib/cmdline";
-import { Option } from "commander";
-import { test_init, Desktop } from "./lib/helpers";
+import { parse, commaSeparatedList } from "./lib/cmdline";
+import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
+import { selectPatterns } from "./checks/software_selection";
 import { performInstallation } from "./checks/installation";
-import { selectSinglePattern } from "./checks/software_selection";
 
 // parse options from the command line
 const options = parse((cmd) =>
   cmd
-    .addOption(
-      new Option("--desktop <name>", "Desktop to install")
-        .choices(Object.keys(Desktop))
-        .default("none"),
-    )
+    .option("--patterns <pattern>...", "comma-separated list of patterns", commaSeparatedList)
     .option("--install", "Proceed to install the system (the default is not to install it)"),
 );
 
 test_init(options);
 logIn(options.password);
-selectSinglePattern(Desktop[options.desktop]);
+if (options.patterns) selectPatterns(options.patterns);
 if (options.install) performInstallation();

@@ -13,6 +13,10 @@ function getInt(value: string) {
   return parsed;
 }
 
+export function commaSeparatedList(value: string) {
+  return value.split(',');
+}
+
 /**
  * Parse command line options. When an invalid command line option is used the script aborts.
  * @param callback callback for adding custom command line options

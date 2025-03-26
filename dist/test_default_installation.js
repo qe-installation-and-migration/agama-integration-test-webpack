@@ -345,6 +345,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.commaSeparatedList = commaSeparatedList;
 exports.parse = parse;
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const commander = __importStar(__webpack_require__(/*! commander */ "./node_modules/commander/index.js"));
@@ -357,6 +358,9 @@ function getInt(value) {
         throw new commander.InvalidArgumentError("Enter a valid number.");
     }
     return parsed;
+}
+function commaSeparatedList(value) {
+    return value.split(',');
 }
 /**
  * Parse command line options. When an invalid command line option is used the script aborts.
