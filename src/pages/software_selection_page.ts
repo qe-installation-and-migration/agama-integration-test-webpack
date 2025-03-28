@@ -12,6 +12,9 @@ export class SoftwareSelectionPage {
   }
 
   async selectPattern(pattern: string) {
+    const checkbox = await this.patternCheckbox(pattern).waitHandle();
+    await checkbox.scrollIntoView();
+
     await this.patternCheckbox(pattern)
       .filter((input) => !input.checked)
       .click();
