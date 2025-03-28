@@ -638,6 +638,8 @@ class SoftwareSelectionPage {
         this.page = page;
     }
     async selectPattern(pattern) {
+        const checkbox = await this.patternCheckbox(pattern).waitHandle();
+        await checkbox.scrollIntoView();
         await this.patternCheckbox(pattern)
             .filter((input) => !input.checked)
             .click();
