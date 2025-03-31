@@ -1038,16 +1038,20 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StoragePage = void 0;
 class StoragePage {
     page;
-    changeInstallationDeviceButton = () => this.page.locator("a[href='#/storage/target-device']");
+    selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
     editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
+    addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
     constructor(page) {
         this.page = page;
     }
-    async changeInstallationDevice() {
-        await this.changeInstallationDeviceButton().click();
+    async selectMoreDevices() {
+        await this.selectMoreDevicesButton().click();
+    }
+    async addLvmVolumeGroup() {
+        await this.addLvmVolumeLink().click();
     }
     async editEncryption() {
         await this.editEncryptionButton().click();

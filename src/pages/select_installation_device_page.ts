@@ -2,8 +2,6 @@ import { type Page } from "puppeteer-core";
 
 export class SelectInstallationDevicePage {
   private readonly page: Page;
-  private readonly newLvmVolumeGroupInput = () =>
-    this.page.locator("::-p-text(A new LVM Volume Group)");
 
   private readonly deviceCheckbox = (index: number) =>
     this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
@@ -22,12 +20,6 @@ export class SelectInstallationDevicePage {
 
   constructor(page: Page) {
     this.page = page;
-  }
-
-  async installOnNewLvm() {
-    await this.newLvmVolumeGroupInput().click();
-    await this.deviceCheckbox(0).click();
-    await this.acceptButton().click();
   }
 
   async prepareDasd() {
