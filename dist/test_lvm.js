@@ -114,16 +114,17 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.changeInstallationDeviceToLvm = changeInstallationDeviceToLvm;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const select_installation_device_page_1 = __webpack_require__(/*! ../pages/select_installation_device_page */ "./src/pages/select_installation_device_page.ts");
+const lvm_settings_page_1 = __webpack_require__(/*! ../pages/lvm_settings_page */ "./src/pages/lvm_settings_page.ts");
 const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
 function changeInstallationDeviceToLvm() {
-    (0, helpers_1.it)("should select installation device", async function () {
+    (0, helpers_1.it)("should add LVM volume group", async function () {
         const storage = new storage_page_1.StoragePage(helpers_1.page);
-        const selectInstallationDevice = new select_installation_device_page_1.SelectInstallationDevicePage(helpers_1.page);
+        const lvm = new lvm_settings_page_1.ConfigureLvmVolumeGroupPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.changeInstallationDevice();
-        await selectInstallationDevice.installOnNewLvm();
+        await storage.selectMoreDevices();
+        await storage.addLvmVolumeGroup();
+        await lvm.installOnNewLvm();
     });
 }
 
@@ -568,6 +569,31 @@ exports.LoginAsRootPage = LoginAsRootPage;
 
 /***/ }),
 
+/***/ "./src/pages/lvm_settings_page.ts":
+/*!****************************************!*\
+  !*** ./src/pages/lvm_settings_page.ts ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigureLvmVolumeGroupPage = void 0;
+class ConfigureLvmVolumeGroupPage {
+    page;
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async installOnNewLvm() {
+        await this.acceptButton().click();
+    }
+}
+exports.ConfigureLvmVolumeGroupPage = ConfigureLvmVolumeGroupPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/overview_page.ts":
 /*!************************************!*\
   !*** ./src/pages/overview_page.ts ***!
@@ -593,52 +619,6 @@ class OverviewPage {
     }
 }
 exports.OverviewPage = OverviewPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/select_installation_device_page.ts":
-/*!******************************************************!*\
-  !*** ./src/pages/select_installation_device_page.ts ***!
-  \******************************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SelectInstallationDevicePage = void 0;
-class SelectInstallationDevicePage {
-    page;
-    newLvmVolumeGroupInput = () => this.page.locator("::-p-text(A new LVM Volume Group)");
-    deviceCheckbox = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
-    deviceSelectButton = () => this.page.locator("::-p-aria(Drive)");
-    deviceSelector = (name) => this.page.locator(`::-p-text(${name})`);
-    storageTechsToggleButton = () => this.page.locator("::-p-text('storage techs')");
-    deviceTypeDasdLink = () => this.page.locator("a[href='#/storage/dasd']");
-    deviceTypeZfcpLink = () => this.page.locator("a[href='#/storage/zfcp']");
-    acceptButton = () => this.page.locator("button::-p-text(Accept)");
-    constructor(page) {
-        this.page = page;
-    }
-    async installOnNewLvm() {
-        await this.newLvmVolumeGroupInput().click();
-        await this.deviceCheckbox(0).click();
-        await this.acceptButton().click();
-    }
-    async prepareDasd() {
-        await this.storageTechsToggleButton().click();
-        await this.deviceTypeDasdLink().click();
-    }
-    async prepareZfcp() {
-        await this.storageTechsToggleButton().click();
-        await this.deviceTypeZfcpLink().click();
-    }
-    async selectDevice(name) {
-        this.deviceSelectButton().click();
-        this.deviceSelector(name).click();
-    }
-}
-exports.SelectInstallationDevicePage = SelectInstallationDevicePage;
 
 
 /***/ }),
@@ -715,16 +695,20 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StoragePage = void 0;
 class StoragePage {
     page;
-    changeInstallationDeviceButton = () => this.page.locator("a[href='#/storage/target-device']");
+    selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
     editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
+    addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
     constructor(page) {
         this.page = page;
     }
-    async changeInstallationDevice() {
-        await this.changeInstallationDeviceButton().click();
+    async selectMoreDevices() {
+        await this.selectMoreDevicesButton().click();
+    }
+    async addLvmVolumeGroup() {
+        await this.addLvmVolumeLink().click();
     }
     async editEncryption() {
         await this.editEncryptionButton().click();
