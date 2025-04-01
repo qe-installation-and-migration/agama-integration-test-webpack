@@ -3,7 +3,7 @@ import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
-import { changeInstallationDeviceToLvm } from "./checks/storage_select_installation_device";
+import { selectMoreDevices } from "./checks/storage_select_installation_device";
 import { enableEncryption } from "./checks/encryption";
 
 // parse options from the command line
@@ -13,6 +13,6 @@ const options = parse((cmd) =>
 
 test_init(options);
 logIn(options.password);
-changeInstallationDeviceToLvm();
+selectMoreDevices();
 enableEncryption(options.password);
 if (options.install) performInstallation();

@@ -8,7 +8,7 @@ export class ConfigureLvmVolumeGroupPage {
     this.page = page;
   }
 
-  async installOnNewLvm() {
+  async accept() {
     await this.acceptButton().click();
   }
 }

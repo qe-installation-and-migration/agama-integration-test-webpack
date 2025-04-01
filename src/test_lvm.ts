@@ -8,7 +8,7 @@
 import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
-import { changeInstallationDeviceToLvm } from "./checks/storage_select_installation_device";
+import { selectMoreDevices } from "./checks/storage_select_installation_device";
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
 import { prepareDasdStorage } from "./checks/storage_dasd";
@@ -23,5 +23,5 @@ const options = parse((cmd) =>
 test_init(options);
 logIn(options.password);
 if (options.dasd) prepareDasdStorage();
-changeInstallationDeviceToLvm();
+selectMoreDevices();
 if (options.install) performInstallation();
