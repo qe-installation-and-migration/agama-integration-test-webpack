@@ -112,20 +112,20 @@ function logIn(password) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.changeInstallationDeviceToLvm = changeInstallationDeviceToLvm;
+exports.selectMoreDevices = selectMoreDevices;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const lvm_settings_page_1 = __webpack_require__(/*! ../pages/lvm_settings_page */ "./src/pages/lvm_settings_page.ts");
+const configure_lvm_volume_group_page_1 = __webpack_require__(/*! ../pages/configure_lvm_volume_group_page */ "./src/pages/configure_lvm_volume_group_page.ts");
 const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
-function changeInstallationDeviceToLvm() {
+function selectMoreDevices() {
     (0, helpers_1.it)("should add LVM volume group", async function () {
         const storage = new storage_page_1.StoragePage(helpers_1.page);
-        const lvm = new lvm_settings_page_1.ConfigureLvmVolumeGroupPage(helpers_1.page);
+        const lvm = new configure_lvm_volume_group_page_1.ConfigureLvmVolumeGroupPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
         await storage.selectMoreDevices();
         await storage.addLvmVolumeGroup();
-        await lvm.installOnNewLvm();
+        await lvm.accept();
     });
 }
 
@@ -458,6 +458,31 @@ var Desktop;
 
 /***/ }),
 
+/***/ "./src/pages/configure_lvm_volume_group_page.ts":
+/*!******************************************************!*\
+  !*** ./src/pages/configure_lvm_volume_group_page.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigureLvmVolumeGroupPage = void 0;
+class ConfigureLvmVolumeGroupPage {
+    page;
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.ConfigureLvmVolumeGroupPage = ConfigureLvmVolumeGroupPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/confirm_installation_page.ts":
 /*!************************************************!*\
   !*** ./src/pages/confirm_installation_page.ts ***!
@@ -570,31 +595,6 @@ class LoginAsRootPage {
     }
 }
 exports.LoginAsRootPage = LoginAsRootPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/lvm_settings_page.ts":
-/*!****************************************!*\
-  !*** ./src/pages/lvm_settings_page.ts ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ConfigureLvmVolumeGroupPage = void 0;
-class ConfigureLvmVolumeGroupPage {
-    page;
-    acceptButton = () => this.page.locator("button::-p-text(Accept)");
-    constructor(page) {
-        this.page = page;
-    }
-    async installOnNewLvm() {
-        await this.acceptButton().click();
-    }
-}
-exports.ConfigureLvmVolumeGroupPage = ConfigureLvmVolumeGroupPage;
 
 
 /***/ }),
@@ -755,7 +755,7 @@ const encryption_1 = __webpack_require__(/*! ./checks/encryption */ "./src/check
 const options = (0, cmdline_1.parse)((cmd) => cmd.option("--install", "Proceed to install the system (the default is not to install it)"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
-(0, storage_select_installation_device_1.changeInstallationDeviceToLvm)();
+(0, storage_select_installation_device_1.selectMoreDevices)();
 (0, encryption_1.enableEncryption)(options.password);
 if (options.install)
     (0, installation_1.performInstallation)();
