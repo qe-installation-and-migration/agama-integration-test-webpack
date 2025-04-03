@@ -71,37 +71,6 @@ function logIn(password) {
 
 /***/ }),
 
-/***/ "./src/checks/storage_dasd.ts":
-/*!************************************!*\
-  !*** ./src/checks/storage_dasd.ts ***!
-  \************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.prepareDasdStorage = prepareDasdStorage;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
-const dasd_page_1 = __webpack_require__(/*! ../pages/dasd_page */ "./src/pages/dasd_page.ts");
-function prepareDasdStorage() {
-    (0, helpers_1.it)("should prepare DASD storage", async function () {
-        const storage = new storage_page_1.StoragePage(helpers_1.page);
-        const dasd = new dasd_page_1.DasdPage(helpers_1.page);
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToStorage();
-        await storage.manageDasd();
-        await dasd.activateDevice();
-        await dasd.back();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/storage_select_installation_device.ts":
 /*!**********************************************************!*\
   !*** ./src/checks/storage_select_installation_device.ts ***!
@@ -532,39 +501,6 @@ exports.CongratulationPage = CongratulationPage;
 
 /***/ }),
 
-/***/ "./src/pages/dasd_page.ts":
-/*!********************************!*\
-  !*** ./src/pages/dasd_page.ts ***!
-  \********************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DasdPage = void 0;
-class DasdPage {
-    page;
-    selectRow = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
-    performAnActionToggleButton = () => this.page.locator("::-p-text('Perform an action')");
-    activateDisk = () => this.page.locator("::-p-text(Activate)");
-    backButton = () => this.page.locator("button::-p-text(Back)");
-    constructor(page) {
-        this.page = page;
-    }
-    async activateDevice() {
-        await this.selectRow(0).click();
-        await this.performAnActionToggleButton().click();
-        await this.activateDisk().click();
-    }
-    async back() {
-        await this.backButton().click();
-    }
-}
-exports.DasdPage = DasdPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/login_as_root_page.ts":
 /*!*****************************************!*\
   !*** ./src/pages/login_as_root_page.ts ***!
@@ -750,15 +686,10 @@ const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts
 const storage_select_installation_device_1 = __webpack_require__(/*! ./checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
-const storage_dasd_1 = __webpack_require__(/*! ./checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 // parse options from the command line
-const options = (0, cmdline_1.parse)((cmd) => cmd
-    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)")
-    .option("--install", "Proceed to install the system (the default is not to install it)"));
+const options = (0, cmdline_1.parse)((cmd) => cmd.option("--install", "Proceed to install the system (the default is not to install it)"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
-if (options.dasd)
-    (0, storage_dasd_1.prepareDasdStorage)();
 (0, storage_select_installation_device_1.selectMoreDevices)();
 if (options.install)
     (0, installation_1.performInstallation)();
