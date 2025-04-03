@@ -11,17 +11,13 @@ import { test_init } from "./lib/helpers";
 import { selectMoreDevices } from "./checks/storage_select_installation_device";
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
-import { prepareDasdStorage } from "./checks/storage_dasd";
 
 // parse options from the command line
 const options = parse((cmd) =>
-  cmd
-    .option("--dasd", "Prepare DASD storage (the default is not to prepare it)")
-    .option("--install", "Proceed to install the system (the default is not to install it)"),
+  cmd.option("--install", "Proceed to install the system (the default is not to install it)"),
 );
 
 test_init(options);
 logIn(options.password);
-if (options.dasd) prepareDasdStorage();
 selectMoreDevices();
 if (options.install) performInstallation();

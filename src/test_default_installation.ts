@@ -15,7 +15,6 @@ import { enterRegistration } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
-import { prepareDasdStorage } from "./checks/storage_dasd";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
 
 // parse options from the command line
@@ -32,6 +31,7 @@ const options = parse((cmd) =>
       new Option(
         "--prepare-advanced-storage <storage-type>",
         "Prepare advance storage for installation",
+        // dasd is not worth to test atm, see bsc#1151436
       ).choices(["dasd", "zfcp"]),
     ),
 );
@@ -44,7 +44,5 @@ if (options.productId !== "none")
 if (options.registrationCode) enterRegistration(options.registrationCode);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
-if (options.dasd) prepareDasdStorage();
-if (options.prepareAdvancedStorage === "dasd") prepareDasdStorage();
-else if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
+if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
 if (options.install) performInstallation();
