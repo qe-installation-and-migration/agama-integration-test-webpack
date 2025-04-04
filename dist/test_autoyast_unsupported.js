@@ -421,10 +421,12 @@ class AutoyastUnsupportedPage {
         await this.continueButton().click();
     }
     async verifyNotImplementedElement(numElements, element) {
-        await this.unsupportedElementText("Not implemented yet", numElements, element).wait();
+        const elementHandle = await this.unsupportedElementText("Not implemented yet", numElements, element).waitHandle();
+        elementHandle.dispose();
     }
     async verifyNotSupportedElement(numElements, element) {
-        await this.unsupportedElementText("Not supported", numElements, element).wait();
+        const elementHandle = await this.unsupportedElementText("Not supported", numElements, element).waitHandle();
+        elementHandle.dispose();
     }
 }
 exports.AutoyastUnsupportedPage = AutoyastUnsupportedPage;

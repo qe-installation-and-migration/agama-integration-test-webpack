@@ -26,10 +26,20 @@ export class AutoyastUnsupportedPage {
   }
 
   async verifyNotImplementedElement(numElements: number, element: string) {
-    await this.unsupportedElementText("Not implemented yet", numElements, element).wait();
+    const elementHandle = await this.unsupportedElementText(
+      "Not implemented yet",
+      numElements,
+      element,
+    ).waitHandle();
+    elementHandle.dispose();
   }
 
   async verifyNotSupportedElement(numElements: number, element: string) {
-    await this.unsupportedElementText("Not supported", numElements, element).wait();
+    const elementHandle = await this.unsupportedElementText(
+      "Not supported",
+      numElements,
+      element,
+    ).waitHandle();
+    elementHandle.dispose();
   }
 }
