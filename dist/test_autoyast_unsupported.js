@@ -17,14 +17,14 @@ exports.abort = abort;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const autoyast_unsupported_page_1 = __webpack_require__(/*! ../pages/autoyast_unsupported_page */ "./src/pages/autoyast_unsupported_page.ts");
 function verifyNotImplemented(elements) {
-    (0, helpers_1.it)("should display elements not implemented yet", async function () {
+    (0, helpers_1.it)(`should display elements not implemented yet: ${elements.join(", ")}`, async function () {
         const autoyastUnsupported = new autoyast_unsupported_page_1.AutoyastUnsupportedPage(helpers_1.page);
         for (const element of elements)
             await autoyastUnsupported.verifyNotImplementedElement(elements.length, element);
     });
 }
 function verifyNotSupported(elements) {
-    (0, helpers_1.it)("should display elements not supported", async function () {
+    (0, helpers_1.it)(`should display elements not supported: ${elements.join(", ")}`, async function () {
         const autoyastUnsupported = new autoyast_unsupported_page_1.AutoyastUnsupportedPage(helpers_1.page);
         for (const element of elements)
             await autoyastUnsupported.verifyNotSupportedElement(elements.length, element);
