@@ -13,7 +13,6 @@
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.verifyNotImplemented = verifyNotImplemented;
 exports.verifyNotSupported = verifyNotSupported;
-exports.verifyAutoYaSTUnsupportedElements = verifyAutoYaSTUnsupportedElements;
 exports.abort = abort;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const autoyast_unsupported_page_1 = __webpack_require__(/*! ../pages/autoyast_unsupported_page */ "./src/pages/autoyast_unsupported_page.ts");
@@ -21,20 +20,14 @@ function verifyNotImplemented(elements) {
     (0, helpers_1.it)("should display elements not implemented yet", async function () {
         const autoyastUnsupported = new autoyast_unsupported_page_1.AutoyastUnsupportedPage(helpers_1.page);
         for (const element of elements)
-            await autoyastUnsupported.verifyNotImplementedText(element);
+            await autoyastUnsupported.verifyNotImplementedElement(elements.length, element);
     });
 }
 function verifyNotSupported(elements) {
     (0, helpers_1.it)("should display elements not supported", async function () {
         const autoyastUnsupported = new autoyast_unsupported_page_1.AutoyastUnsupportedPage(helpers_1.page);
         for (const element of elements)
-            await autoyastUnsupported.verifyNotSupportedText(element);
-    });
-}
-function verifyAutoYaSTUnsupportedElements() {
-    (0, helpers_1.it)("should display the title Unsupported", async function () {
-        const autoyastUnsupported = new autoyast_unsupported_page_1.AutoyastUnsupportedPage(helpers_1.page);
-        await autoyastUnsupported.verifyTitle();
+            await autoyastUnsupported.verifyNotSupportedElement(elements.length, element);
     });
 }
 function abort() {
@@ -417,9 +410,7 @@ class AutoyastUnsupportedPage {
     page;
     abortButton = () => this.page.locator("button::-p-text(Abort)");
     continueButton = () => this.page.locator("button::-p-text(Continue)");
-    titleText = () => this.page.locator("::-p-text(Unsupported AutoYaST elements)");
-    notImplementedText = (element) => this.page.locator(`::-p-text(${element})`);
-    notSupportedText = (element) => this.page.locator(`::-p-text(${element})`);
+    unsupportedElementText = (sectionTitle, numElements, element) => this.page.locator(`::-p-aria([name="${sectionTitle} (${numElements})"][role="region"]) ::-p-text(${element})`);
     constructor(page) {
         this.page = page;
     }
@@ -429,14 +420,11 @@ class AutoyastUnsupportedPage {
     async continue() {
         await this.continueButton().click();
     }
-    async verifyTitle() {
-        await this.titleText().wait();
+    async verifyNotImplementedElement(numElements, element) {
+        await this.unsupportedElementText("Not implemented yet", numElements, element).wait();
     }
-    async verifyNotImplementedText(element) {
-        await this.notImplementedText(element).wait();
-    }
-    async verifyNotSupportedText(element) {
-        await this.notSupportedText(element).wait();
+    async verifyNotSupportedElement(numElements, element) {
+        await this.unsupportedElementText("Not supported", numElements, element).wait();
     }
 }
 exports.AutoyastUnsupportedPage = AutoyastUnsupportedPage;
@@ -500,7 +488,6 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
 if (options.notImplemented)
     (0, autoyast_unsupported_1.verifyNotImplemented)(options.notImplemented);
 (0, autoyast_unsupported_1.verifyNotSupported)(options.notSupported);
-(0, autoyast_unsupported_1.verifyAutoYaSTUnsupportedElements)();
 (0, autoyast_unsupported_1.abort)();
 
 

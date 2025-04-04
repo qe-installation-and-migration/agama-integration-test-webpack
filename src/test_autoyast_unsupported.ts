@@ -8,12 +8,7 @@
 import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
-import {
-  verifyNotImplemented,
-  verifyNotSupported,
-  verifyAutoYaSTUnsupportedElements,
-  abort,
-} from "./checks/autoyast_unsupported";
+import { verifyNotImplemented, verifyNotSupported, abort } from "./checks/autoyast_unsupported";
 import { logIn } from "./checks/login";
 
 // parse options from the command line
@@ -35,5 +30,4 @@ test_init(options);
 logIn(options.password);
 if (options.notImplemented) verifyNotImplemented(options.notImplemented);
 verifyNotSupported(options.notSupported);
-verifyAutoYaSTUnsupportedElements();
 abort();

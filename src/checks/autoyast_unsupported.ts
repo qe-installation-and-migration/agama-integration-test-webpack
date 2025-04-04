@@ -4,21 +4,16 @@ import { AutoyastUnsupportedPage } from "../pages/autoyast_unsupported_page";
 export function verifyNotImplemented(elements: string[]) {
   it("should display elements not implemented yet", async function () {
     const autoyastUnsupported = new AutoyastUnsupportedPage(page);
-    for (const element of elements) await autoyastUnsupported.verifyNotImplementedText(element);
+    for (const element of elements)
+      await autoyastUnsupported.verifyNotImplementedElement(elements.length, element);
   });
 }
 
 export function verifyNotSupported(elements: string[]) {
   it("should display elements not supported", async function () {
     const autoyastUnsupported = new AutoyastUnsupportedPage(page);
-    for (const element of elements) await autoyastUnsupported.verifyNotSupportedText(element);
-  });
-}
-
-export function verifyAutoYaSTUnsupportedElements() {
-  it("should display the title Unsupported", async function () {
-    const autoyastUnsupported = new AutoyastUnsupportedPage(page);
-    await autoyastUnsupported.verifyTitle();
+    for (const element of elements)
+      await autoyastUnsupported.verifyNotSupportedElement(elements.length, element);
   });
 }
 

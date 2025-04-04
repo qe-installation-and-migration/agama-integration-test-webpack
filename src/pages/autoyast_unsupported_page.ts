@@ -4,12 +4,14 @@ export class AutoyastUnsupportedPage {
   private readonly page: Page;
   private readonly abortButton = () => this.page.locator("button::-p-text(Abort)");
   private readonly continueButton = () => this.page.locator("button::-p-text(Continue)");
-  private readonly titleText = () => this.page.locator("::-p-text(Unsupported AutoYaST elements)");
-  private readonly notImplementedText = (element: string) =>
-    this.page.locator(`::-p-text(${element})`);
-
-  private readonly notSupportedText = (element: string) =>
-    this.page.locator(`::-p-text(${element})`);
+  private readonly unsupportedElementText = (
+    sectionTitle: string,
+    numElements: number,
+    element: string,
+  ) =>
+    this.page.locator(
+      `::-p-aria([name="${sectionTitle} (${numElements})"][role="region"]) ::-p-text(${element})`,
+    );
 
   constructor(page: Page) {
     this.page = page;
@@ -23,15 +25,11 @@ export class AutoyastUnsupportedPage {
     await this.continueButton().click();
   }
 
-  async verifyTitle() {
-    await this.titleText().wait();
+  async verifyNotImplementedElement(numElements: number, element: string) {
+    await this.unsupportedElementText("Not implemented yet", numElements, element).wait();
   }
 
-  async verifyNotImplementedText(element: string) {
-    await this.notImplementedText(element).wait();
-  }
-
-  async verifyNotSupportedText(element: string) {
-    await this.notSupportedText(element).wait();
+  async verifyNotSupportedElement(numElements: number, element: string) {
+    await this.unsupportedElementText("Not supported", numElements, element).wait();
   }
 }
