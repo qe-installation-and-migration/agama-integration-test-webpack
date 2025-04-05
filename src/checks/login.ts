@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { it, page } from "../lib/helpers";
+import { page } from "../lib/helpers";
+import { it, } from "node:test";
 import { LoginAsRootPage } from "../pages/login_as_root_page";
 
 export function logIn(password: string) {

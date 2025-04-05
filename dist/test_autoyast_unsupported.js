@@ -2,74 +2,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/checks/autoyast_unsupported.ts":
-/*!********************************************!*\
-  !*** ./src/checks/autoyast_unsupported.ts ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.verifyNotImplemented = verifyNotImplemented;
-exports.verifyNotSupported = verifyNotSupported;
-exports.abort = abort;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const autoyast_unsupported_page_1 = __webpack_require__(/*! ../pages/autoyast_unsupported_page */ "./src/pages/autoyast_unsupported_page.ts");
-function verifyNotImplemented(elements) {
-    (0, helpers_1.it)("should display elements not implemented yet", async function () {
-        const autoyastUnsupported = new autoyast_unsupported_page_1.AutoyastUnsupportedPage(helpers_1.page);
-        for (const element of elements)
-            await autoyastUnsupported.verifyNotImplementedElement(elements.length, element);
-    });
-}
-function verifyNotSupported(elements) {
-    (0, helpers_1.it)("should display elements not supported", async function () {
-        const autoyastUnsupported = new autoyast_unsupported_page_1.AutoyastUnsupportedPage(helpers_1.page);
-        for (const element of elements)
-            await autoyastUnsupported.verifyNotSupportedElement(elements.length, element);
-    });
-}
-function abort() {
-    (0, helpers_1.it)("should abort installation", async function () {
-        const autoyastUnsupported = new autoyast_unsupported_page_1.AutoyastUnsupportedPage(helpers_1.page);
-        await autoyastUnsupported.abort();
-    });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/login.ts":
-/*!*****************************!*\
-  !*** ./src/checks/login.ts ***!
-  \*****************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.logIn = logIn;
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const login_as_root_page_1 = __webpack_require__(/*! ../pages/login_as_root_page */ "./src/pages/login_as_root_page.ts");
-function logIn(password) {
-    (0, helpers_1.it)("should have Agama page title", async function () {
-        strict_1.default.deepEqual(await helpers_1.page.title(), "Agama");
-    });
-    (0, helpers_1.it)("should allow logging in", async function () {
-        const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
-        await loginAsRoot.fillPassword(password);
-        await loginAsRoot.logIn();
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/lib/cmdline.ts":
 /*!****************************!*\
   !*** ./src/lib/cmdline.ts ***!
@@ -255,7 +187,7 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         protocol: "webDriverBiDi",
         headless,
         ignoreHTTPSErrors: true,
-        timeout: 30000,
+        // timeout: 30000,
         slowMo,
         defaultViewport: {
             width: 1280,
@@ -396,44 +328,6 @@ var Desktop;
 
 /***/ }),
 
-/***/ "./src/pages/autoyast_unsupported_page.ts":
-/*!************************************************!*\
-  !*** ./src/pages/autoyast_unsupported_page.ts ***!
-  \************************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AutoyastUnsupportedPage = void 0;
-class AutoyastUnsupportedPage {
-    page;
-    abortButton = () => this.page.locator("button::-p-text(Abort)");
-    continueButton = () => this.page.locator("button::-p-text(Continue)");
-    unsupportedElementText = (sectionTitle, numElements, element) => this.page.locator(`::-p-aria([name="${sectionTitle} (${numElements})"][role="region"]) ::-p-text(${element})`);
-    constructor(page) {
-        this.page = page;
-    }
-    async abort() {
-        await this.abortButton().click();
-    }
-    async continue() {
-        await this.continueButton().click();
-    }
-    async verifyNotImplementedElement(numElements, element) {
-        const elementHandle = await this.unsupportedElementText("Not implemented yet", numElements, element).waitHandle();
-        elementHandle.dispose();
-    }
-    async verifyNotSupportedElement(numElements, element) {
-        const elementHandle = await this.unsupportedElementText("Not supported", numElements, element).waitHandle();
-        elementHandle.dispose();
-    }
-}
-exports.AutoyastUnsupportedPage = AutoyastUnsupportedPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/login_as_root_page.ts":
 /*!*****************************************!*\
   !*** ./src/pages/login_as_root_page.ts ***!
@@ -467,7 +361,7 @@ exports.LoginAsRootPage = LoginAsRootPage;
 /*!******************************************!*\
   !*** ./src/test_autoyast_unsupported.ts ***!
   \******************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
@@ -475,22 +369,158 @@ exports.LoginAsRootPage = LoginAsRootPage;
 // If the test fails it saves the page screenshot and the HTML page dump to
 // ./log/ subdirectory. For more details about customization see the README.md
 // file.
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
+const puppeteer = __importStar(__webpack_require__(/*! puppeteer-core */ "./node_modules/puppeteer-core/lib/cjs/puppeteer/puppeteer-core.js"));
+const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
-const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
-const autoyast_unsupported_1 = __webpack_require__(/*! ./checks/autoyast_unsupported */ "./src/checks/autoyast_unsupported.ts");
-const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
+const login_as_root_page_1 = __webpack_require__(/*! ./pages/login_as_root_page */ "./src/pages/login_as_root_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--not-implemented <elements>", "comma-separated list of not implemented yet elements", cmdline_1.commaSeparatedList)
     .option("--not-supported <elements>", "comma-separated list of not supported elements", cmdline_1.commaSeparatedList));
-(0, helpers_1.test_init)(options);
-(0, login_1.logIn)(options.password);
-if (options.notImplemented)
-    (0, autoyast_unsupported_1.verifyNotImplemented)(options.notImplemented);
-(0, autoyast_unsupported_1.verifyNotSupported)(options.notSupported);
-(0, autoyast_unsupported_1.abort)();
+let page;
+let browser;
+let url;
+function browserSettings(name) {
+    switch (name.toLowerCase()) {
+        case "firefox":
+            return {
+                product: "firefox",
+                executablePath: "/usr/bin/firefox",
+            };
+        case "chrome":
+            return {
+                product: "chrome",
+                executablePath: "/usr/bin/google-chrome-stable",
+            };
+        case "chromium":
+            return {
+                product: "chrome",
+                executablePath: "/usr/bin/chromium",
+            };
+        default:
+            throw new Error(`Unsupported browser type: ${name}`);
+    }
+}
+async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
+    url = agamaServer;
+    browser = await puppeteer.launch({
+        // "webDriverBiDi" does not work with old FireFox, comment it out if needed
+        protocol: "webDriverBiDi",
+        headless,
+        ignoreHTTPSErrors: true,
+        timeout: 30000,
+        slowMo,
+        defaultViewport: {
+            width: 1280,
+            height: 800,
+        },
+        ...browserSettings(agamaBrowser),
+    });
+    return browser;
+    // page = await browser.newPage();
+    // page.setDefaultTimeout(20000);
+    // await page.goto(agamaServer, {
+    //   timeout: 60000,
+    //   waitUntil: "domcontentloaded",
+    // });
+    // return { page, browser };
+}
+async function finishBrowser() {
+    if (page) {
+        await page.close();
+        page = null;
+    }
+    if (browser) {
+        await browser.close();
+        browser = null;
+    }
+}
+// before(async function () {
+//   ({ page } = await startBrowser(
+//     !options.headed,
+//     options.delay,
+//     options.browser,
+//     options.url
+//   ));
+// });
+(0, node_test_1.after)(async function () {
+    await finishBrowser();
+});
+(0, node_test_1.it)("before browser", async function () {
+    browser = await startBrowser(!options.headed, options.delay, options.browser, options.url);
+});
+(0, node_test_1.it)("before page", async function () {
+    page = await browser.newPage();
+    page.setDefaultTimeout(20000);
+    await page.goto(options.url, {
+        timeout: 60000,
+        waitUntil: "domcontentloaded",
+    });
+});
+// test_init(options);
+(0, node_test_1.it)("should have Agama page title", async function () {
+    strict_1.default.deepEqual(await page.title(), "Agama");
+});
+(0, node_test_1.it)("should allow logging in", async function () {
+    const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(page);
+    await loginAsRoot.fillPassword(options.password);
+    await loginAsRoot.logIn();
+});
+(0, node_test_1.it)("should display elements not supported", async function () {
+    // let autoyastUnsupported = new AutoyastUnsupportedPage(page);
+    for (const element of options.notSupported) {
+        // let elementText = await page.locator(`::-p-aria([name="Not supported (29)"][role="region"]) ::-p-text(${element})`)
+        //   .map(span => span.textContent)
+        //   .wait();
+        // assert.deepEqual(elementText, `${element}`);
+        let elementHandler = await page.waitForSelector(`::-p-aria([name="Not supported (29)"][role="region"]) ::-p-text(${element})`);
+        let current = await elementHandler.evaluate(node => node.textContent);
+        strict_1.default.deepEqual(current, `${element}`);
+        elementHandler.dispose();
+    }
+});
+// if (options.notImplemented) verifyNotImplemented(options.notImplemented);
+// verifyNotSupported(options.notSupported);
+// abort();
 
 
 /***/ }),

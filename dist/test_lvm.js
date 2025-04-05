@@ -56,12 +56,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.logIn = logIn;
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
 const login_as_root_page_1 = __webpack_require__(/*! ../pages/login_as_root_page */ "./src/pages/login_as_root_page.ts");
 function logIn(password) {
-    (0, helpers_1.it)("should have Agama page title", async function () {
+    (0, node_test_1.it)("should have Agama page title", async function () {
         strict_1.default.deepEqual(await helpers_1.page.title(), "Agama");
     });
-    (0, helpers_1.it)("should allow logging in", async function () {
+    (0, node_test_1.it)("should allow logging in", async function () {
         const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
         await loginAsRoot.fillPassword(password);
         await loginAsRoot.logIn();
@@ -285,7 +286,7 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         protocol: "webDriverBiDi",
         headless,
         ignoreHTTPSErrors: true,
-        timeout: 30000,
+        // timeout: 30000,
         slowMo,
         defaultViewport: {
             width: 1280,

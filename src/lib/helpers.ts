@@ -55,7 +55,7 @@ export async function startBrowser(
     protocol: "webDriverBiDi",
     headless,
     ignoreHTTPSErrors: true,
-    timeout: 30000,
+    // timeout: 30000,
     slowMo,
     defaultViewport: {
       width: 1280,
