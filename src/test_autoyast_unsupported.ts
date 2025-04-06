@@ -16,6 +16,7 @@ import { logIn } from "./checks/login";
 import { LoginAsRootPage } from "./pages/login_as_root_page";
 import { AutoyastUnsupportedPage } from "./pages/autoyast_unsupported_page";
 import assert from "node:assert/strict";
+import { text } from "node:stream/consumers";
 
 // parse options from the command line
 const options = parse((cmd) =>
@@ -151,17 +152,27 @@ it("should allow logging in", async function () {
 
 it("should display elements not supported", async function () {
   // let autoyastUnsupported = new AutoyastUnsupportedPage(page);
-  for (const element of options.notSupported) {
-    // let elementText = await page.locator(`::-p-aria([name="Not supported (29)"][role="region"]) ::-p-text(${element})`)
-    //   .map(span => span.textContent)
-    //   .wait();
-    // assert.deepEqual(elementText, `${element}`);
+  // for (const element of options.notSupported) {
+  //   let elementText = await page.locator(`::-p-aria([name="Not supported (29)"][role="region"]) ::-p-text(${element})`)
+  //     .map(span => span.textContent)
+  //     .wait();
+  //   assert.deepEqual(elementText, `${element}`);
 
-    let elementHandler = await page.waitForSelector(`::-p-aria([name="Not supported (29)"][role="region"]) ::-p-text(${element})`);
-    let current = await elementHandler.evaluate(node => node.textContent);
-    assert.deepEqual(current, `${element}`);
-    elementHandler.dispose();
-  }
+  // let elementHandler = await page.waitForSelector(`::-p-aria([name="Not supported (29)"][role="region"]) ::-p-text(${element})`);
+  // let current = await elementHandler.evaluate(node => node.textContent);
+  // assert.deepEqual(current, `${element}`);
+  // elementHandler.dispose();
+
+  // await page.locator(`::-p-text(Not supported) ::-p-text(${element})`).wait();
+
+  await page.waitForSelector(`::-p-aria([name="Not supported (29)"][role="region"]) li span`);
+  const elements = await page.$$(`::-p-aria([name="Not supported (29)"][role="region"]) li span`);
+  const textElements = await Promise.all(
+    elements.map(async (element) => {
+      return await element.evaluate(node => node.textContent);
+    })
+  );
+  assert.deepStrictEqual(textElements, options.notSupported);
 });
 
 // if (options.notImplemented) verifyNotImplemented(options.notImplemented);

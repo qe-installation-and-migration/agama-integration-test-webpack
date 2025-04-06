@@ -507,16 +507,22 @@ async function finishBrowser() {
 });
 (0, node_test_1.it)("should display elements not supported", async function () {
     // let autoyastUnsupported = new AutoyastUnsupportedPage(page);
-    for (const element of options.notSupported) {
-        // let elementText = await page.locator(`::-p-aria([name="Not supported (29)"][role="region"]) ::-p-text(${element})`)
-        //   .map(span => span.textContent)
-        //   .wait();
-        // assert.deepEqual(elementText, `${element}`);
-        let elementHandler = await page.waitForSelector(`::-p-aria([name="Not supported (29)"][role="region"]) ::-p-text(${element})`);
-        let current = await elementHandler.evaluate(node => node.textContent);
-        strict_1.default.deepEqual(current, `${element}`);
-        elementHandler.dispose();
-    }
+    // for (const element of options.notSupported) {
+    //   let elementText = await page.locator(`::-p-aria([name="Not supported (29)"][role="region"]) ::-p-text(${element})`)
+    //     .map(span => span.textContent)
+    //     .wait();
+    //   assert.deepEqual(elementText, `${element}`);
+    // let elementHandler = await page.waitForSelector(`::-p-aria([name="Not supported (29)"][role="region"]) ::-p-text(${element})`);
+    // let current = await elementHandler.evaluate(node => node.textContent);
+    // assert.deepEqual(current, `${element}`);
+    // elementHandler.dispose();
+    // await page.locator(`::-p-text(Not supported) ::-p-text(${element})`).wait();
+    await page.waitForSelector(`::-p-aria([name="Not supported (29)"][role="region"]) li span`);
+    const elements = await page.$$(`::-p-aria([name="Not supported (29)"][role="region"]) li span`);
+    const textElements = await Promise.all(elements.map(async (element) => {
+        return await element.evaluate(node => node.textContent);
+    }));
+    strict_1.default.deepStrictEqual(textElements, options.notSupported);
 });
 // if (options.notImplemented) verifyNotImplemented(options.notImplemented);
 // verifyNotSupported(options.notSupported);
