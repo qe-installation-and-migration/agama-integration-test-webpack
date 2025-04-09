@@ -11,7 +11,7 @@ import { Option } from "commander";
 
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser } from "./checks/root_authentication";
-import { enterRegistration } from "./checks/registration";
+import { enterRegistration, enterRegistrationHa } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
@@ -26,6 +26,7 @@ const options = parse((cmd) =>
       "Accept license for a product with license (the default is a product without license)",
     )
     .option("--registration-code <code>", "Registration code")
+    .option("--registration-code-ha <code>", "Registration code for Extension High Availability")
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .addOption(
       new Option(
@@ -42,6 +43,7 @@ if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
 if (options.registrationCode) enterRegistration(options.registrationCode);
+if (options.registrationCodeHa) enterRegistrationHa(options.registrationCodeHa);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
 if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
