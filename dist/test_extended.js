@@ -2,32 +2,56 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/checks/encryption.ts":
+/***/ "./src/checks/decryption.ts":
 /*!**********************************!*\
-  !*** ./src/checks/encryption.ts ***!
+  !*** ./src/checks/decryption.ts ***!
   \**********************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.enableEncryption = enableEncryption;
+exports.decryptDevice = decryptDevice;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const encryption_settings_page_1 = __webpack_require__(/*! ../pages/encryption_settings_page */ "./src/pages/encryption_settings_page.ts");
+const encrypted_device_page_1 = __webpack_require__(/*! ../pages/encrypted_device_page */ "./src/pages/encrypted_device_page.ts");
+function decryptDevice(password) {
+    (0, helpers_1.it)("Should decrypt encrypted device", async function () {
+        const storageDecryption = new encrypted_device_page_1.EncryptedDevice(helpers_1.page);
+        await storageDecryption.decrypt(password, 3 * 60 * 1000);
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/first_user.ts":
+/*!**********************************!*\
+  !*** ./src/checks/first_user.ts ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createFirstUser = createFirstUser;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const create_user_page_1 = __webpack_require__(/*! ../pages/create_user_page */ "./src/pages/create_user_page.ts");
+const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
-function enableEncryption(password) {
-    (0, helpers_1.it)("should enable encryption", async function () {
-        const storage = new storage_page_1.StoragePage(helpers_1.page);
-        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
+function createFirstUser(password) {
+    (0, helpers_1.it)("should create first user", async function () {
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToStorage();
-        await storage.editEncryption();
-        await encryptionSettings.encryptTheSystem();
-        await encryptionSettings.fillPassword(password);
-        await encryptionSettings.fillPasswordConfirmation(password);
-        await encryptionSettings.accept();
-        await storage.verifyEncryptionEnabled();
+        await sidebar.goToUsers();
+        await users.defineAUserNow();
+        await createFirstUser.fillFullName("Bernhard M. Wiedemann");
+        await createFirstUser.fillUserName("bernhard");
+        await createFirstUser.fillPassword(password);
+        await createFirstUser.fillPasswordConfirmation(password);
+        await createFirstUser.accept();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
     });
 }
 
@@ -103,30 +127,204 @@ function logIn(password) {
 
 /***/ }),
 
-/***/ "./src/checks/storage_select_installation_device.ts":
-/*!**********************************************************!*\
-  !*** ./src/checks/storage_select_installation_device.ts ***!
-  \**********************************************************/
+/***/ "./src/checks/overview.ts":
+/*!********************************!*\
+  !*** ./src/checks/overview.ts ***!
+  \********************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.changeInstallationDeviceToLvm = changeInstallationDeviceToLvm;
+exports.ensureOverviewVisible = ensureOverviewVisible;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const lvm_settings_page_1 = __webpack_require__(/*! ../pages/lvm_settings_page */ "./src/pages/lvm_settings_page.ts");
+function ensureOverviewVisible() {
+    (0, helpers_1.it)("should display overview", async function () {
+        await new sidebar_page_1.SidebarPage(helpers_1.page).waitOverviewVisible(40000);
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/product_selection.ts":
+/*!*****************************************!*\
+  !*** ./src/checks/product_selection.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.productSelectionByName = productSelectionByName;
+exports.productSelection = productSelection;
+exports.productSelectionWithLicense = productSelectionWithLicense;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
+function productSelectionByName(productName) {
+    (0, helpers_1.it)(`should allow to select product ${productName}`, async function () {
+        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectByName(productName);
+    });
+}
+function productSelection(productId) {
+    (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
+        const productSelectionPage = new product_selection_page_1.ProductSelectionPage(helpers_1.page);
+        await productSelectionPage.choose(productId);
+        await productSelectionPage.select();
+    });
+}
+function productSelectionWithLicense(productId) {
+    (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
+        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).choose(productId);
+    });
+    (0, helpers_1.it)(`should allow to review its license`, async function () {
+        const productSelectionWithRegistrationPage = new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page);
+        await productSelectionWithRegistrationPage.openLicense();
+        await productSelectionWithRegistrationPage.verifyLicense();
+        await productSelectionWithRegistrationPage.closeLicense();
+    });
+    (0, helpers_1.it)(`should allow to accept its license`, async function () {
+        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).acceptProductLicense();
+    });
+    (0, helpers_1.it)(`should allow to select product`, async function () {
+        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/registration.ts":
+/*!************************************!*\
+  !*** ./src/checks/registration.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.enterRegistration = enterRegistration;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const registration_enter_code_page_1 = __webpack_require__(/*! ../pages/registration_enter_code_page */ "./src/pages/registration_enter_code_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+function enterRegistration(code) {
+    (0, helpers_1.it)("should allow setting registration", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const registration = new registration_enter_code_page_1.RegistrationEnterCodePage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await registration.fillCode(code);
+        await registration.register();
+    });
+    (0, helpers_1.it)("should not display option to register in Overview", async function () {
+        await new overview_page_1.OverviewPage(helpers_1.page).waitWarningAlertToDisappear();
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/root_authentication.ts":
+/*!*******************************************!*\
+  !*** ./src/checks/root_authentication.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.editRootUser = editRootUser;
+exports.setupMandatoryRootAuth = setupMandatoryRootAuth;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const setup_root_user_authentication_page_1 = __webpack_require__(/*! ../pages/setup_root_user_authentication_page */ "./src/pages/setup_root_user_authentication_page.ts");
+const root_authentication_methods_1 = __webpack_require__(/*! ../pages/root_authentication_methods */ "./src/pages/root_authentication_methods.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
+function editRootUser(password) {
+    (0, helpers_1.it)("should edit the root user", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await sidebar.goToUsers();
+        await users.editRootUser();
+        await setARootPassword.usePassword();
+        await setARootPassword.fillPassword(password);
+        await setARootPassword.fillPasswordConfirmation(password);
+        await setARootPassword.accept();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+    });
+}
+function setupMandatoryRootAuth(password) {
+    (0, helpers_1.it)("should setup root user authentication password", async function () {
+        const setupRootuserAuthentication = new setup_root_user_authentication_page_1.SetupRootUserAuthenticationPage(helpers_1.page);
+        // longer timeout to refresh repos when coming from product selection
+        await setupRootuserAuthentication.wait(3 * 60 * 1000);
+        await setupRootuserAuthentication.fillPassword(password);
+        await setupRootuserAuthentication.submit();
+    }, 3 * 60 * 1000);
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/storage_result_destructive_actions_planned.ts":
+/*!******************************************************************!*\
+  !*** ./src/checks/storage_result_destructive_actions_planned.ts ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.verifyDecryptDestructiveActions = verifyDecryptDestructiveActions;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
-function changeInstallationDeviceToLvm() {
-    (0, helpers_1.it)("should add LVM volume group", async function () {
+function verifyDecryptDestructiveActions(patterns) {
+    (0, helpers_1.it)("should unfold list of destructive actions", async function () {
+        await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
+        await new storage_page_1.StoragePage(helpers_1.page).expandDestructiveActionsList();
+    });
+    (0, helpers_1.it)(`should delete: ${patterns.join(", ")}`, async function () {
+        for (const action of patterns) {
+            await new storage_page_1.StoragePage(helpers_1.page).verifyDestructiveAction(action);
+        }
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/storage_zfcp.ts":
+/*!************************************!*\
+  !*** ./src/checks/storage_zfcp.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.prepareZfcpStorage = prepareZfcpStorage;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
+function prepareZfcpStorage() {
+    (0, helpers_1.it)("should prepare zFCP storage", async function () {
         const storage = new storage_page_1.StoragePage(helpers_1.page);
-        const lvm = new lvm_settings_page_1.ConfigureLvmVolumeGroupPage(helpers_1.page);
+        const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.selectMoreDevices();
-        await storage.addLvmVolumeGroup();
-        await lvm.installOnNewLvm();
-    });
+        await storage.activateZfcp();
+        await zfcp.activateDevice("0.0.fa00");
+        await zfcp.activateDevice("0.0.fc00");
+        await zfcp.back();
+        await zfcp.activateMultipath();
+        // Workaround to wait for page to load, sometimes workers take more than 60 seconds to load storage
+        await storage.waitForElement("::-p-text(Activate zFCP disks)", 80000);
+    }, 3 * 60 * 1000);
 }
 
 
@@ -508,27 +706,31 @@ exports.CongratulationPage = CongratulationPage;
 
 /***/ }),
 
-/***/ "./src/pages/encryption_settings_page.ts":
-/*!***********************************************!*\
-  !*** ./src/pages/encryption_settings_page.ts ***!
-  \***********************************************/
+/***/ "./src/pages/create_user_page.ts":
+/*!***************************************!*\
+  !*** ./src/pages/create_user_page.ts ***!
+  \***************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EncryptionSettingsPage = void 0;
-class EncryptionSettingsPage {
+exports.CreateFirstUserPage = void 0;
+class CreateFirstUserPage {
     page;
-    encryptTheSystemToggle = () => this.page.locator("::-p-text(Encrypt the system)");
-    passwordInput = () => this.page.locator("#password");
-    passwordConfirmationInput = () => this.page.locator("#passwordConfirmation");
-    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    fullNameInput = () => this.page.locator("input#userFullName");
+    usernameInput = () => this.page.locator("input#userName");
+    passwordInput = () => this.page.locator("input#password");
+    passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
+    acceptButton = () => this.page.locator("button[form='firstUserForm']");
     constructor(page) {
         this.page = page;
     }
-    async encryptTheSystem() {
-        await this.encryptTheSystemToggle().click();
+    async fillFullName(fullName) {
+        await this.fullNameInput().fill(fullName);
+    }
+    async fillUserName(userName) {
+        await this.usernameInput().fill(userName);
     }
     async fillPassword(password) {
         await this.passwordInput().fill(password);
@@ -540,7 +742,34 @@ class EncryptionSettingsPage {
         await this.acceptButton().click();
     }
 }
-exports.EncryptionSettingsPage = EncryptionSettingsPage;
+exports.CreateFirstUserPage = CreateFirstUserPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/encrypted_device_page.ts":
+/*!********************************************!*\
+  !*** ./src/pages/encrypted_device_page.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EncryptedDevice = void 0;
+class EncryptedDevice {
+    page;
+    encryptionPasswordInput = () => this.page.locator("input#luks-password");
+    decryptButton = () => this.page.locator("button::-p-text(Decrypt)");
+    constructor(page) {
+        this.page = page;
+    }
+    async decrypt(password, timeout) {
+        await this.encryptionPasswordInput().setTimeout(timeout).fill(password);
+        await this.decryptButton().click();
+    }
+}
+exports.EncryptedDevice = EncryptedDevice;
 
 
 /***/ }),
@@ -574,31 +803,6 @@ exports.LoginAsRootPage = LoginAsRootPage;
 
 /***/ }),
 
-/***/ "./src/pages/lvm_settings_page.ts":
-/*!****************************************!*\
-  !*** ./src/pages/lvm_settings_page.ts ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ConfigureLvmVolumeGroupPage = void 0;
-class ConfigureLvmVolumeGroupPage {
-    page;
-    acceptButton = () => this.page.locator("button::-p-text(Accept)");
-    constructor(page) {
-        this.page = page;
-    }
-    async installOnNewLvm() {
-        await this.acceptButton().click();
-    }
-}
-exports.ConfigureLvmVolumeGroupPage = ConfigureLvmVolumeGroupPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/overview_page.ts":
 /*!************************************!*\
   !*** ./src/pages/overview_page.ts ***!
@@ -624,6 +828,169 @@ class OverviewPage {
     }
 }
 exports.OverviewPage = OverviewPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/product_selection_page.ts":
+/*!*********************************************!*\
+  !*** ./src/pages/product_selection_page.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProductSelectionWithRegistrationPage = exports.ProductSelectionPage = void 0;
+class ProductSelectionPage {
+    page;
+    productText = (name) => this.page.locator(`::-p-text(${name})`);
+    productId = (id) => this.page.locator("input#" + id.replaceAll(".", "\\."));
+    selectButton = () => this.page.locator("button[form='productSelectionForm']");
+    constructor(page) {
+        this.page = page;
+    }
+    async choose(id) {
+        (await this.productId(id).waitHandle()).scrollIntoView();
+        await this.productId(id).click();
+    }
+    async select() {
+        await this.selectButton().click();
+    }
+    async selectByName(name) {
+        await this.choose(name);
+        await this.selectButton().click();
+    }
+}
+exports.ProductSelectionPage = ProductSelectionPage;
+function LicenseAcceptable(Base) {
+    return class extends Base {
+        licenseAcceptanceCheckbox = () => this.page.locator("::-p-text(I have read and)");
+        licenseOpenButton = () => this.page.locator("::-p-text(license)");
+        licenseCloseButton = () => this.page.locator("::-p-text(Close)");
+        licenseText = () => this.page.locator("::-p-text(SUSE(R) End User License Agreement for Beta Software)");
+        async acceptLicense() {
+            await this.licenseAcceptanceCheckbox().click();
+        }
+        async openLicense() {
+            await this.licenseOpenButton().click();
+        }
+        async verifyLicense() {
+            await this.licenseText().wait();
+        }
+        async closeLicense() {
+            await this.licenseCloseButton().click();
+        }
+        async acceptProductLicense() {
+            await this.acceptLicense();
+        }
+    };
+}
+class ProductSelectionWithRegistrationPage extends LicenseAcceptable(ProductSelectionPage) {
+}
+exports.ProductSelectionWithRegistrationPage = ProductSelectionWithRegistrationPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/registration_enter_code_page.ts":
+/*!***************************************************!*\
+  !*** ./src/pages/registration_enter_code_page.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RegistrationEnterCodePage = void 0;
+class RegistrationEnterCodePage {
+    page;
+    codeInput = () => this.page.locator("input#key");
+    registertButton = () => this.page.locator("button[form='productRegistration']");
+    constructor(page) {
+        this.page = page;
+    }
+    async fillCode(code) {
+        await this.codeInput().fill(code);
+    }
+    async register() {
+        await this.registertButton().click();
+    }
+}
+exports.RegistrationEnterCodePage = RegistrationEnterCodePage;
+
+
+/***/ }),
+
+/***/ "./src/pages/root_authentication_methods.ts":
+/*!**************************************************!*\
+  !*** ./src/pages/root_authentication_methods.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SetARootPasswordPage = void 0;
+class SetARootPasswordPage {
+    page;
+    acceptText = () => this.page.locator("button::-p-text(Accept)");
+    confirmText = () => this.page.locator("button::-p-text(Confirm)");
+    passwordInput = () => this.page.locator("input#password");
+    passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
+    usePasswordToggle = () => this.page.locator("::-p-text(Use password)");
+    constructor(page) {
+        this.page = page;
+    }
+    async accept() {
+        await this.acceptText().click();
+    }
+    async confirm() {
+        await this.confirmText().click();
+    }
+    async fillPassword(password) {
+        await this.passwordInput().fill(password);
+    }
+    async fillPasswordConfirmation(password) {
+        await this.passwordConfirmationInput().fill(password);
+    }
+    async usePassword() {
+        await this.usePasswordToggle().click();
+    }
+}
+exports.SetARootPasswordPage = SetARootPasswordPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/setup_root_user_authentication_page.ts":
+/*!**********************************************************!*\
+  !*** ./src/pages/setup_root_user_authentication_page.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SetupRootUserAuthenticationPage = void 0;
+class SetupRootUserAuthenticationPage {
+    page;
+    rootPasswordInput = () => this.page.locator("input#rootPassword");
+    submitButton = () => this.page.locator("button[type='submit']");
+    constructor(page) {
+        this.page = page;
+    }
+    async wait(timeout) {
+        await this.rootPasswordInput().setTimeout(timeout).wait();
+    }
+    async fillPassword(password) {
+        await this.rootPasswordInput().fill(password);
+    }
+    async submit() {
+        await this.submitButton().click();
+    }
+}
+exports.SetupRootUserAuthenticationPage = SetupRootUserAuthenticationPage;
 
 
 /***/ }),
@@ -706,6 +1073,8 @@ class StoragePage {
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
     addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
+    destructiveActionsList = () => this.page.locator("::-p-text(Check)");
+    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
     constructor(page) {
         this.page = page;
     }
@@ -730,33 +1099,144 @@ class StoragePage {
     async waitForElement(element, timeout) {
         await this.page.locator(element).setTimeout(timeout).wait();
     }
+    async expandDestructiveActionsList() {
+        await this.destructiveActionsList().click();
+    }
+    async verifyDestructiveAction(action) {
+        await this.destructiveActionText(action).wait();
+    }
 }
 exports.StoragePage = StoragePage;
 
 
 /***/ }),
 
-/***/ "./src/test_lvm_encrypted.ts":
-/*!***********************************!*\
-  !*** ./src/test_lvm_encrypted.ts ***!
-  \***********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ "./src/pages/users_page.ts":
+/*!*********************************!*\
+  !*** ./src/pages/users_page.ts ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UsersPage = void 0;
+class UsersPage {
+    page;
+    firstUserLink = () => this.page.locator("a[href='#/users/first']");
+    editRootUserButton = () => this.page.locator("a[href='#/users/root/edit']");
+    defineTheFirstUserButton = () => this.page.locator("a[href='#/users/first/edit']");
+    constructor(page) {
+        this.page = page;
+    }
+    async defineAUserNow() {
+        await this.firstUserLink().click();
+    }
+    async editRootUser() {
+        await this.editRootUserButton().click();
+    }
+    async defineTheFirstUser() {
+        await this.defineTheFirstUserButton().click();
+    }
+}
+exports.UsersPage = UsersPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/zfcp_page.ts":
+/*!********************************!*\
+  !*** ./src/pages/zfcp_page.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ZfcpPage = void 0;
+class ZfcpPage {
+    page;
+    faDisk = () => this.page.locator("tbody > tr:first-child > td:last-child > button#zfcp_controllers_actions");
+    fcDisk = () => this.page.locator("tbody > tr:last-child > td:last-child > button#zfcp_controllers_actions");
+    activateDisk = () => this.page.locator("::-p-aria(Activate[role='menuitem'])");
+    backButton = () => this.page.locator("button::-p-text(Back)");
+    enableMultipath = () => this.page.locator("::-p-text('Yes')");
+    constructor(page) {
+        this.page = page;
+    }
+    async activateDevice(channelId) {
+        let element;
+        if (channelId === "0.0.fa00")
+            element = this.faDisk();
+        else
+            element = this.fcDisk();
+        await element.click();
+        await this.activateDisk().click();
+        await this.page.locator("::-p-text(WWPN)");
+        await element.setTimeout(90000).wait();
+    }
+    async activateMultipath() {
+        await this.enableMultipath().setTimeout(40000).click();
+    }
+    async back() {
+        await this.backButton().click();
+    }
+}
+exports.ZfcpPage = ZfcpPage;
+
+
+/***/ }),
+
+/***/ "./src/test_extended.ts":
+/*!******************************!*\
+  !*** ./src/test_extended.ts ***!
+  \******************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+// This is an example file for running Agama integration tests using Puppeteer.
+// If the test fails it saves the page screenshot and the HTML page dump to
+// ./log/ subdirectory. For more details about customization see the README.md
+// file.
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+// see https://nodejs.org/docs/latest-v20.x/api/test.html
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
+const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
+const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
+const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
+const decryption_1 = __webpack_require__(/*! ./checks/decryption */ "./src/checks/decryption.ts");
+const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ./checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
+const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
+const overview_1 = __webpack_require__(/*! ./checks/overview */ "./src/checks/overview.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
-const storage_select_installation_device_1 = __webpack_require__(/*! ./checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
-const encryption_1 = __webpack_require__(/*! ./checks/encryption */ "./src/checks/encryption.ts");
+const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 // parse options from the command line
-const options = (0, cmdline_1.parse)((cmd) => cmd.option("--install", "Proceed to install the system (the default is not to install it)"));
+const options = (0, cmdline_1.parse)((cmd) => cmd
+    .option("--product-id <id>", "Product id to select a product to install", "none")
+    .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
+    .option("--registration-code <code>", "Registration code")
+    .option("--install", "Proceed to install the system (the default is not to install it)")
+    .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
+    .option("--delete-patterns <pattern>...", "comma separated list of patterns", cmdline_1.commaSeparatedList));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
-(0, storage_select_installation_device_1.changeInstallationDeviceToLvm)();
-(0, encryption_1.enableEncryption)(options.password);
+if (options.productId !== "none")
+    if (options.acceptLicense)
+        (0, product_selection_1.productSelectionWithLicense)(options.productId);
+    else
+        (0, product_selection_1.productSelection)(options.productId);
+(0, decryption_1.decryptDevice)(options.decryptPassword);
+(0, overview_1.ensureOverviewVisible)();
+(0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(options.deletePatterns);
+if (options.registrationCode)
+    (0, registration_1.enterRegistration)(options.registrationCode);
+(0, first_user_1.createFirstUser)(options.password);
+(0, root_authentication_1.editRootUser)(options.rootPassword);
+if (options.prepareAdvancedStorage === "zfcp")
+    (0, storage_zfcp_1.prepareZfcpStorage)();
 if (options.install)
     (0, installation_1.performInstallation)();
 
@@ -1145,7 +1625,7 @@ module.exports = require("zlib");
 /******/ 	// the startup function
 /******/ 	__webpack_require__.x = () => {
 /******/ 		// Load entry module and return exports
-/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_lvm_encrypted.ts")))
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_extended.ts")))
 /******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 		return __webpack_exports__;
 /******/ 	};
@@ -1249,7 +1729,7 @@ module.exports = require("zlib");
 /******/ 		// object to store loaded chunks
 /******/ 		// "1" means "loaded", otherwise not loaded yet
 /******/ 		var installedChunks = {
-/******/ 			"test_lvm_encrypted": 1
+/******/ 			"test_extended": 1
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.O.require = (chunkId) => (installedChunks[chunkId]);
@@ -1301,4 +1781,4 @@ module.exports = require("zlib");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=test_lvm_encrypted.js.map
+//# sourceMappingURL=test_extended.js.map

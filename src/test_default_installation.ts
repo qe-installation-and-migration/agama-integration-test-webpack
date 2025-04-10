@@ -15,6 +15,8 @@ import { enterRegistration } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
+import { ensureProductConfigurationStarted } from "./checks/configuration_started";
+import { ensureOverviewVisible } from "./checks/overview";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
 
 // parse options from the command line
@@ -41,6 +43,8 @@ logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
+ensureProductConfigurationStarted();
+ensureOverviewVisible();
 if (options.registrationCode) enterRegistration(options.registrationCode);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);

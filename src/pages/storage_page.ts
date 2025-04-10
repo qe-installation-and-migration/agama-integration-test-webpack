@@ -14,6 +14,10 @@ export class StoragePage {
 
   private readonly addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
 
+  private readonly destructiveActionsList = () => this.page.locator("::-p-text(Check)");
+  private readonly destructiveActionText = (name: string) =>
+    this.page.locator(`::-p-text(Delete ${name})`);
+
   constructor(page: Page) {
     this.page = page;
   }
@@ -44,5 +48,13 @@ export class StoragePage {
 
   async waitForElement(element, timeout) {
     await this.page.locator(element).setTimeout(timeout).wait();
+  }
+
+  async expandDestructiveActionsList() {
+    await this.destructiveActionsList().click();
+  }
+
+  async verifyDestructiveAction(action: string) {
+    await this.destructiveActionText(action).wait();
   }
 }
