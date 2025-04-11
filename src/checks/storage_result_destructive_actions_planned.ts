@@ -8,7 +8,7 @@ export function verifyDecryptDestructiveActions(patterns: string[]) {
     await new StoragePage(page).expandDestructiveActionsList();
   });
 
-  it(`should delete: ${patterns.join(", ")}`, async function () {
+  it("should delete defined patterns", async function () {
     for (const action of patterns) {
       await new StoragePage(page).verifyDestructiveAction(action);
     }

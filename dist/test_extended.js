@@ -58,6 +58,33 @@ function createFirstUser(password) {
 
 /***/ }),
 
+/***/ "./src/checks/hostname.ts":
+/*!********************************!*\
+  !*** ./src/checks/hostname.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.setPermanentHostname = setPermanentHostname;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const hostname_page_1 = __webpack_require__(/*! ../pages/hostname_page */ "./src/pages/hostname_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+function setPermanentHostname(hostname) {
+    (0, helpers_1.it)("should allow setting static hostname", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const hostnamePage = new hostname_page_1.HostnamePage(helpers_1.page);
+        await sidebar.goToHostname();
+        await hostnamePage.useStaticHostname();
+        await hostnamePage.fill(hostname);
+        await hostnamePage.accept();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/installation.ts":
 /*!************************************!*\
   !*** ./src/checks/installation.ts ***!
@@ -287,7 +314,7 @@ function verifyDecryptDestructiveActions(patterns) {
         await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
         await new storage_page_1.StoragePage(helpers_1.page).expandDestructiveActionsList();
     });
-    (0, helpers_1.it)(`should delete: ${patterns.join(", ")}`, async function () {
+    (0, helpers_1.it)("should delete defined patterns", async function () {
         for (const action of patterns) {
             await new storage_page_1.StoragePage(helpers_1.page).verifyDestructiveAction(action);
         }
@@ -774,6 +801,39 @@ exports.EncryptedDevice = EncryptedDevice;
 
 /***/ }),
 
+/***/ "./src/pages/hostname_page.ts":
+/*!************************************!*\
+  !*** ./src/pages/hostname_page.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HostnamePage = void 0;
+class HostnamePage {
+    page;
+    useStaticHostnameToggle = () => this.page.locator("input#hostname");
+    hostnameInput = () => this.page.locator("::-p-aria(Static hostname)");
+    acceptButton = () => this.page.locator("::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async useStaticHostname() {
+        await this.useStaticHostnameToggle().click();
+    }
+    async fill(hostname) {
+        await this.hostnameInput().fill(hostname);
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.HostnamePage = HostnamePage;
+
+
+/***/ }),
+
 /***/ "./src/pages/login_as_root_page.ts":
 /*!*****************************************!*\
   !*** ./src/pages/login_as_root_page.ts ***!
@@ -1009,6 +1069,7 @@ class SidebarPage {
     page;
     overviewLink = () => this.page.locator("a[href='#/overview']");
     overviewText = () => this.page.locator("h2::-p-text('Overview')");
+    hostnameLink = () => this.page.locator("a[href='#/hostname']");
     localizationLink = () => this.page.locator("a[href='#/l10n']");
     networkLink = () => this.page.locator("a[href='#/network']");
     storageLink = () => this.page.locator("a[href='#/storage']");
@@ -1022,6 +1083,9 @@ class SidebarPage {
     }
     async waitOverviewVisible(timeout) {
         await this.overviewText().setTimeout(timeout).wait();
+    }
+    async goToHostname() {
+        await this.hostnameLink().click();
     }
     async goToLocalization() {
         await this.localizationLink().click();
@@ -1207,6 +1271,7 @@ const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
+const hostname_1 = __webpack_require__(/*! ./checks/hostname */ "./src/checks/hostname.ts");
 const decryption_1 = __webpack_require__(/*! ./checks/decryption */ "./src/checks/decryption.ts");
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ./checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
@@ -1218,6 +1283,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
     .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
     .option("--registration-code <code>", "Registration code")
+    .option("--staticHostname <hostname>", "Static Hostname")
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
     .option("--delete-patterns <pattern>...", "comma separated list of patterns", cmdline_1.commaSeparatedList));
@@ -1231,6 +1297,8 @@ if (options.productId !== "none")
 (0, decryption_1.decryptDevice)(options.decryptPassword);
 (0, overview_1.ensureOverviewVisible)();
 (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(options.deletePatterns);
+if (options.staticHostname)
+    (0, hostname_1.setPermanentHostname)(options.staticHostname);
 if (options.registrationCode)
     (0, registration_1.enterRegistration)(options.registrationCode);
 (0, first_user_1.createFirstUser)(options.password);
