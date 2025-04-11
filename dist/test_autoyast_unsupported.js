@@ -20,14 +20,14 @@ function verifyNotImplemented(elements) {
     (0, helpers_1.it)(`should display elements not implemented yet: ${elements.join(", ")}`, async function () {
         const autoyastUnsupported = new autoyast_unsupported_page_1.AutoyastUnsupportedPage(helpers_1.page);
         for (const element of elements)
-            await autoyastUnsupported.verifyNotImplementedElement(elements.length, element);
+            await autoyastUnsupported.verifyNotImplementedElement(element);
     });
 }
 function verifyNotSupported(elements) {
     (0, helpers_1.it)(`should display elements not supported: ${elements.join(", ")}`, async function () {
         const autoyastUnsupported = new autoyast_unsupported_page_1.AutoyastUnsupportedPage(helpers_1.page);
         for (const element of elements)
-            await autoyastUnsupported.verifyNotSupportedElement(elements.length, element);
+            await autoyastUnsupported.verifyNotSupportedElement(element);
     });
 }
 function abort() {
@@ -410,7 +410,9 @@ class AutoyastUnsupportedPage {
     page;
     abortButton = () => this.page.locator("button::-p-text(Abort)");
     continueButton = () => this.page.locator("button::-p-text(Continue)");
-    unsupportedElementText = (sectionTitle, numElements, element) => this.page.locator(`::-p-aria([name="${sectionTitle} (${numElements})"][role="region"]) ::-p-text(${element})`);
+    // atm we cannot be more specific to distinguish the section which belongs each element due to some
+    // problem with puppeteer when running so many asyn calls, so this locator is used for both sections
+    unsupportedElementText = (element) => this.page.locator(`::-p-text(${element})`);
     constructor(page) {
         this.page = page;
     }
@@ -420,13 +422,11 @@ class AutoyastUnsupportedPage {
     async continue() {
         await this.continueButton().click();
     }
-    async verifyNotImplementedElement(numElements, element) {
-        const elementHandle = await this.unsupportedElementText("Not implemented yet", numElements, element).waitHandle();
-        elementHandle.dispose();
+    async verifyNotImplementedElement(element) {
+        await this.unsupportedElementText(element).wait();
     }
-    async verifyNotSupportedElement(numElements, element) {
-        const elementHandle = await this.unsupportedElementText("Not supported", numElements, element).waitHandle();
-        elementHandle.dispose();
+    async verifyNotSupportedElement(element) {
+        await this.unsupportedElementText(element).wait();
     }
 }
 exports.AutoyastUnsupportedPage = AutoyastUnsupportedPage;

@@ -2,6 +2,27 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/checks/configuration_started.ts":
+/*!*********************************************!*\
+  !*** ./src/checks/configuration_started.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ensureProductConfigurationStarted = ensureProductConfigurationStarted;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const configuring_product_page_1 = __webpack_require__(/*! ../pages/configuring_product_page */ "./src/pages/configuring_product_page.ts");
+function ensureProductConfigurationStarted() {
+    (0, helpers_1.it)("should start configuring the product", async function () {
+        await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/first_user.ts":
 /*!**********************************!*\
   !*** ./src/checks/first_user.ts ***!
@@ -105,6 +126,27 @@ function logIn(password) {
 
 /***/ }),
 
+/***/ "./src/checks/overview.ts":
+/*!********************************!*\
+  !*** ./src/checks/overview.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ensureOverviewVisible = ensureOverviewVisible;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+function ensureOverviewVisible() {
+    (0, helpers_1.it)("should display overview", async function () {
+        await new sidebar_page_1.SidebarPage(helpers_1.page).waitOverviewVisible(40000);
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/product_selection.ts":
 /*!*****************************************!*\
   !*** ./src/checks/product_selection.ts ***!
@@ -118,22 +160,11 @@ exports.productSelectionByName = productSelectionByName;
 exports.productSelection = productSelection;
 exports.productSelectionWithLicense = productSelectionWithLicense;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const configuring_product_page_1 = __webpack_require__(/*! ../pages/configuring_product_page */ "./src/pages/configuring_product_page.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function ensureProductConfigured() {
-    (0, helpers_1.it)("should start configuring the product", async function () {
-        await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
-    });
-    (0, helpers_1.it)("should finish configuring the product", async function () {
-        await new sidebar_page_1.SidebarPage(helpers_1.page).waitOverviewVisible(40000);
-    });
-}
 function productSelectionByName(productName) {
     (0, helpers_1.it)(`should allow to select product ${productName}`, async function () {
         await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectByName(productName);
     });
-    ensureProductConfigured();
 }
 function productSelection(productId) {
     (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
@@ -141,7 +172,6 @@ function productSelection(productId) {
         await productSelectionPage.choose(productId);
         await productSelectionPage.select();
     });
-    ensureProductConfigured();
 }
 function productSelectionWithLicense(productId) {
     (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
@@ -159,7 +189,6 @@ function productSelectionWithLicense(productId) {
     (0, helpers_1.it)(`should allow to select product`, async function () {
         await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
     });
-    ensureProductConfigured();
 }
 
 
@@ -234,37 +263,6 @@ function setupMandatoryRootAuth(password) {
         await setupRootuserAuthentication.fillPassword(password);
         await setupRootuserAuthentication.submit();
     }, 3 * 60 * 1000);
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/storage_dasd.ts":
-/*!************************************!*\
-  !*** ./src/checks/storage_dasd.ts ***!
-  \************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.prepareDasdStorage = prepareDasdStorage;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
-const dasd_page_1 = __webpack_require__(/*! ../pages/dasd_page */ "./src/pages/dasd_page.ts");
-function prepareDasdStorage() {
-    (0, helpers_1.it)("should prepare DASD storage", async function () {
-        const storage = new storage_page_1.StoragePage(helpers_1.page);
-        const dasd = new dasd_page_1.DasdPage(helpers_1.page);
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToStorage();
-        await storage.manageDasd();
-        await dasd.activateDevice();
-        await dasd.back();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
-    });
 }
 
 
@@ -745,39 +743,6 @@ exports.CreateFirstUserPage = CreateFirstUserPage;
 
 /***/ }),
 
-/***/ "./src/pages/dasd_page.ts":
-/*!********************************!*\
-  !*** ./src/pages/dasd_page.ts ***!
-  \********************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DasdPage = void 0;
-class DasdPage {
-    page;
-    selectRow = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
-    performAnActionToggleButton = () => this.page.locator("::-p-text('Perform an action')");
-    activateDisk = () => this.page.locator("::-p-text(Activate)");
-    backButton = () => this.page.locator("button::-p-text(Back)");
-    constructor(page) {
-        this.page = page;
-    }
-    async activateDevice() {
-        await this.selectRow(0).click();
-        await this.performAnActionToggleButton().click();
-        await this.activateDisk().click();
-    }
-    async back() {
-        await this.backButton().click();
-    }
-}
-exports.DasdPage = DasdPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/login_as_root_page.ts":
 /*!*****************************************!*\
   !*** ./src/pages/login_as_root_page.ts ***!
@@ -1077,6 +1042,8 @@ class StoragePage {
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
     addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
+    destructiveActionsList = () => this.page.locator("::-p-text(Check)");
+    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
     constructor(page) {
         this.page = page;
     }
@@ -1100,6 +1067,12 @@ class StoragePage {
     }
     async waitForElement(element, timeout) {
         await this.page.locator(element).setTimeout(timeout).wait();
+    }
+    async expandDestructiveActionsList() {
+        await this.destructiveActionsList().click();
+    }
+    async verifyDestructiveAction(action) {
+        await this.destructiveActionText(action).wait();
     }
 }
 exports.StoragePage = StoragePage;
@@ -1206,7 +1179,8 @@ const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/c
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
-const storage_dasd_1 = __webpack_require__(/*! ./checks/storage_dasd */ "./src/checks/storage_dasd.ts");
+const configuration_started_1 = __webpack_require__(/*! ./checks/configuration_started */ "./src/checks/configuration_started.ts");
+const overview_1 = __webpack_require__(/*! ./checks/overview */ "./src/checks/overview.ts");
 const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
@@ -1222,15 +1196,13 @@ if (options.productId !== "none")
         (0, product_selection_1.productSelectionWithLicense)(options.productId);
     else
         (0, product_selection_1.productSelection)(options.productId);
+(0, configuration_started_1.ensureProductConfigurationStarted)();
+(0, overview_1.ensureOverviewVisible)();
 if (options.registrationCode)
     (0, registration_1.enterRegistration)(options.registrationCode);
 (0, first_user_1.createFirstUser)(options.password);
 (0, root_authentication_1.editRootUser)(options.rootPassword);
-if (options.dasd)
-    (0, storage_dasd_1.prepareDasdStorage)();
-if (options.prepareAdvancedStorage === "dasd")
-    (0, storage_dasd_1.prepareDasdStorage)();
-else if (options.prepareAdvancedStorage === "zfcp")
+if (options.prepareAdvancedStorage === "zfcp")
     (0, storage_zfcp_1.prepareZfcpStorage)();
 if (options.install)
     (0, installation_1.performInstallation)();
