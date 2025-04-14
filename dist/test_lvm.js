@@ -573,6 +573,7 @@ class SidebarPage {
     page;
     overviewLink = () => this.page.locator("a[href='#/overview']");
     overviewText = () => this.page.locator("h2::-p-text('Overview')");
+    hostnameLink = () => this.page.locator("a[href='#/hostname']");
     localizationLink = () => this.page.locator("a[href='#/l10n']");
     networkLink = () => this.page.locator("a[href='#/network']");
     storageLink = () => this.page.locator("a[href='#/storage']");
@@ -586,6 +587,9 @@ class SidebarPage {
     }
     async waitOverviewVisible(timeout) {
         await this.overviewText().setTimeout(timeout).wait();
+    }
+    async goToHostname() {
+        await this.hostnameLink().click();
     }
     async goToLocalization() {
         await this.localizationLink().click();

@@ -12,6 +12,7 @@ import { logIn } from "./checks/login";
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser } from "./checks/root_authentication";
 import { enterRegistration } from "./checks/registration";
+import { setPermanentHostname } from "./checks/hostname";
 import { decryptDevice } from "./checks/decryption";
 import { verifyDecryptDestructiveActions } from "./checks/storage_result_destructive_actions_planned";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
@@ -28,6 +29,7 @@ const options = parse((cmd) =>
       "Accept license for a product with license (the default is a product without license)",
     )
     .option("--registration-code <code>", "Registration code")
+    .option("--staticHostname <hostname>", "Static Hostname")
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
     .option(
@@ -45,6 +47,7 @@ if (options.productId !== "none")
 decryptDevice(options.decryptPassword);
 ensureOverviewVisible();
 verifyDecryptDestructiveActions(options.deletePatterns);
+if (options.staticHostname) setPermanentHostname(options.staticHostname);
 if (options.registrationCode) enterRegistration(options.registrationCode);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
