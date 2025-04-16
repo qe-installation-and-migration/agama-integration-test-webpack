@@ -232,6 +232,7 @@ function productSelectionWithLicense(productId) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterRegistration = enterRegistration;
+exports.enterRegistrationHa = enterRegistrationHa;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const registration_enter_code_page_1 = __webpack_require__(/*! ../pages/registration_enter_code_page */ "./src/pages/registration_enter_code_page.ts");
@@ -246,6 +247,15 @@ function enterRegistration(code) {
     });
     (0, helpers_1.it)("should not display option to register in Overview", async function () {
         await new overview_page_1.OverviewPage(helpers_1.page).waitWarningAlertToDisappear();
+    });
+}
+function enterRegistrationHa(code) {
+    (0, helpers_1.it)("should allow setting registration HA", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const registration = new registration_enter_code_page_1.RegistrationEnterCodePage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await registration.fillCodeHa(code);
+        await registration.register();
     });
 }
 
@@ -966,12 +976,16 @@ exports.RegistrationEnterCodePage = void 0;
 class RegistrationEnterCodePage {
     page;
     codeInput = () => this.page.locator("input#key");
-    registertButton = () => this.page.locator("button[form='productRegistration']");
+    codeHaInput = () => this.page.locator("input[id='input-reg-code-sle-ha-16.0']");
+    registertButton = () => this.page.locator("button::-p-text(Register)");
     constructor(page) {
         this.page = page;
     }
     async fillCode(code) {
         await this.codeInput().fill(code);
+    }
+    async fillCodeHa(code) {
+        await this.codeHaInput().fill(code);
     }
     async register() {
         await this.registertButton().click();
