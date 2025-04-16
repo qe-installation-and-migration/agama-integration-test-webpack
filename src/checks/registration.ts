@@ -17,3 +17,14 @@ export function enterRegistration(code: string) {
     await new OverviewPage(page).waitWarningAlertToDisappear();
   });
 }
+
+export function enterRegistrationHa(code: string) {
+  it("should allow setting registration HA", async function () {
+    const sidebar = new SidebarWithRegistrationPage(page);
+    const registration = new RegistrationEnterCodePage(page);
+
+    await sidebar.goToRegistration();
+    await registration.fillCodeHa(code);
+    await registration.register();
+  });
+}

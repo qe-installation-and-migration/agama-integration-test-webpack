@@ -204,6 +204,7 @@ function productSelectionWithLicense(productId) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterRegistration = enterRegistration;
+exports.enterRegistrationHa = enterRegistrationHa;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const registration_enter_code_page_1 = __webpack_require__(/*! ../pages/registration_enter_code_page */ "./src/pages/registration_enter_code_page.ts");
@@ -218,6 +219,15 @@ function enterRegistration(code) {
     });
     (0, helpers_1.it)("should not display option to register in Overview", async function () {
         await new overview_page_1.OverviewPage(helpers_1.page).waitWarningAlertToDisappear();
+    });
+}
+function enterRegistrationHa(code) {
+    (0, helpers_1.it)("should allow setting registration HA", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const registration = new registration_enter_code_page_1.RegistrationEnterCodePage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await registration.fillCodeHa(code);
+        await registration.register();
     });
 }
 
@@ -875,12 +885,16 @@ exports.RegistrationEnterCodePage = void 0;
 class RegistrationEnterCodePage {
     page;
     codeInput = () => this.page.locator("input#key");
-    registertButton = () => this.page.locator("button[form='productRegistration']");
+    codeHaInput = () => this.page.locator("input[id='input-reg-code-sle-ha-16.0']");
+    registertButton = () => this.page.locator("button::-p-text(Register)");
     constructor(page) {
         this.page = page;
     }
     async fillCode(code) {
         await this.codeInput().fill(code);
+    }
+    async fillCodeHa(code) {
+        await this.codeHaInput().fill(code);
     }
     async register() {
         await this.registertButton().click();
@@ -1191,6 +1205,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
     .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
     .option("--registration-code <code>", "Registration code")
+    .option("--registration-code-ha <code>", "Registration code for Extension High Availability")
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .addOption(new commander_1.Option("--prepare-advanced-storage <storage-type>", "Prepare advance storage for installation").choices(["dasd", "zfcp"])));
 (0, helpers_1.test_init)(options);
@@ -1204,6 +1219,8 @@ if (options.productId !== "none")
 (0, overview_1.ensureOverviewVisible)();
 if (options.registrationCode)
     (0, registration_1.enterRegistration)(options.registrationCode);
+if (options.registrationCodeHa)
+    (0, registration_1.enterRegistrationHa)(options.registrationCodeHa);
 (0, first_user_1.createFirstUser)(options.password);
 (0, root_authentication_1.editRootUser)(options.rootPassword);
 if (options.prepareAdvancedStorage === "zfcp")
