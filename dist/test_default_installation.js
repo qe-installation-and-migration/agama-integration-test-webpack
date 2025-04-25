@@ -278,6 +278,36 @@ function setupMandatoryRootAuth(password) {
 
 /***/ }),
 
+/***/ "./src/checks/software_selection.ts":
+/*!******************************************!*\
+  !*** ./src/checks/software_selection.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.selectPatterns = selectPatterns;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const software_page_1 = __webpack_require__(/*! ../pages/software_page */ "./src/pages/software_page.ts");
+const software_selection_page_1 = __webpack_require__(/*! ../pages/software_selection_page */ "./src/pages/software_selection_page.ts");
+function selectPatterns(patterns) {
+    (0, helpers_1.it)(`should select patterns ${patterns.join(", ")}`, async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const software = new software_page_1.SoftwarePage(helpers_1.page);
+        const softwareSelection = new software_selection_page_1.SoftwareSelectionPage(helpers_1.page);
+        await sidebar.goToSoftware();
+        await software.changeSelection();
+        for (const pattern of patterns)
+            await softwareSelection.selectPattern(pattern);
+        await softwareSelection.close();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/storage_zfcp.ts":
 /*!************************************!*\
   !*** ./src/checks/storage_zfcp.ts ***!
@@ -1042,6 +1072,68 @@ exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 /***/ }),
 
+/***/ "./src/pages/software_page.ts":
+/*!************************************!*\
+  !*** ./src/pages/software_page.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SoftwarePage = void 0;
+class SoftwarePage {
+    page;
+    changeSelectionButton = () => this.page.locator("::-p-text(Change selection)");
+    constructor(page) {
+        this.page = page;
+    }
+    async changeSelection() {
+        await this.changeSelectionButton().click();
+    }
+}
+exports.SoftwarePage = SoftwarePage;
+
+
+/***/ }),
+
+/***/ "./src/pages/software_selection_page.ts":
+/*!**********************************************!*\
+  !*** ./src/pages/software_selection_page.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SoftwareSelectionPage = void 0;
+class SoftwareSelectionPage {
+    page;
+    patternCheckbox = (pattern) => this.page.locator(`input[type=checkbox][rowid=${pattern}-title]`);
+    closeButton = () => this.page.locator("::-p-text(Close)");
+    constructor(page) {
+        this.page = page;
+    }
+    async selectPattern(pattern) {
+        const checkbox = await this.patternCheckbox(pattern).waitHandle();
+        await checkbox.scrollIntoView();
+        await this.patternCheckbox(pattern)
+            .filter((input) => !input.checked)
+            .click();
+        // ensure selection due to puppeteer might go too fast
+        await this.patternCheckbox(pattern)
+            .filter((input) => input.checked)
+            .wait();
+    }
+    async close() {
+        await this.closeButton().click();
+    }
+}
+exports.SoftwareSelectionPage = SoftwareSelectionPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/storage_page.ts":
 /*!***********************************!*\
   !*** ./src/pages/storage_page.ts ***!
@@ -1193,19 +1285,21 @@ const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts
 const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
+const configuration_started_1 = __webpack_require__(/*! ./checks/configuration_started */ "./src/checks/configuration_started.ts");
+const overview_1 = __webpack_require__(/*! ./checks/overview */ "./src/checks/overview.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
-const configuration_started_1 = __webpack_require__(/*! ./checks/configuration_started */ "./src/checks/configuration_started.ts");
-const overview_1 = __webpack_require__(/*! ./checks/overview */ "./src/checks/overview.ts");
 const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
+const software_selection_1 = __webpack_require__(/*! ./checks/software_selection */ "./src/checks/software_selection.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
     .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
     .option("--registration-code <code>", "Registration code")
     .option("--registration-code-ha <code>", "Registration code for Extension High Availability")
+    .option("--patterns <pattern>...", "comma-separated list of patterns", cmdline_1.commaSeparatedList)
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .addOption(new commander_1.Option("--prepare-advanced-storage <storage-type>", "Prepare advance storage for installation").choices(["dasd", "zfcp"])));
 (0, helpers_1.test_init)(options);
@@ -1221,6 +1315,8 @@ if (options.registrationCode)
     (0, registration_1.enterRegistration)(options.registrationCode);
 if (options.registrationCodeHa)
     (0, registration_1.enterRegistrationHa)(options.registrationCodeHa);
+if (options.patterns)
+    (0, software_selection_1.selectPatterns)(options.patterns);
 (0, first_user_1.createFirstUser)(options.password);
 (0, root_authentication_1.editRootUser)(options.rootPassword);
 if (options.prepareAdvancedStorage === "zfcp")
