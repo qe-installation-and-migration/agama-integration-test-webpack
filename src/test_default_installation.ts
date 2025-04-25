@@ -5,19 +5,20 @@
 
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 
-import { parse } from "./lib/cmdline";
+import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { Option } from "commander";
 
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser } from "./checks/root_authentication";
+import { ensureProductConfigurationStarted } from "./checks/configuration_started";
+import { ensureOverviewVisible } from "./checks/overview";
 import { enterRegistration, enterRegistrationHa } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
-import { ensureProductConfigurationStarted } from "./checks/configuration_started";
-import { ensureOverviewVisible } from "./checks/overview";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
+import { selectPatterns } from "./checks/software_selection";
 
 // parse options from the command line
 const options = parse((cmd) =>
@@ -29,6 +30,7 @@ const options = parse((cmd) =>
     )
     .option("--registration-code <code>", "Registration code")
     .option("--registration-code-ha <code>", "Registration code for Extension High Availability")
+    .option("--patterns <pattern>...", "comma-separated list of patterns", commaSeparatedList)
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .addOption(
       new Option(
@@ -48,6 +50,7 @@ ensureProductConfigurationStarted();
 ensureOverviewVisible();
 if (options.registrationCode) enterRegistration(options.registrationCode);
 if (options.registrationCodeHa) enterRegistrationHa(options.registrationCodeHa);
+if (options.patterns) selectPatterns(options.patterns);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
 if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
