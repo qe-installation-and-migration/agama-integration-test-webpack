@@ -235,15 +235,15 @@ exports.enterRegistration = enterRegistration;
 exports.enterRegistrationHa = enterRegistrationHa;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
-const registration_enter_code_page_1 = __webpack_require__(/*! ../pages/registration_enter_code_page */ "./src/pages/registration_enter_code_page.ts");
+const registration_page_1 = __webpack_require__(/*! ../pages/registration_page */ "./src/pages/registration_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 function enterRegistration(code) {
     (0, helpers_1.it)("should allow setting registration", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const registration = new registration_enter_code_page_1.RegistrationEnterCodePage(helpers_1.page);
+        const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
-        await registration.fillCode(code);
-        await registration.register();
+        await productRegistration.fillCode(code);
+        await productRegistration.register();
     });
     (0, helpers_1.it)("should not display option to register in Overview", async function () {
         await new overview_page_1.OverviewPage(helpers_1.page).waitWarningAlertToDisappear();
@@ -252,10 +252,10 @@ function enterRegistration(code) {
 function enterRegistrationHa(code) {
     (0, helpers_1.it)("should allow setting registration HA", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const registration = new registration_enter_code_page_1.RegistrationEnterCodePage(helpers_1.page);
+        const extensionRegistration = new registration_page_1.ExtensionHaRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
-        await registration.fillCodeHa(code);
-        await registration.register();
+        await extensionRegistration.fillCode(code);
+        await extensionRegistration.register();
     });
 }
 
@@ -963,35 +963,46 @@ exports.ProductSelectionWithRegistrationPage = ProductSelectionWithRegistrationP
 
 /***/ }),
 
-/***/ "./src/pages/registration_enter_code_page.ts":
-/*!***************************************************!*\
-  !*** ./src/pages/registration_enter_code_page.ts ***!
-  \***************************************************/
+/***/ "./src/pages/registration_page.ts":
+/*!****************************************!*\
+  !*** ./src/pages/registration_page.ts ***!
+  \****************************************/
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.RegistrationEnterCodePage = void 0;
-class RegistrationEnterCodePage {
+exports.ExtensionHaRegistrationPage = exports.ProductRegistrationPage = void 0;
+class RegistrationBasePage {
     page;
-    codeInput = () => this.page.locator("input#key");
-    codeHaInput = () => this.page.locator("input[id='input-reg-code-sle-ha-16.0']");
-    registertButton = () => this.page.locator("button::-p-text(Register)");
+    codeInput;
+    registerButton = () => this.page.locator("button::-p-text(Register)");
     constructor(page) {
         this.page = page;
     }
     async fillCode(code) {
         await this.codeInput().fill(code);
     }
-    async fillCodeHa(code) {
-        await this.codeHaInput().fill(code);
-    }
     async register() {
-        await this.registertButton().click();
+        await this.registerButton().click();
     }
 }
-exports.RegistrationEnterCodePage = RegistrationEnterCodePage;
+function ProductRegistrable(Base) {
+    return class extends Base {
+        codeInput = () => this.page.locator("input#key");
+    };
+}
+function ExtensionHaRegistrable(Base) {
+    return class extends Base {
+        codeInput = () => this.page.locator("input[id^='input-reg-code-sle-ha-16.']");
+    };
+}
+class ProductRegistrationPage extends ProductRegistrable(RegistrationBasePage) {
+}
+exports.ProductRegistrationPage = ProductRegistrationPage;
+class ExtensionHaRegistrationPage extends ExtensionHaRegistrable(RegistrationBasePage) {
+}
+exports.ExtensionHaRegistrationPage = ExtensionHaRegistrationPage;
 
 
 /***/ }),
