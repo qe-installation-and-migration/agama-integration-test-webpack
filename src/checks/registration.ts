@@ -1,16 +1,16 @@
 import { it, page } from "../lib/helpers";
 import { OverviewPage } from "../pages/overview_page";
-import { RegistrationEnterCodePage } from "../pages/registration_enter_code_page";
+import { ProductRegistrationPage, ExtensionHaRegistrationPage } from "../pages/registration_page";
 import { SidebarWithRegistrationPage } from "../pages/sidebar_page";
 
 export function enterRegistration(code: string) {
   it("should allow setting registration", async function () {
     const sidebar = new SidebarWithRegistrationPage(page);
-    const registration = new RegistrationEnterCodePage(page);
+    const productRegistration = new ProductRegistrationPage(page);
 
     await sidebar.goToRegistration();
-    await registration.fillCode(code);
-    await registration.register();
+    await productRegistration.fillCode(code);
+    await productRegistration.register();
   });
 
   it("should not display option to register in Overview", async function () {
@@ -21,10 +21,10 @@ export function enterRegistration(code: string) {
 export function enterRegistrationHa(code: string) {
   it("should allow setting registration HA", async function () {
     const sidebar = new SidebarWithRegistrationPage(page);
-    const registration = new RegistrationEnterCodePage(page);
+    const extensionRegistration = new ExtensionHaRegistrationPage(page);
 
     await sidebar.goToRegistration();
-    await registration.fillCodeHa(code);
-    await registration.register();
+    await extensionRegistration.fillCode(code);
+    await extensionRegistration.register();
   });
 }
