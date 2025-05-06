@@ -228,6 +228,7 @@ function enterRegistrationHa(code) {
         await sidebar.goToRegistration();
         await extensionRegistration.fillCode(code);
         await extensionRegistration.register();
+        await extensionRegistration.verifyExtensionRegistration();
     });
 }
 
@@ -916,6 +917,7 @@ class RegistrationBasePage {
     page;
     codeInput;
     registerButton = () => this.page.locator("button::-p-text(Register)");
+    extensionRegisteredText = () => this.page.locator("::-p-text(The extension has been registered)");
     constructor(page) {
         this.page = page;
     }
@@ -924,6 +926,9 @@ class RegistrationBasePage {
     }
     async register() {
         await this.registerButton().click();
+    }
+    async verifyExtensionRegistration() {
+        await this.extensionRegisteredText().wait();
     }
 }
 function ProductRegistrable(Base) {

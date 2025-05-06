@@ -5,6 +5,8 @@ class RegistrationBasePage {
   protected readonly page: Page;
   protected readonly codeInput: () => Locator<HTMLInputElement>;
   protected readonly registerButton = () => this.page.locator("button::-p-text(Register)");
+  protected readonly extensionRegisteredText = () =>
+    this.page.locator("::-p-text(The extension has been registered)");
 
   constructor(page: Page) {
     this.page = page;
@@ -16,6 +18,10 @@ class RegistrationBasePage {
 
   async register() {
     await this.registerButton().click();
+  }
+
+  async verifyExtensionRegistration() {
+    await this.extensionRegisteredText().wait();
   }
 }
 
