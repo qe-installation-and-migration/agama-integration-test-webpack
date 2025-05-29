@@ -33,8 +33,8 @@ const options = parse((cmd) =>
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
     .option(
-      "--delete-patterns <pattern>...",
-      "comma separated list of patterns",
+      "--destructive-actions <actions>...",
+      "comma separated list of actions (excluding 'Delete ')",
       commaSeparatedList,
     ),
 );
@@ -46,7 +46,7 @@ if (options.productId !== "none")
   else productSelection(options.productId);
 decryptDevice(options.decryptPassword);
 ensureOverviewVisible();
-verifyDecryptDestructiveActions(options.deletePatterns);
+verifyDecryptDestructiveActions(options.destructiveActions);
 if (options.staticHostname) setPermanentHostname(options.staticHostname);
 if (options.registrationCode) enterRegistration(options.registrationCode);
 createFirstUser(options.password);

@@ -320,13 +320,11 @@ exports.verifyDecryptDestructiveActions = verifyDecryptDestructiveActions;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
-function verifyDecryptDestructiveActions(patterns) {
-    (0, helpers_1.it)("should unfold list of destructive actions", async function () {
+function verifyDecryptDestructiveActions(destructiveActions) {
+    (0, helpers_1.it)("should display a list of destructive actions", async function () {
         await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
         await new storage_page_1.StoragePage(helpers_1.page).expandDestructiveActionsList();
-    });
-    (0, helpers_1.it)("should delete defined patterns", async function () {
-        for (const action of patterns) {
+        for (const action of destructiveActions) {
             await new storage_page_1.StoragePage(helpers_1.page).verifyDestructiveAction(action);
         }
     });
@@ -1316,7 +1314,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--staticHostname <hostname>", "Static Hostname")
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
-    .option("--delete-patterns <pattern>...", "comma separated list of patterns", cmdline_1.commaSeparatedList));
+    .option("--destructive-actions <actions>...", "comma separated list of actions (excluding 'Delete ')", cmdline_1.commaSeparatedList));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 if (options.productId !== "none")
@@ -1326,7 +1324,7 @@ if (options.productId !== "none")
         (0, product_selection_1.productSelection)(options.productId);
 (0, decryption_1.decryptDevice)(options.decryptPassword);
 (0, overview_1.ensureOverviewVisible)();
-(0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(options.deletePatterns);
+(0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(options.destructiveActions);
 if (options.staticHostname)
     (0, hostname_1.setPermanentHostname)(options.staticHostname);
 if (options.registrationCode)
