@@ -3,7 +3,7 @@ import { type Page } from "puppeteer-core";
 export class SoftwareSelectionPage {
   private readonly page: Page;
   private readonly patternCheckbox = (pattern: string) =>
-    this.page.locator(`input[type=checkbox][rowid=${pattern}-title]`);
+    this.page.locator(`input[type=checkbox][aria-labelledby*=${pattern}-title]`);
 
   private readonly closeButton = () => this.page.locator("::-p-text(Close)");
 
