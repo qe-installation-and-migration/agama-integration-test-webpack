@@ -20,8 +20,8 @@ class RegistrationBasePage {
     await this.registerButton().click();
   }
 
-  async verifyExtensionRegistration() {
-    await this.extensionRegisteredText().wait();
+  async verifyExtensionRegistration(timeout: number) {
+    await this.extensionRegisteredText().setTimeout(timeout).wait();
   }
 }
 

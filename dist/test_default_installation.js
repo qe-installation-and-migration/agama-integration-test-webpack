@@ -228,7 +228,7 @@ function enterRegistrationHa(code) {
         await sidebar.goToRegistration();
         await extensionRegistration.fillCode(code);
         await extensionRegistration.register();
-        await extensionRegistration.verifyExtensionRegistration();
+        await extensionRegistration.verifyExtensionRegistration(1 * 60 * 1000);
     });
 }
 
@@ -927,8 +927,8 @@ class RegistrationBasePage {
     async register() {
         await this.registerButton().click();
     }
-    async verifyExtensionRegistration() {
-        await this.extensionRegisteredText().wait();
+    async verifyExtensionRegistration(timeout) {
+        await this.extensionRegisteredText().setTimeout(timeout).wait();
     }
 }
 function ProductRegistrable(Base) {

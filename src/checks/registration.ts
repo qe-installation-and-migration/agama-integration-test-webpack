@@ -26,6 +26,6 @@ export function enterRegistrationHa(code: string) {
     await sidebar.goToRegistration();
     await extensionRegistration.fillCode(code);
     await extensionRegistration.register();
-    await extensionRegistration.verifyExtensionRegistration();
+    await extensionRegistration.verifyExtensionRegistration(1 * 60 * 1000);
   });
 }
