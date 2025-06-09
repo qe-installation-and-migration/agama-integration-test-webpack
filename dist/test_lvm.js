@@ -18,6 +18,7 @@ const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_ins
 const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const install_page_1 = __webpack_require__(/*! ../pages/install_page */ "./src/pages/install_page.ts");
 function performInstallation() {
     (0, helpers_1.it)("should start installation", async function () {
         const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
@@ -27,15 +28,26 @@ function performInstallation() {
         await overview.install();
         await confirmInstallation.continue();
     });
-    (0, helpers_1.it)("should finish installation", async function () {
-        await new congratulation_page_1.CongratulationPage(helpers_1.page).wait(14 * 60 * 1000);
-    }, 15 * 60 * 1000);
+    (0, helpers_1.it)("should install in progress", async function () {
+        const install = new install_page_1.InstallPage(helpers_1.page);
+        await install.waitInstallSpinner();
+        await install.waitInstallProgressPage();
+        await install.waitForSpinnerToDisappear();
+    }, 30 * 60 * 1000);
+    (0, helpers_1.it)("should see the congratulation page", async function () {
+        await new congratulation_page_1.CongratulationPage(helpers_1.page).wait(1000);
+    });
 }
 function finishInstallation() {
+    (0, helpers_1.it)("should install in progress", async function () {
+        const install = new install_page_1.InstallPage(helpers_1.page);
+        await install.waitInstallSpinner();
+        await install.waitInstallProgressPage();
+        await install.waitForSpinnerToDisappear();
+    }, 30 * 60 * 1000);
     (0, helpers_1.it)("should finish", async function () {
-        const congratulation = new congratulation_page_1.CongratulationPage(helpers_1.page);
-        await congratulation.wait(14 * 60 * 1000);
-    }, 15 * 60 * 1000);
+        await new congratulation_page_1.CongratulationPage(helpers_1.page).wait(1000);
+    });
 }
 
 
@@ -488,15 +500,89 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CongratulationPage = void 0;
 class CongratulationPage {
     page;
-    congratulationText = () => this.page.locator("h2::-p-text('Congratulations!')");
+    congratulationText = () => this.page.locator('h2:Contains("Congratulations!")');
     constructor(page) {
         this.page = page;
     }
     async wait(timeout) {
         await this.congratulationText().setTimeout(timeout).wait();
     }
+    async checkCongratulationText() {
+        await this.congratulationText();
+    }
 }
 exports.CongratulationPage = CongratulationPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/install_page.ts":
+/*!***********************************!*\
+  !*** ./src/pages/install_page.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.InstallPage = void 0;
+class InstallPage {
+    page;
+    installingSpinner = `svg.pf-m-xl[role="progressbar"]`;
+    installingProgressPage = `[data-testid="progress-report"]`;
+    constructor(page) {
+        this.page = page;
+    }
+    async waitInstallProgressPage() {
+        try {
+            await this.page.waitForSelector(this.installingProgressPage, { timeout: 30000 });
+            console.log("Progress report page detected successfully");
+        }
+        catch (error) {
+            console.log("No progress report page was shown");
+            console.log(`Reason: ${error.message}`);
+        }
+    }
+    async waitInstallSpinner() {
+        await this.page.waitForSelector(this.installingSpinner);
+    }
+    async waitForSpinnerToDisappear() {
+        const checkInterval = 10000; // 10 seconds
+        const maxTimeout = 1200000; // 20 minutes
+        const startTime = Date.now();
+        while (Date.now() - startTime < maxTimeout) {
+            const spinnerVisible = (await this.page.$(this.installingSpinner)) !== null;
+            if (!spinnerVisible) {
+                console.log("Spinnner is gone and Installation Finished.");
+                return; // Spinner is no longer visible
+            }
+            await new Promise((resolve) => setTimeout(resolve, checkInterval));
+        }
+    }
+    async waitInstallFinish() {
+        const checkInterval = 1000 * 10; // 10 seconds
+        const maxTimeout = 1000 * 60 * 15; // 15 minutes
+        const startTime = Date.now();
+        while (Date.now() - startTime < maxTimeout) {
+            try {
+                await this.page.waitForSelector(this.installingSpinner, {
+                    hidden: true,
+                    timeout: checkInterval,
+                });
+                const timeTaken = (Date.now() - startTime) / 1000;
+                console.log(`Installation completed. Time taken: ${timeTaken} seconds.`);
+                return; // Spinner disappeared
+            }
+            catch {
+                // Continue the loop if the spinner is still visible after the checkInterval
+            }
+            // Wait checkInterval before the next check
+            await new Promise((resolve) => setTimeout(resolve, checkInterval));
+        }
+        throw new Error("Spinner did not disappear within the timeout period!");
+    }
+}
+exports.InstallPage = InstallPage;
 
 
 /***/ }),

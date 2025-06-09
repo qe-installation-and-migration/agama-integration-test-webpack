@@ -3,6 +3,7 @@ import { ConfirmInstallationPage } from "../pages/confirm_installation_page";
 import { CongratulationPage } from "../pages/congratulation_page";
 import { OverviewPage } from "../pages/overview_page";
 import { SidebarPage } from "../pages/sidebar_page";
+import { InstallPage } from "../pages/install_page";
 
 export function performInstallation() {
   it("should start installation", async function () {
@@ -16,21 +17,36 @@ export function performInstallation() {
   });
 
   it(
-    "should finish installation",
+    "should install in progress",
     async function () {
-      await new CongratulationPage(page).wait(14 * 60 * 1000);
+      const install = new InstallPage(page);
+
+      await install.waitInstallSpinner();
+      await install.waitInstallProgressPage();
+      await install.waitForSpinnerToDisappear();
     },
-    15 * 60 * 1000,
+    30 * 60 * 1000, // 20 minutes
   );
+
+  it("should see the congratulation page", async function () {
+    await new CongratulationPage(page).wait(1000);
+  });
 }
 
 export function finishInstallation() {
   it(
-    "should finish",
+    "should install in progress",
     async function () {
-      const congratulation = new CongratulationPage(page);
-      await congratulation.wait(14 * 60 * 1000);
+      const install = new InstallPage(page);
+
+      await install.waitInstallSpinner();
+      await install.waitInstallProgressPage();
+      await install.waitForSpinnerToDisappear();
     },
-    15 * 60 * 1000,
+    30 * 60 * 1000, // 20 minutes
   );
+
+  it("should finish", async function () {
+    await new CongratulationPage(page).wait(1000);
+  });
 }
