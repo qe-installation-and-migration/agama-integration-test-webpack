@@ -730,7 +730,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CongratulationPage = void 0;
 class CongratulationPage {
     page;
-    congratulationText = () => this.page.locator("h2::-p-text('Congratulations!')");
+    congratulationText = () => this.page.locator("::-p-text('Congratulations!')");
     constructor(page) {
         this.page = page;
     }
