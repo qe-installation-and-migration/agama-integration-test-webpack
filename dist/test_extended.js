@@ -756,6 +756,7 @@ class CreateFirstUserPage {
     page;
     fullNameInput = () => this.page.locator("input#userFullName");
     usernameInput = () => this.page.locator("input#userName");
+    // private readonly usernameDropdownSelector = "[aria-label='Username suggestion dropdown']";
     passwordInput = () => this.page.locator("input#password");
     passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
     acceptButton = () => this.page.locator("button[form='firstUserForm']");
@@ -766,9 +767,14 @@ class CreateFirstUserPage {
         await this.fullNameInput().fill(fullName);
     }
     async fillUserName(userName) {
+        // await this.usernameInput().click();
+        // await this.page.keyboard.press('Escape');
         await this.usernameInput().fill(userName);
+        // await this.page.type('input#userName', userName, { delay: 100 });
+        // await this.page.waitForSelector(this.usernameDropdownSelector, { hidden: true });
     }
     async fillPassword(password) {
+        // await this.passwordInput().setWaitForStableBoundingBox(true).fill(password);
         await this.passwordInput().fill(password);
     }
     async fillPasswordConfirmation(password) {
@@ -776,6 +782,7 @@ class CreateFirstUserPage {
     }
     async accept() {
         await this.acceptButton().click();
+        // await this.page.waitForSelector("Something went wrong", { hidden: true });
     }
 }
 exports.CreateFirstUserPage = CreateFirstUserPage;
