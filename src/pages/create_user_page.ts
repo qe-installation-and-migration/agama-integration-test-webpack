@@ -15,19 +15,43 @@ export class CreateFirstUserPage {
   }
 
   async fillFullName(fullName: string) {
+    // Fill the full name first to generate suggestions
     await this.fullNameInput().fill(fullName);
+    await this.page.evaluate(() => document.getElementById("userFullName").blur());
+    console.log("userFullName blurred - suggestions generated");
   }
 
   async fillUserName(userName: string) {
-    await this.usernameInput().fill(userName);
+    // Focus username field to show suggestions
+    await this.page.focus("#userName");
+    console.log("focus userName - dropdown should appear");
+
+    // Wait for suggestions dropdown to appear
+    await this.page.waitForSelector(".first-username-dropdown", { visible: true });
+
+    // Click the first suggestion to dismiss the dropdown
+    await this.page.click('.first-username-dropdown [role="menuitem"]:first-child');
+    console.log("clicked first suggestion - dropdown dismissed");
+
+    // await this.page.type("#userName", userName);
+    console.log(`click to choose username with: ${userName}`);
   }
 
   async fillPassword(password: string) {
-    await this.passwordInput().fill(password);
+    console.log("before filled passwordInput");
+    const passwordSelector = "#password";
+    await this.page.click(passwordSelector, { clickCount: 3 });
+    await this.page.type(passwordSelector, password);
+    console.log(`after filled passwordInput passwd=${password}`);
   }
 
   async fillPasswordConfirmation(password: string) {
-    await this.passwordConfirmationInput().fill(password);
+    console.log("before ConfirmationInpu");
+    const passwordConfirmationSelector = "#passwordConfirmation";
+    await this.page.click(passwordConfirmationSelector, { clickCount: 3 });
+    await this.page.type(passwordConfirmationSelector, password);
+    // await this.passwordConfirmationInput().fill(password);
+    console.log(`after fillPasswordConfirmation... passwd=${password}`);
   }
 
   async accept() {
