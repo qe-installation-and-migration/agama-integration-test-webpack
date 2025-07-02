@@ -1136,10 +1136,11 @@ class SoftwareSelectionPage {
         await this.patternCheckbox(pattern)
             .filter((input) => !input.checked)
             .click();
-        // ensure selection due to puppeteer might go too fast
-        await this.patternCheckbox(pattern)
-            .filter((input) => input.checked)
-            .wait();
+        // Wait for the DOM to actually update
+        await this.page.waitForFunction((pattern) => {
+            const checkbox = document.querySelector(`input[type=checkbox][aria-labelledby*=${pattern}-title]`);
+            return checkbox && checkbox.checked === true;
+        }, { timeout: 20000 }, pattern);
     }
     async close() {
         await this.closeButton().click();
