@@ -1136,6 +1136,8 @@ class SoftwareSelectionPage {
         await this.patternCheckbox(pattern)
             .filter((input) => !input.checked)
             .click();
+        // Add a small delay before checking state
+        await new Promise((resolve) => setTimeout(resolve, 500));
         // ensure selection due to puppeteer might go too fast
         await this.patternCheckbox(pattern)
             .filter((input) => input.checked)
