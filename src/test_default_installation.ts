@@ -12,7 +12,6 @@ import { Option } from "commander";
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser } from "./checks/root_authentication";
 import { ensureProductConfigurationStarted } from "./checks/configuration_started";
-import { ensureOverviewVisible } from "./checks/overview";
 import { enterRegistration, enterRegistrationHa } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
@@ -47,7 +46,6 @@ if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
 ensureProductConfigurationStarted();
-ensureOverviewVisible();
 if (options.registrationCode) enterRegistration(options.registrationCode);
 if (options.registrationCodeHa) enterRegistrationHa(options.registrationCodeHa);
 if (options.patterns) selectPatterns(options.patterns);

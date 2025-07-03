@@ -4,7 +4,6 @@ import { type GConstructor } from "../lib/helpers";
 export class SidebarPage {
   protected readonly page: Page;
   private readonly overviewLink = () => this.page.locator("a[href='#/overview']");
-  private readonly overviewText = () => this.page.locator("h2::-p-text('Overview')");
   private readonly hostnameLink = () => this.page.locator("a[href='#/hostname']");
   private readonly localizationLink = () => this.page.locator("a[href='#/l10n']");
   private readonly networkLink = () => this.page.locator("a[href='#/network']");
@@ -18,10 +17,6 @@ export class SidebarPage {
 
   async goToOverview() {
     await this.overviewLink().click();
-  }
-
-  async waitOverviewVisible(timeout: number) {
-    await this.overviewText().setTimeout(timeout).wait();
   }
 
   async goToHostname() {

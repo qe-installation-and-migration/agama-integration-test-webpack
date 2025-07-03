@@ -558,12 +558,12 @@ exports.OverviewPage = void 0;
 class OverviewPage {
     page;
     installButton = () => this.page.locator("button::-p-text(Install)");
-    mustBeRegisteredText = () => this.page.locator("::-p-text(must be registered)");
+    overviewText = () => this.page.locator("h2::-p-text('Overview')");
     constructor(page) {
         this.page = page;
     }
-    async waitWarningAlertToDisappear() {
-        await this.mustBeRegisteredText().setVisibility("hidden").wait();
+    async waitVisible(timeout) {
+        await this.overviewText().setTimeout(timeout).wait();
     }
     async install() {
         await this.installButton().click();
@@ -587,7 +587,6 @@ exports.SidebarWithRegistrationPage = exports.SidebarPage = void 0;
 class SidebarPage {
     page;
     overviewLink = () => this.page.locator("a[href='#/overview']");
-    overviewText = () => this.page.locator("h2::-p-text('Overview')");
     hostnameLink = () => this.page.locator("a[href='#/hostname']");
     localizationLink = () => this.page.locator("a[href='#/l10n']");
     networkLink = () => this.page.locator("a[href='#/network']");
@@ -599,9 +598,6 @@ class SidebarPage {
     }
     async goToOverview() {
         await this.overviewLink().click();
-    }
-    async waitOverviewVisible(timeout) {
-        await this.overviewText().setTimeout(timeout).wait();
     }
     async goToHostname() {
         await this.hostnameLink().click();

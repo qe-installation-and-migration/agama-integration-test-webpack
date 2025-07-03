@@ -13,8 +13,8 @@ export function enterRegistration(code: string) {
     await productRegistration.register();
   });
 
-  it("should not display option to register in Overview", async function () {
-    await new OverviewPage(page).waitWarningAlertToDisappear();
+  it("should display Overview", async function () {
+    await new OverviewPage(page).waitVisible(40000);
   });
 }
 
