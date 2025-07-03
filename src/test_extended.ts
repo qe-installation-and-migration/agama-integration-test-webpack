@@ -16,7 +16,6 @@ import { setPermanentHostname } from "./checks/hostname";
 import { decryptDevice } from "./checks/decryption";
 import { verifyDecryptDestructiveActions } from "./checks/storage_result_destructive_actions_planned";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
-import { ensureOverviewVisible } from "./checks/overview";
 import { performInstallation } from "./checks/installation";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
 
@@ -45,7 +44,6 @@ if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
 decryptDevice(options.decryptPassword);
-ensureOverviewVisible();
 verifyDecryptDestructiveActions(options.destructiveActions);
 if (options.staticHostname) setPermanentHostname(options.staticHostname);
 if (options.registrationCode) enterRegistration(options.registrationCode);

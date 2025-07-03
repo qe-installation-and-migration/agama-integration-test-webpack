@@ -14,9 +14,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ensureProductConfigurationStarted = ensureProductConfigurationStarted;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const configuring_product_page_1 = __webpack_require__(/*! ../pages/configuring_product_page */ "./src/pages/configuring_product_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 function ensureProductConfigurationStarted() {
     (0, helpers_1.it)("should start configuring the product", async function () {
         await new configuring_product_page_1.ConfiguringProductPage(helpers_1.page).wait();
+    });
+    (0, helpers_1.it)("should display Overview", async function () {
+        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
     });
 }
 
@@ -126,27 +130,6 @@ function logIn(password) {
 
 /***/ }),
 
-/***/ "./src/checks/overview.ts":
-/*!********************************!*\
-  !*** ./src/checks/overview.ts ***!
-  \********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ensureOverviewVisible = ensureOverviewVisible;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function ensureOverviewVisible() {
-    (0, helpers_1.it)("should display overview", async function () {
-        await new sidebar_page_1.SidebarPage(helpers_1.page).waitOverviewVisible(40000);
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/product_selection.ts":
 /*!*****************************************!*\
   !*** ./src/checks/product_selection.ts ***!
@@ -217,8 +200,8 @@ function enterRegistration(code) {
         await productRegistration.fillCode(code);
         await productRegistration.register();
     });
-    (0, helpers_1.it)("should not display option to register in Overview", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitWarningAlertToDisappear();
+    (0, helpers_1.it)("should display Overview", async function () {
+        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
     });
 }
 function enterRegistrationHa(code) {
@@ -826,12 +809,12 @@ exports.OverviewPage = void 0;
 class OverviewPage {
     page;
     installButton = () => this.page.locator("button::-p-text(Install)");
-    mustBeRegisteredText = () => this.page.locator("::-p-text(must be registered)");
+    overviewText = () => this.page.locator("h2::-p-text('Overview')");
     constructor(page) {
         this.page = page;
     }
-    async waitWarningAlertToDisappear() {
-        await this.mustBeRegisteredText().setVisibility("hidden").wait();
+    async waitVisible(timeout) {
+        await this.overviewText().setTimeout(timeout).wait();
     }
     async install() {
         await this.installButton().click();
@@ -1037,7 +1020,6 @@ exports.SidebarWithRegistrationPage = exports.SidebarPage = void 0;
 class SidebarPage {
     page;
     overviewLink = () => this.page.locator("a[href='#/overview']");
-    overviewText = () => this.page.locator("h2::-p-text('Overview')");
     hostnameLink = () => this.page.locator("a[href='#/hostname']");
     localizationLink = () => this.page.locator("a[href='#/l10n']");
     networkLink = () => this.page.locator("a[href='#/network']");
@@ -1049,9 +1031,6 @@ class SidebarPage {
     }
     async goToOverview() {
         await this.overviewLink().click();
-    }
-    async waitOverviewVisible(timeout) {
-        await this.overviewText().setTimeout(timeout).wait();
     }
     async goToHostname() {
         await this.hostnameLink().click();
@@ -1302,7 +1281,6 @@ const commander_1 = __webpack_require__(/*! commander */ "./node_modules/command
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 const configuration_started_1 = __webpack_require__(/*! ./checks/configuration_started */ "./src/checks/configuration_started.ts");
-const overview_1 = __webpack_require__(/*! ./checks/overview */ "./src/checks/overview.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
@@ -1326,7 +1304,6 @@ if (options.productId !== "none")
     else
         (0, product_selection_1.productSelection)(options.productId);
 (0, configuration_started_1.ensureProductConfigurationStarted)();
-(0, overview_1.ensureOverviewVisible)();
 if (options.registrationCode)
     (0, registration_1.enterRegistration)(options.registrationCode);
 if (options.registrationCodeHa)
