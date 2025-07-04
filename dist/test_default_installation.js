@@ -809,12 +809,12 @@ exports.OverviewPage = void 0;
 class OverviewPage {
     page;
     installButton = () => this.page.locator("button::-p-text(Install)");
-    overviewText = () => this.page.locator("h2::-p-text('Overview')");
+    overviewHeading = () => this.page.locator('::-p-aria([name="Overview"][role="heading"])');
     constructor(page) {
         this.page = page;
     }
     async waitVisible(timeout) {
-        await this.overviewText().setTimeout(timeout).wait();
+        await this.overviewHeading().setTimeout(timeout).wait();
     }
     async install() {
         await this.installButton().click();
