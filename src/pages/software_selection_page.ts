@@ -2,8 +2,11 @@ import { type Page } from "puppeteer-core";
 
 export class SoftwareSelectionPage {
   private readonly page: Page;
-  private readonly patternCheckbox = (pattern: string) =>
-    this.page.locator(`input[type=checkbox][aria-labelledby*=${pattern}-title]`);
+  private readonly patternCheckboxNotChecked = (pattern: string) =>
+    this.page.locator(`input[type=checkbox]:not(:checked)[aria-labelledby*=${pattern}-title]`);
+
+  private readonly patternCheckboxChecked = (pattern: string) =>
+    this.page.locator(`input[type=checkbox]:checked[aria-labelledby*=${pattern}-title]`);
 
   private readonly closeButton = () => this.page.locator("::-p-text(Close)");
 
@@ -12,17 +15,8 @@ export class SoftwareSelectionPage {
   }
 
   async selectPattern(pattern: string) {
-    const checkbox = await this.patternCheckbox(pattern).waitHandle();
-    await checkbox.scrollIntoView();
-
-    await this.patternCheckbox(pattern)
-      .filter((input) => !input.checked)
-      .click();
-
-    // ensure selection due to puppeteer might go too fast
-    await this.patternCheckbox(pattern)
-      .filter((input) => input.checked)
-      .wait();
+    await this.patternCheckboxNotChecked(pattern).click();
+    await this.patternCheckboxChecked(pattern).wait();
   }
 
   async close() {

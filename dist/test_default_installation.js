@@ -1104,21 +1104,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoftwareSelectionPage = void 0;
 class SoftwareSelectionPage {
     page;
-    patternCheckbox = (pattern) => this.page.locator(`input[type=checkbox][aria-labelledby*=${pattern}-title]`);
+    patternCheckboxNotChecked = (pattern) => this.page.locator(`input[type=checkbox]:not(:checked)[aria-labelledby*=${pattern}-title]`);
+    patternCheckboxChecked = (pattern) => this.page.locator(`input[type=checkbox]:checked[aria-labelledby*=${pattern}-title]`);
     closeButton = () => this.page.locator("::-p-text(Close)");
     constructor(page) {
         this.page = page;
     }
     async selectPattern(pattern) {
-        const checkbox = await this.patternCheckbox(pattern).waitHandle();
-        await checkbox.scrollIntoView();
-        await this.patternCheckbox(pattern)
-            .filter((input) => !input.checked)
-            .click();
-        // ensure selection due to puppeteer might go too fast
-        await this.patternCheckbox(pattern)
-            .filter((input) => input.checked)
-            .wait();
+        await this.patternCheckboxNotChecked(pattern).click();
+        await this.patternCheckboxChecked(pattern).wait();
     }
     async close() {
         await this.closeButton().click();
