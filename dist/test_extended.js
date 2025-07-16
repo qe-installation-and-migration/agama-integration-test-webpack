@@ -972,7 +972,7 @@ class RegistrationBasePage {
 }
 function ProductRegistrable(Base) {
     return class extends Base {
-        codeInput = () => this.page.locator("input#key");
+        codeInput = () => this.page.locator("input#code");
     };
 }
 function ExtensionHaRegistrable(Base) {
