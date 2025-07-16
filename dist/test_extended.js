@@ -969,9 +969,6 @@ class RegistrationBasePage {
     async register() {
         await this.registerButton().click();
     }
-    async verifyExtensionRegistration() {
-        await this.extensionRegisteredText().wait();
-    }
 }
 function ProductRegistrable(Base) {
     return class extends Base {
@@ -981,6 +978,10 @@ function ProductRegistrable(Base) {
 function ExtensionHaRegistrable(Base) {
     return class extends Base {
         codeInput = () => this.page.locator("input[id^='input-reg-code-sle-ha-16.']");
+        extensionRegisteredText = () => this.page.locator("::-p-text(The extension has been registered)");
+        async verifyExtensionRegistration() {
+            await this.extensionRegisteredText().wait();
+        }
     };
 }
 class ProductRegistrationPage extends ProductRegistrable(RegistrationBasePage) {

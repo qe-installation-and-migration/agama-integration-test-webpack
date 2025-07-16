@@ -19,10 +19,6 @@ class RegistrationBasePage {
   async register() {
     await this.registerButton().click();
   }
-
-  async verifyExtensionRegistration() {
-    await this.extensionRegisteredText().wait();
-  }
 }
 
 function ProductRegistrable<TBase extends GConstructor<RegistrationBasePage>>(Base: TBase) {
@@ -34,6 +30,12 @@ function ProductRegistrable<TBase extends GConstructor<RegistrationBasePage>>(Ba
 function ExtensionHaRegistrable<TBase extends GConstructor<RegistrationBasePage>>(Base: TBase) {
   return class extends Base {
     codeInput = () => this.page.locator("input[id^='input-reg-code-sle-ha-16.']");
+    extensionRegisteredText = () =>
+      this.page.locator("::-p-text(The extension has been registered)");
+
+    async verifyExtensionRegistration() {
+      await this.extensionRegisteredText().wait();
+    }
   };
 }
 
