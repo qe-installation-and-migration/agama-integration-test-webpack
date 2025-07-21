@@ -1,6 +1,7 @@
 import { it, page } from "../lib/helpers";
 import { OverviewPage } from "../pages/overview_page";
 import { ProductRegistrationPage, ExtensionHaRegistrationPage } from "../pages/registration_page";
+
 import { SidebarWithRegistrationPage } from "../pages/sidebar_page";
 
 export function enterRegistration(code: string) {
@@ -30,14 +31,16 @@ export function enterRegistrationHa(code: string) {
   });
 }
 
-export function enterRegistrationRegUrl(code: string) {
+export function enterRegistrationRegUrl(code?: string) {
   it("should allow setting registration", async function () {
     const sidebar = new SidebarWithRegistrationPage(page);
     const productRegistration = new ProductRegistrationPage(page);
 
     await sidebar.goToRegistration();
-    await productRegistration.provideRegistrationCode();
-    await productRegistration.fillCode(code);
+    if (code) {
+      await productRegistration.provideRegistrationCode();
+      await productRegistration.fillCode(code);
+    }
     await productRegistration.register();
   });
 

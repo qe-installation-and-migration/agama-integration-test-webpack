@@ -280,8 +280,10 @@ function enterRegistrationRegUrl(code) {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
-        await productRegistration.provideRegistrationCode();
-        await productRegistration.fillCode(code);
+        if (code) {
+            await productRegistration.provideRegistrationCode();
+            await productRegistration.fillCode(code);
+        }
         await productRegistration.register();
     });
     (0, helpers_1.it)("should display Overview", async function () {
