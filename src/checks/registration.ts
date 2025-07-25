@@ -29,3 +29,32 @@ export function enterRegistrationHa(code: string) {
     await extensionRegistration.verifyExtensionRegistration();
   });
 }
+
+export function enterRegistrationRegUrl(code: string) {
+  it("should allow setting registration", async function () {
+    const sidebar = new SidebarWithRegistrationPage(page);
+    const productRegistration = new ProductRegistrationPage(page);
+
+    await sidebar.goToRegistration();
+    await productRegistration.provideRegistrationCode();
+    await productRegistration.fillCode(code);
+    await productRegistration.register();
+  });
+
+  it("should display Overview", async function () {
+    await new OverviewPage(page).waitVisible(40000);
+  });
+}
+
+export function enterRegistrationHaRegUrl(code: string) {
+  it("should allow setting registration HA", async function () {
+    const sidebar = new SidebarWithRegistrationPage(page);
+    const extensionRegistration = new ExtensionHaRegistrationPage(page);
+
+    await sidebar.goToRegistration();
+    await extensionRegistration.provideRegistrationCode();
+    await extensionRegistration.fillCode(code);
+    await extensionRegistration.register();
+    await extensionRegistration.verifyExtensionRegistration();
+  });
+}

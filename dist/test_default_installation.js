@@ -188,6 +188,8 @@ function productSelectionWithLicense(productId) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterRegistration = enterRegistration;
 exports.enterRegistrationHa = enterRegistrationHa;
+exports.enterRegistrationRegUrl = enterRegistrationRegUrl;
+exports.enterRegistrationHaRegUrl = enterRegistrationHaRegUrl;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const registration_page_1 = __webpack_require__(/*! ../pages/registration_page */ "./src/pages/registration_page.ts");
@@ -209,6 +211,30 @@ function enterRegistrationHa(code) {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const extensionRegistration = new registration_page_1.ExtensionHaRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
+        await extensionRegistration.fillCode(code);
+        await extensionRegistration.register();
+        await extensionRegistration.verifyExtensionRegistration();
+    });
+}
+function enterRegistrationRegUrl(code) {
+    (0, helpers_1.it)("should allow setting registration", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await productRegistration.provideRegistrationCode();
+        await productRegistration.fillCode(code);
+        await productRegistration.register();
+    });
+    (0, helpers_1.it)("should display Overview", async function () {
+        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
+    });
+}
+function enterRegistrationHaRegUrl(code) {
+    (0, helpers_1.it)("should allow setting registration HA", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const extensionRegistration = new registration_page_1.ExtensionHaRegistrationPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await extensionRegistration.provideRegistrationCode();
         await extensionRegistration.fillCode(code);
         await extensionRegistration.register();
         await extensionRegistration.verifyExtensionRegistration();
@@ -901,8 +927,12 @@ class RegistrationBasePage {
     codeInput;
     registerButton = () => this.page.locator("button::-p-text(Register)");
     extensionRegisteredText = () => this.page.locator("::-p-text(The extension has been registered)");
+    registrationOptionCheckbox = () => this.page.locator("input#provide-code");
     constructor(page) {
         this.page = page;
+    }
+    async provideRegistrationCode() {
+        await this.registrationOptionCheckbox().click();
     }
     async fillCode(code) {
         await this.codeInput().fill(code);
@@ -1290,6 +1320,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--registration-code-ha <code>", "Registration code for Extension High Availability")
     .option("--patterns <pattern>...", "comma-separated list of patterns", cmdline_1.commaSeparatedList)
     .option("--install", "Proceed to install the system (the default is not to install it)")
+    .option("--inst-register-url", "Custom registration url was provided by kernel cmdline")
     .addOption(new commander_1.Option("--prepare-advanced-storage <storage-type>", "Prepare advance storage for installation").choices(["dasd", "zfcp"])));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
@@ -1300,9 +1331,15 @@ if (options.productId !== "none")
         (0, product_selection_1.productSelection)(options.productId);
 (0, configuration_started_1.ensureProductConfigurationStarted)();
 if (options.registrationCode)
-    (0, registration_1.enterRegistration)(options.registrationCode);
-if (options.registrationCodeHa)
-    (0, registration_1.enterRegistrationHa)(options.registrationCodeHa);
+    if (options.instRegisterUrl)
+        (0, registration_1.enterRegistrationRegUrl)(options.registrationCode);
+    else
+        (0, registration_1.enterRegistration)(options.registrationCode);
+else if (options.registrationCodeHa)
+    if (options.instRegisterUrl)
+        (0, registration_1.enterRegistrationHaRegUrl)(options.registrationCodeHa);
+    else
+        (0, registration_1.enterRegistrationHa)(options.registrationCodeHa);
 if (options.patterns)
     (0, software_selection_1.selectPatterns)(options.patterns);
 (0, first_user_1.createFirstUser)(options.password);
