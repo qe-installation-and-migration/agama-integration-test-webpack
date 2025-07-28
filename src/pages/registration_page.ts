@@ -8,8 +8,14 @@ class RegistrationBasePage {
   protected readonly extensionRegisteredText = () =>
     this.page.locator("::-p-text(The extension has been registered)");
 
+  protected readonly registrationOptionCheckbox = () => this.page.locator("input#provide-code");
+
   constructor(page: Page) {
     this.page = page;
+  }
+
+  async provideRegistrationCode() {
+    await this.registrationOptionCheckbox().click();
   }
 
   async fillCode(code: string) {

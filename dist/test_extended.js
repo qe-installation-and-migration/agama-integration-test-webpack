@@ -216,6 +216,8 @@ function productSelectionWithLicense(productId) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterRegistration = enterRegistration;
 exports.enterRegistrationHa = enterRegistrationHa;
+exports.enterRegistrationRegUrl = enterRegistrationRegUrl;
+exports.enterRegistrationHaRegUrl = enterRegistrationHaRegUrl;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const registration_page_1 = __webpack_require__(/*! ../pages/registration_page */ "./src/pages/registration_page.ts");
@@ -237,6 +239,30 @@ function enterRegistrationHa(code) {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const extensionRegistration = new registration_page_1.ExtensionHaRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
+        await extensionRegistration.fillCode(code);
+        await extensionRegistration.register();
+        await extensionRegistration.verifyExtensionRegistration();
+    });
+}
+function enterRegistrationRegUrl(code) {
+    (0, helpers_1.it)("should allow setting registration", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await productRegistration.provideRegistrationCode();
+        await productRegistration.fillCode(code);
+        await productRegistration.register();
+    });
+    (0, helpers_1.it)("should display Overview", async function () {
+        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
+    });
+}
+function enterRegistrationHaRegUrl(code) {
+    (0, helpers_1.it)("should allow setting registration HA", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const extensionRegistration = new registration_page_1.ExtensionHaRegistrationPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await extensionRegistration.provideRegistrationCode();
         await extensionRegistration.fillCode(code);
         await extensionRegistration.register();
         await extensionRegistration.verifyExtensionRegistration();
@@ -960,8 +986,12 @@ class RegistrationBasePage {
     codeInput;
     registerButton = () => this.page.locator("button::-p-text(Register)");
     extensionRegisteredText = () => this.page.locator("::-p-text(The extension has been registered)");
+    registrationOptionCheckbox = () => this.page.locator("input#provide-code");
     constructor(page) {
         this.page = page;
+    }
+    async provideRegistrationCode() {
+        await this.registrationOptionCheckbox().click();
     }
     async fillCode(code) {
         await this.codeInput().fill(code);

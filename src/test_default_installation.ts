@@ -12,7 +12,12 @@ import { Option } from "commander";
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser } from "./checks/root_authentication";
 import { ensureProductConfigurationStarted } from "./checks/configuration_started";
-import { enterRegistration, enterRegistrationHa } from "./checks/registration";
+import {
+  enterRegistration,
+  enterRegistrationHa,
+  enterRegistrationRegUrl,
+  enterRegistrationHaRegUrl,
+} from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
@@ -31,6 +36,7 @@ const options = parse((cmd) =>
     .option("--registration-code-ha <code>", "Registration code for Extension High Availability")
     .option("--patterns <pattern>...", "comma-separated list of patterns", commaSeparatedList)
     .option("--install", "Proceed to install the system (the default is not to install it)")
+    .option("--inst-register-url", "Custom registration url was provided by kernel cmdline")
     .addOption(
       new Option(
         "--prepare-advanced-storage <storage-type>",
@@ -46,8 +52,12 @@ if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
 ensureProductConfigurationStarted();
-if (options.registrationCode) enterRegistration(options.registrationCode);
-if (options.registrationCodeHa) enterRegistrationHa(options.registrationCodeHa);
+if (options.registrationCode)
+  if (options.instRegisterUrl) enterRegistrationRegUrl(options.registrationCode);
+  else enterRegistration(options.registrationCode);
+else if (options.registrationCodeHa)
+  if (options.instRegisterUrl) enterRegistrationHaRegUrl(options.registrationCodeHa);
+  else enterRegistrationHa(options.registrationCodeHa);
 if (options.patterns) selectPatterns(options.patterns);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
