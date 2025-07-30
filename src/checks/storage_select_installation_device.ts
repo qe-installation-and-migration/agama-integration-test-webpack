@@ -15,3 +15,12 @@ export function selectMoreDevices() {
     await lvm.accept();
   });
 }
+
+export function deleteLvmVolumeGroupSystem() {
+  it("should delete LVM vloume group system", async function () {
+    const storage = new StoragePage(page);
+
+    await storage.clickCreateLvmVolumeGroupSystem();
+    await storage.clickDeleteVolumeGroup();
+  });
+}

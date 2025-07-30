@@ -1192,6 +1192,8 @@ class StoragePage {
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
     addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
+    createLvmVolumeGroupSystem = () => this.page.locator("::-p-text(Create Lvm Volume Group System)");
+    deleteVolumeGroup = () => this.page.locator("::-p-text(Delete Volume Group)");
     destructiveActionsList = () => this.page.locator("::-p-text(Check)");
     destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
     constructor(page) {
@@ -1202,6 +1204,12 @@ class StoragePage {
     }
     async addLvmVolumeGroup() {
         await this.addLvmVolumeLink().click();
+    }
+    async clickCreateLvmVolumeGroupSystem() {
+        await this.createLvmVolumeGroupSystem().click();
+    }
+    async clickDeleteVolumeGroup() {
+        await this.deleteVolumeGroup().click();
     }
     async editEncryption() {
         await this.editEncryptionButton().click();

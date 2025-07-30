@@ -380,6 +380,43 @@ function verifyDecryptDestructiveActions(destructiveActions) {
 
 /***/ }),
 
+/***/ "./src/checks/storage_select_installation_device.ts":
+/*!**********************************************************!*\
+  !*** ./src/checks/storage_select_installation_device.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.selectMoreDevices = selectMoreDevices;
+exports.deleteLvmVolumeGroupSystem = deleteLvmVolumeGroupSystem;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const configure_lvm_volume_group_page_1 = __webpack_require__(/*! ../pages/configure_lvm_volume_group_page */ "./src/pages/configure_lvm_volume_group_page.ts");
+const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+function selectMoreDevices() {
+    (0, helpers_1.it)("should add LVM volume group", async function () {
+        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const lvm = new configure_lvm_volume_group_page_1.ConfigureLvmVolumeGroupPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.selectMoreDevices();
+        await storage.addLvmVolumeGroup();
+        await lvm.accept();
+    });
+}
+function deleteLvmVolumeGroupSystem() {
+    (0, helpers_1.it)("should delete LVM vloume group system", async function () {
+        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        await storage.clickCreateLvmVolumeGroupSystem();
+        await storage.clickDeleteVolumeGroup();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/storage_zfcp.ts":
 /*!************************************!*\
   !*** ./src/checks/storage_zfcp.ts ***!
@@ -735,6 +772,31 @@ var Desktop;
     Desktop["none"] = "None";
 })(Desktop || (exports.Desktop = Desktop = {}));
 ;
+
+
+/***/ }),
+
+/***/ "./src/pages/configure_lvm_volume_group_page.ts":
+/*!******************************************************!*\
+  !*** ./src/pages/configure_lvm_volume_group_page.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigureLvmVolumeGroupPage = void 0;
+class ConfigureLvmVolumeGroupPage {
+    page;
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.ConfigureLvmVolumeGroupPage = ConfigureLvmVolumeGroupPage;
 
 
 /***/ }),
@@ -1260,6 +1322,8 @@ class StoragePage {
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
     addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
+    createLvmVolumeGroupSystem = () => this.page.locator("::-p-text(Create Lvm Volume Group System)");
+    deleteVolumeGroup = () => this.page.locator("::-p-text(Delete Volume Group)");
     destructiveActionsList = () => this.page.locator("::-p-text(Check)");
     destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
     constructor(page) {
@@ -1270,6 +1334,12 @@ class StoragePage {
     }
     async addLvmVolumeGroup() {
         await this.addLvmVolumeLink().click();
+    }
+    async clickCreateLvmVolumeGroupSystem() {
+        await this.createLvmVolumeGroupSystem().click();
+    }
+    async clickDeleteVolumeGroup() {
+        await this.deleteVolumeGroup().click();
     }
     async editEncryption() {
         await this.editEncryptionButton().click();
@@ -1401,6 +1471,7 @@ const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ./c
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
+const storage_select_installation_device_1 = __webpack_require__(/*! ./checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
@@ -1408,6 +1479,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--registration-code <code>", "Registration code")
     .option("--staticHostname <hostname>", "Static Hostname")
     .option("--noCopyNetwork", "The connection will be used only during installation")
+    .option("--lvm-add-delete", "Add and then delete LVM volume group")
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--inst-register-url", "Custom registration url was provided by kernel cmdline")
     .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
@@ -1425,6 +1497,10 @@ if (options.destructiveActions)
     (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(options.destructiveActions);
 if (options.staticHostname)
     (0, hostname_1.setPermanentHostname)(options.staticHostname);
+if (options.lvmAddDelete) {
+    (0, storage_select_installation_device_1.selectMoreDevices)();
+    (0, storage_select_installation_device_1.deleteLvmVolumeGroupSystem)();
+}
 if (options.noCopyNetwork)
     (0, network_1.setOnlyInstallationNetwork)();
 if (options.registrationCode)

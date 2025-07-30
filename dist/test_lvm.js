@@ -81,6 +81,7 @@ function logIn(password) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.selectMoreDevices = selectMoreDevices;
+exports.deleteLvmVolumeGroupSystem = deleteLvmVolumeGroupSystem;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const configure_lvm_volume_group_page_1 = __webpack_require__(/*! ../pages/configure_lvm_volume_group_page */ "./src/pages/configure_lvm_volume_group_page.ts");
@@ -94,6 +95,13 @@ function selectMoreDevices() {
         await storage.selectMoreDevices();
         await storage.addLvmVolumeGroup();
         await lvm.accept();
+    });
+}
+function deleteLvmVolumeGroupSystem() {
+    (0, helpers_1.it)("should delete LVM vloume group system", async function () {
+        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        await storage.clickCreateLvmVolumeGroupSystem();
+        await storage.clickDeleteVolumeGroup();
     });
 }
 
@@ -637,6 +645,8 @@ class StoragePage {
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
     addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
+    createLvmVolumeGroupSystem = () => this.page.locator("::-p-text(Create Lvm Volume Group System)");
+    deleteVolumeGroup = () => this.page.locator("::-p-text(Delete Volume Group)");
     destructiveActionsList = () => this.page.locator("::-p-text(Check)");
     destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
     constructor(page) {
@@ -647,6 +657,12 @@ class StoragePage {
     }
     async addLvmVolumeGroup() {
         await this.addLvmVolumeLink().click();
+    }
+    async clickCreateLvmVolumeGroupSystem() {
+        await this.createLvmVolumeGroupSystem().click();
+    }
+    async clickDeleteVolumeGroup() {
+        await this.deleteVolumeGroup().click();
     }
     async editEncryption() {
         await this.editEncryptionButton().click();
@@ -686,7 +702,8 @@ exports.StoragePage = StoragePage;
 // This is an example file for running Agama integration tests using Puppeteer.
 // If the test fails it saves the page screenshot and the HTML page dump to
 // ./log/ subdirectory. For more details about customization see the README.md
-// file.
+// file
+// test.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");

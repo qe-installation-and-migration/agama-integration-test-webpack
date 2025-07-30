@@ -593,7 +593,7 @@ class RegistrationBasePage {
 }
 function ProductRegistrable(Base) {
     return class extends Base {
-        codeInput = () => this.page.locator(`input[id="code"], input[id="key"]`);
+        codeInput = () => this.page.locator("input#code");
     };
 }
 function ExtensionHaRegistrable(Base) {

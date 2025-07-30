@@ -14,7 +14,13 @@ export class StoragePage {
 
   private readonly addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
 
+  private readonly createLvmVolumeGroupSystem = () =>
+    this.page.locator("::-p-text(Create Lvm Volume Group System)");
+
+  private readonly deleteVolumeGroup = () => this.page.locator("::-p-text(Delete Volume Group)");
+
   private readonly destructiveActionsList = () => this.page.locator("::-p-text(Check)");
+
   private readonly destructiveActionText = (name: string) =>
     this.page.locator(`::-p-text(Delete ${name})`);
 
@@ -28,6 +34,14 @@ export class StoragePage {
 
   async addLvmVolumeGroup() {
     await this.addLvmVolumeLink().click();
+  }
+
+  async clickCreateLvmVolumeGroupSystem() {
+    await this.createLvmVolumeGroupSystem().click();
+  }
+
+  async clickDeleteVolumeGroup() {
+    await this.deleteVolumeGroup().click();
   }
 
   async editEncryption() {

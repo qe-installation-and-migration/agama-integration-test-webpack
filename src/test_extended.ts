@@ -19,6 +19,10 @@ import { verifyDecryptDestructiveActions } from "./checks/storage_result_destruc
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { performInstallation } from "./checks/installation";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
+import {
+  selectMoreDevices,
+  deleteLvmVolumeGroupSystem,
+} from "./checks/storage_select_installation_device";
 
 // parse options from the command line
 const options = parse((cmd) =>
@@ -31,6 +35,7 @@ const options = parse((cmd) =>
     .option("--registration-code <code>", "Registration code")
     .option("--staticHostname <hostname>", "Static Hostname")
     .option("--noCopyNetwork", "The connection will be used only during installation")
+    .option("--lvm-add-delete", "Add and then delete LVM volume group")
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--inst-register-url", "Custom registration url was provided by kernel cmdline")
     .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
@@ -49,6 +54,10 @@ if (options.productId !== "none")
 if (options.decryptPassword) decryptDevice(options.decryptPassword);
 if (options.destructiveActions) verifyDecryptDestructiveActions(options.destructiveActions);
 if (options.staticHostname) setPermanentHostname(options.staticHostname);
+if (options.lvmAddDelete) {
+  selectMoreDevices();
+  deleteLvmVolumeGroupSystem();
+}
 if (options.noCopyNetwork) setOnlyInstallationNetwork();
 if (options.registrationCode)
   if (options.instRegisterUrl) enterRegistrationRegUrl(options.registrationCode);
