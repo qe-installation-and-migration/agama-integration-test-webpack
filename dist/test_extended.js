@@ -158,38 +158,6 @@ function logIn(password) {
 
 /***/ }),
 
-/***/ "./src/checks/network.ts":
-/*!*******************************!*\
-  !*** ./src/checks/network.ts ***!
-  \*******************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setOnlyInstallationNetwork = setOnlyInstallationNetwork;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const network_page_1 = __webpack_require__(/*! ../pages/network_page */ "./src/pages/network_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function setOnlyInstallationNetwork() {
-    (0, helpers_1.it)("should allow setting only installation network", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
-        await sidebar.goToNetwork();
-        await networkPage.selectWiredConnection();
-        await networkPage.selectInstallationOnly();
-    });
-    (0, helpers_1.it)("should alert no network after installation", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
-        await sidebar.goToNetwork();
-        await networkPage.waitVisibleWarningAlert();
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/product_selection.ts":
 /*!*****************************************!*\
   !*** ./src/checks/product_selection.ts ***!
@@ -249,7 +217,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterRegistration = enterRegistration;
 exports.enterRegistrationHa = enterRegistrationHa;
 exports.enterRegistrationRegUrl = enterRegistrationRegUrl;
-exports.enterRegistrationHaRegUrl = enterRegistrationHaRegUrl;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const registration_page_1 = __webpack_require__(/*! ../pages/registration_page */ "./src/pages/registration_page.ts");
@@ -287,17 +254,6 @@ function enterRegistrationRegUrl(code) {
     });
     (0, helpers_1.it)("should display Overview", async function () {
         await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
-    });
-}
-function enterRegistrationHaRegUrl(code) {
-    (0, helpers_1.it)("should allow setting registration HA", async function () {
-        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const extensionRegistration = new registration_page_1.ExtensionHaRegistrationPage(helpers_1.page);
-        await sidebar.goToRegistration();
-        await extensionRegistration.provideRegistrationCode();
-        await extensionRegistration.fillCode(code);
-        await extensionRegistration.register();
-        await extensionRegistration.verifyExtensionRegistration();
     });
 }
 
@@ -913,41 +869,6 @@ exports.LoginAsRootPage = LoginAsRootPage;
 
 /***/ }),
 
-/***/ "./src/pages/network_page.ts":
-/*!***********************************!*\
-  !*** ./src/pages/network_page.ts ***!
-  \***********************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NetworkPage = void 0;
-class NetworkPage {
-    page;
-    wiredConnection = () => this.page.locator(`ul[aria-label="Wired connections"] > li`);
-    installationOnlyCheckboxNotChecked = () => this.page.locator(`input[type="checkbox"]:not(:checked)[role="switch"]`);
-    installationOnlyCheckboxChecked = () => this.page.locator(`input[type="checkbox"]:checked[role="switch"]`);
-    warningAlertHeading = () => this.page.locator(`::-p-text(Installed system may not have network connections)`);
-    constructor(page) {
-        this.page = page;
-    }
-    async selectWiredConnection() {
-        await this.wiredConnection().click();
-    }
-    async selectInstallationOnly() {
-        await this.installationOnlyCheckboxNotChecked().click();
-        await this.installationOnlyCheckboxChecked().wait();
-    }
-    async waitVisibleWarningAlert() {
-        await this.warningAlertHeading().wait();
-    }
-}
-exports.NetworkPage = NetworkPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/overview_page.ts":
 /*!************************************!*\
   !*** ./src/pages/overview_page.ts ***!
@@ -1377,7 +1298,7 @@ const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/check
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const hostname_1 = __webpack_require__(/*! ./checks/hostname */ "./src/checks/hostname.ts");
-const network_1 = __webpack_require__(/*! ./checks/network */ "./src/checks/network.ts");
+const network_1 = __webpack_require__(Object(function webpackMissingModule() { var e = new Error("Cannot find module './checks/network'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 const decryption_1 = __webpack_require__(/*! ./checks/decryption */ "./src/checks/decryption.ts");
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ./checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");

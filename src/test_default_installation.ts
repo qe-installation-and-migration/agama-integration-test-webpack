@@ -16,7 +16,6 @@ import {
   enterRegistration,
   enterRegistrationHa,
   enterRegistrationRegUrl,
-  enterRegistrationHaRegUrl,
 } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
@@ -55,9 +54,7 @@ ensureProductConfigurationStarted();
 if (options.registrationCode)
   if (options.instRegisterUrl) enterRegistrationRegUrl(options.registrationCode);
   else enterRegistration(options.registrationCode);
-else if (options.registrationCodeHa)
-  if (options.instRegisterUrl) enterRegistrationHaRegUrl(options.registrationCodeHa);
-  else enterRegistrationHa(options.registrationCodeHa);
+if (options.registrationCodeHa) enterRegistrationHa(options.registrationCodeHa);
 if (options.patterns) selectPatterns(options.patterns);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
