@@ -249,7 +249,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterRegistration = enterRegistration;
 exports.enterRegistrationHa = enterRegistrationHa;
 exports.enterRegistrationRegUrl = enterRegistrationRegUrl;
-exports.enterRegistrationHaRegUrl = enterRegistrationHaRegUrl;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const registration_page_1 = __webpack_require__(/*! ../pages/registration_page */ "./src/pages/registration_page.ts");
@@ -287,17 +286,6 @@ function enterRegistrationRegUrl(code) {
     });
     (0, helpers_1.it)("should display Overview", async function () {
         await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
-    });
-}
-function enterRegistrationHaRegUrl(code) {
-    (0, helpers_1.it)("should allow setting registration HA", async function () {
-        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const extensionRegistration = new registration_page_1.ExtensionHaRegistrationPage(helpers_1.page);
-        await sidebar.goToRegistration();
-        await extensionRegistration.provideRegistrationCode();
-        await extensionRegistration.fillCode(code);
-        await extensionRegistration.register();
-        await extensionRegistration.verifyExtensionRegistration();
     });
 }
 

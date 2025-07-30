@@ -45,16 +45,3 @@ export function enterRegistrationRegUrl(code: string) {
     await new OverviewPage(page).waitVisible(40000);
   });
 }
-
-export function enterRegistrationHaRegUrl(code: string) {
-  it("should allow setting registration HA", async function () {
-    const sidebar = new SidebarWithRegistrationPage(page);
-    const extensionRegistration = new ExtensionHaRegistrationPage(page);
-
-    await sidebar.goToRegistration();
-    await extensionRegistration.provideRegistrationCode();
-    await extensionRegistration.fillCode(code);
-    await extensionRegistration.register();
-    await extensionRegistration.verifyExtensionRegistration();
-  });
-}
