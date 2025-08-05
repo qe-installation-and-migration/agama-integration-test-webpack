@@ -10,7 +10,7 @@ import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
 import { createFirstUser } from "./checks/first_user";
-import { editRootUser } from "./checks/root_authentication";
+import { editRootUser, verifyPasswordStrength } from "./checks/root_authentication";
 import { enterRegistration, enterRegistrationRegUrl } from "./checks/registration";
 import { setPermanentHostname } from "./checks/hostname";
 import { setOnlyInstallationNetwork } from "./checks/network";
@@ -55,5 +55,6 @@ if (options.registrationCode)
   else enterRegistration(options.registrationCode);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
+verifyPasswordStrength();
 if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
 if (options.install) performInstallation();
