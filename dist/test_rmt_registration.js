@@ -2,93 +2,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/checks/decryption.ts":
-/*!**********************************!*\
-  !*** ./src/checks/decryption.ts ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.decryptDevice = decryptDevice;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const encrypted_device_page_1 = __webpack_require__(/*! ../pages/encrypted_device_page */ "./src/pages/encrypted_device_page.ts");
-const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
-function decryptDevice(password) {
-    (0, helpers_1.it)("Should decrypt encrypted device", async function () {
-        const storageDecryption = new encrypted_device_page_1.EncryptedDevice(helpers_1.page);
-        await storageDecryption.decrypt(password, 3 * 60 * 1000);
-    });
-    (0, helpers_1.it)("should display Overview", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
-    });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/first_user.ts":
-/*!**********************************!*\
-  !*** ./src/checks/first_user.ts ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createFirstUser = createFirstUser;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const create_user_page_1 = __webpack_require__(/*! ../pages/create_user_page */ "./src/pages/create_user_page.ts");
-const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function createFirstUser(password) {
-    (0, helpers_1.it)("should create first user", async function () {
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToUsers();
-        await users.defineAUserNow();
-        await createFirstUser.fillFullName("Bernhard M. Wiedemann");
-        await createFirstUser.fillUserName("bernhard");
-        await createFirstUser.fillPassword(password);
-        await createFirstUser.fillPasswordConfirmation(password);
-        await createFirstUser.accept();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
-    });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/hostname.ts":
-/*!********************************!*\
-  !*** ./src/checks/hostname.ts ***!
-  \********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setPermanentHostname = setPermanentHostname;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const hostname_page_1 = __webpack_require__(/*! ../pages/hostname_page */ "./src/pages/hostname_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function setPermanentHostname(hostname) {
-    (0, helpers_1.it)("should allow setting static hostname", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const hostnamePage = new hostname_page_1.HostnamePage(helpers_1.page);
-        await sidebar.goToHostname();
-        await hostnamePage.useStaticHostname();
-        await hostnamePage.fill(hostname);
-        await hostnamePage.accept();
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/installation.ts":
 /*!************************************!*\
   !*** ./src/checks/installation.ts ***!
@@ -158,85 +71,6 @@ function logIn(password) {
 
 /***/ }),
 
-/***/ "./src/checks/network.ts":
-/*!*******************************!*\
-  !*** ./src/checks/network.ts ***!
-  \*******************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setOnlyInstallationNetwork = setOnlyInstallationNetwork;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const network_page_1 = __webpack_require__(/*! ../pages/network_page */ "./src/pages/network_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function setOnlyInstallationNetwork() {
-    (0, helpers_1.it)("should allow setting only installation network", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
-        await sidebar.goToNetwork();
-        await networkPage.selectWiredConnection();
-        await networkPage.selectInstallationOnly();
-    });
-    (0, helpers_1.it)("should alert no network after installation", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
-        await sidebar.goToNetwork();
-        await networkPage.waitVisibleWarningAlert();
-    });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/product_selection.ts":
-/*!*****************************************!*\
-  !*** ./src/checks/product_selection.ts ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.productSelectionByName = productSelectionByName;
-exports.productSelection = productSelection;
-exports.productSelectionWithLicense = productSelectionWithLicense;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-function productSelectionByName(productName) {
-    (0, helpers_1.it)(`should allow to select product ${productName}`, async function () {
-        await new product_selection_page_1.ProductSelectionPage(helpers_1.page).selectByName(productName);
-    });
-}
-function productSelection(productId) {
-    (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
-        const productSelectionPage = new product_selection_page_1.ProductSelectionPage(helpers_1.page);
-        await productSelectionPage.choose(productId);
-        await productSelectionPage.select();
-    });
-}
-function productSelectionWithLicense(productId) {
-    (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
-        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).choose(productId);
-    });
-    (0, helpers_1.it)(`should allow to review its license`, async function () {
-        const productSelectionWithRegistrationPage = new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page);
-        await productSelectionWithRegistrationPage.openLicense();
-        await productSelectionWithRegistrationPage.verifyLicense();
-        await productSelectionWithRegistrationPage.closeLicense();
-    });
-    (0, helpers_1.it)(`should allow to accept its license`, async function () {
-        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).acceptProductLicense();
-    });
-    (0, helpers_1.it)(`should allow to select product`, async function () {
-        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/registration.ts":
 /*!************************************!*\
   !*** ./src/checks/registration.ts ***!
@@ -249,6 +83,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterRegistration = enterRegistration;
 exports.enterRegistrationHa = enterRegistrationHa;
 exports.enterRegistrationRegUrl = enterRegistrationRegUrl;
+exports.enterRegistrationHaRegUrl = enterRegistrationHaRegUrl;
+exports.enterRMTRegistration = enterRMTRegistration;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const registration_page_1 = __webpack_require__(/*! ../pages/registration_page */ "./src/pages/registration_page.ts");
@@ -280,118 +116,41 @@ function enterRegistrationRegUrl(code) {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
-        if (code) {
-            await productRegistration.provideRegistrationCode();
-            await productRegistration.fillCode(code);
-        }
+        await productRegistration.provideRegistrationCode();
+        await productRegistration.fillCode(code);
         await productRegistration.register();
     });
     (0, helpers_1.it)("should display Overview", async function () {
         await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
     });
 }
-
-
-/***/ }),
-
-/***/ "./src/checks/root_authentication.ts":
-/*!*******************************************!*\
-  !*** ./src/checks/root_authentication.ts ***!
-  \*******************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.editRootUser = editRootUser;
-exports.setupMandatoryRootAuth = setupMandatoryRootAuth;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const setup_root_user_authentication_page_1 = __webpack_require__(/*! ../pages/setup_root_user_authentication_page */ "./src/pages/setup_root_user_authentication_page.ts");
-const root_authentication_methods_1 = __webpack_require__(/*! ../pages/root_authentication_methods */ "./src/pages/root_authentication_methods.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
-function editRootUser(password) {
-    (0, helpers_1.it)("should edit the root user", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const users = new users_page_1.UsersPage(helpers_1.page);
-        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
-        await sidebar.goToUsers();
-        await users.editRootUser();
-        await setARootPassword.usePassword();
-        await setARootPassword.fillPassword(password);
-        await setARootPassword.fillPasswordConfirmation(password);
-        await setARootPassword.accept();
-        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
-        await (0, helpers_1.sleep)(2000);
+function enterRegistrationHaRegUrl(code) {
+    (0, helpers_1.it)("should allow setting registration HA", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const extensionRegistration = new registration_page_1.ExtensionHaRegistrationPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await extensionRegistration.provideRegistrationCode();
+        await extensionRegistration.fillCode(code);
+        await extensionRegistration.register();
+        await extensionRegistration.verifyExtensionRegistration();
     });
 }
-function setupMandatoryRootAuth(password) {
-    (0, helpers_1.it)("should setup root user authentication password", async function () {
-        const setupRootuserAuthentication = new setup_root_user_authentication_page_1.SetupRootUserAuthenticationPage(helpers_1.page);
-        // longer timeout to refresh repos when coming from product selection
-        await setupRootuserAuthentication.wait(3 * 60 * 1000);
-        await setupRootuserAuthentication.fillPassword(password);
-        await setupRootuserAuthentication.submit();
-    }, 3 * 60 * 1000);
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/storage_result_destructive_actions_planned.ts":
-/*!******************************************************************!*\
-  !*** ./src/checks/storage_result_destructive_actions_planned.ts ***!
-  \******************************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.verifyDecryptDestructiveActions = verifyDecryptDestructiveActions;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
-function verifyDecryptDestructiveActions(destructiveActions) {
-    (0, helpers_1.it)("should display a list of destructive actions", async function () {
-        await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
-        await new storage_page_1.StoragePage(helpers_1.page).expandDestructiveActionsList();
-        for (const action of destructiveActions) {
-            await new storage_page_1.StoragePage(helpers_1.page).verifyDestructiveAction(action);
-        }
+function enterRMTRegistration(code) {
+    (0, helpers_1.it)("should allow setting RMT registration", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const rmtRegistration = new registration_page_1.CustomRegistrationPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        if (code)
+            await rmtRegistration.enterCustomRegistration(code);
+        await rmtRegistration.register();
+        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
     });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/storage_zfcp.ts":
-/*!************************************!*\
-  !*** ./src/checks/storage_zfcp.ts ***!
-  \************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.prepareZfcpStorage = prepareZfcpStorage;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
-const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
-function prepareZfcpStorage() {
-    (0, helpers_1.it)("should prepare zFCP storage", async function () {
-        const storage = new storage_page_1.StoragePage(helpers_1.page);
-        const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToStorage();
-        await storage.activateZfcp();
-        await zfcp.activateDevice("0.0.fa00");
-        await zfcp.activateDevice("0.0.fc00");
-        await zfcp.back();
-        await zfcp.activateMultipath();
-        // Workaround to wait for page to load, sometimes workers take more than 60 seconds to load storage
-        await storage.waitForElement("::-p-text(Activate zFCP disks)", 80000);
-    }, 3 * 60 * 1000);
+    (0, helpers_1.it)("should display RMT server in the registration page", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const rmtRegistration = new registration_page_1.CustomRegistrationPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await rmtRegistration.verifyCustomRegistration();
+    });
 }
 
 
@@ -773,107 +532,6 @@ exports.CongratulationPage = CongratulationPage;
 
 /***/ }),
 
-/***/ "./src/pages/create_user_page.ts":
-/*!***************************************!*\
-  !*** ./src/pages/create_user_page.ts ***!
-  \***************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CreateFirstUserPage = void 0;
-class CreateFirstUserPage {
-    page;
-    fullNameInput = () => this.page.locator("input#userFullName");
-    usernameInput = () => this.page.locator("input#userName");
-    passwordInput = () => this.page.locator("input#password");
-    passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
-    acceptButton = () => this.page.locator("button[form='firstUserForm']");
-    constructor(page) {
-        this.page = page;
-    }
-    async fillFullName(fullName) {
-        await this.fullNameInput().fill(fullName);
-    }
-    async fillUserName(userName) {
-        await this.usernameInput().fill(userName);
-    }
-    async fillPassword(password) {
-        await this.passwordInput().fill(password);
-    }
-    async fillPasswordConfirmation(password) {
-        await this.passwordConfirmationInput().fill(password);
-    }
-    async accept() {
-        await this.acceptButton().click();
-    }
-}
-exports.CreateFirstUserPage = CreateFirstUserPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/encrypted_device_page.ts":
-/*!********************************************!*\
-  !*** ./src/pages/encrypted_device_page.ts ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EncryptedDevice = void 0;
-class EncryptedDevice {
-    page;
-    encryptionPasswordInput = () => this.page.locator("input#luks-password");
-    decryptButton = () => this.page.locator("button::-p-text(Decrypt)");
-    constructor(page) {
-        this.page = page;
-    }
-    async decrypt(password, timeout) {
-        await this.encryptionPasswordInput().setTimeout(timeout).fill(password);
-        await this.decryptButton().click();
-    }
-}
-exports.EncryptedDevice = EncryptedDevice;
-
-
-/***/ }),
-
-/***/ "./src/pages/hostname_page.ts":
-/*!************************************!*\
-  !*** ./src/pages/hostname_page.ts ***!
-  \************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.HostnamePage = void 0;
-class HostnamePage {
-    page;
-    useStaticHostnameToggle = () => this.page.locator("input#hostname");
-    hostnameInput = () => this.page.locator("::-p-aria(Static hostname)");
-    acceptButton = () => this.page.locator("::-p-text(Accept)");
-    constructor(page) {
-        this.page = page;
-    }
-    async useStaticHostname() {
-        await this.useStaticHostnameToggle().click();
-    }
-    async fill(hostname) {
-        await this.hostnameInput().fill(hostname);
-    }
-    async accept() {
-        await this.acceptButton().click();
-    }
-}
-exports.HostnamePage = HostnamePage;
-
-
-/***/ }),
-
 /***/ "./src/pages/login_as_root_page.ts":
 /*!*****************************************!*\
   !*** ./src/pages/login_as_root_page.ts ***!
@@ -899,41 +557,6 @@ class LoginAsRootPage {
     }
 }
 exports.LoginAsRootPage = LoginAsRootPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/network_page.ts":
-/*!***********************************!*\
-  !*** ./src/pages/network_page.ts ***!
-  \***********************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NetworkPage = void 0;
-class NetworkPage {
-    page;
-    wiredConnection = () => this.page.locator(`ul[aria-label="Wired connections"] > li`);
-    installationOnlyCheckboxNotChecked = () => this.page.locator(`input[type="checkbox"]:not(:checked)[role="switch"]`);
-    installationOnlyCheckboxChecked = () => this.page.locator(`input[type="checkbox"]:checked[role="switch"]`);
-    warningAlertHeading = () => this.page.locator(`::-p-text(Installed system may not have network connections)`);
-    constructor(page) {
-        this.page = page;
-    }
-    async selectWiredConnection() {
-        await this.wiredConnection().click();
-    }
-    async selectInstallationOnly() {
-        await this.installationOnlyCheckboxNotChecked().click();
-        await this.installationOnlyCheckboxChecked().wait();
-    }
-    async waitVisibleWarningAlert() {
-        await this.warningAlertHeading().wait();
-    }
-}
-exports.NetworkPage = NetworkPage;
 
 
 /***/ }),
@@ -967,67 +590,6 @@ exports.OverviewPage = OverviewPage;
 
 /***/ }),
 
-/***/ "./src/pages/product_selection_page.ts":
-/*!*********************************************!*\
-  !*** ./src/pages/product_selection_page.ts ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProductSelectionWithRegistrationPage = exports.ProductSelectionPage = void 0;
-class ProductSelectionPage {
-    page;
-    productText = (name) => this.page.locator(`::-p-text(${name})`);
-    productId = (id) => this.page.locator("input#" + id.replaceAll(".", "\\."));
-    selectButton = () => this.page.locator("button[form='productSelectionForm']");
-    constructor(page) {
-        this.page = page;
-    }
-    async choose(id) {
-        (await this.productId(id).waitHandle()).scrollIntoView();
-        await this.productId(id).click();
-    }
-    async select() {
-        await this.selectButton().click();
-    }
-    async selectByName(name) {
-        await this.choose(name);
-        await this.selectButton().click();
-    }
-}
-exports.ProductSelectionPage = ProductSelectionPage;
-function LicenseAcceptable(Base) {
-    return class extends Base {
-        licenseAcceptanceCheckbox = () => this.page.locator("::-p-text(I have read and)");
-        licenseOpenButton = () => this.page.locator("::-p-text(license)");
-        licenseCloseButton = () => this.page.locator("::-p-text(Close)");
-        licenseText = () => this.page.locator("::-p-text(SUSE(R) End User License Agreement for Beta Software)");
-        async acceptLicense() {
-            await this.licenseAcceptanceCheckbox().click();
-        }
-        async openLicense() {
-            await this.licenseOpenButton().click();
-        }
-        async verifyLicense() {
-            await this.licenseText().wait();
-        }
-        async closeLicense() {
-            await this.licenseCloseButton().click();
-        }
-        async acceptProductLicense() {
-            await this.acceptLicense();
-        }
-    };
-}
-class ProductSelectionWithRegistrationPage extends LicenseAcceptable(ProductSelectionPage) {
-}
-exports.ProductSelectionWithRegistrationPage = ProductSelectionWithRegistrationPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/registration_page.ts":
 /*!****************************************!*\
   !*** ./src/pages/registration_page.ts ***!
@@ -1037,7 +599,7 @@ exports.ProductSelectionWithRegistrationPage = ProductSelectionWithRegistrationP
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ExtensionHaRegistrationPage = exports.ProductRegistrationPage = void 0;
+exports.CustomRegistrationPage = exports.ExtensionHaRegistrationPage = exports.ProductRegistrationPage = void 0;
 class RegistrationBasePage {
     page;
     codeInput;
@@ -1071,85 +633,29 @@ function ExtensionHaRegistrable(Base) {
         }
     };
 }
+function CustomRegistrable(Base) {
+    return class extends Base {
+        codeInput = () => this.page.locator("input#code");
+        customRegistrationCodeCheckbox = () => this.page.locator("input#provide-code");
+        customRegisteredText = () => this.page.locator("::-p-text(has been registered with below information)");
+        async enterCustomRegistration(code) {
+            await this.customRegistrationCodeCheckbox().click();
+            await this.codeInput().fill(code);
+        }
+        async verifyCustomRegistration() {
+            await this.customRegisteredText().wait();
+        }
+    };
+}
 class ProductRegistrationPage extends ProductRegistrable(RegistrationBasePage) {
 }
 exports.ProductRegistrationPage = ProductRegistrationPage;
 class ExtensionHaRegistrationPage extends ExtensionHaRegistrable(RegistrationBasePage) {
 }
 exports.ExtensionHaRegistrationPage = ExtensionHaRegistrationPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/root_authentication_methods.ts":
-/*!**************************************************!*\
-  !*** ./src/pages/root_authentication_methods.ts ***!
-  \**************************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SetARootPasswordPage = void 0;
-class SetARootPasswordPage {
-    page;
-    acceptText = () => this.page.locator("button::-p-text(Accept)");
-    confirmText = () => this.page.locator("button::-p-text(Confirm)");
-    passwordInput = () => this.page.locator("input#password");
-    passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
-    usePasswordToggle = () => this.page.locator("::-p-text(Use password)");
-    constructor(page) {
-        this.page = page;
-    }
-    async accept() {
-        await this.acceptText().click();
-    }
-    async confirm() {
-        await this.confirmText().click();
-    }
-    async fillPassword(password) {
-        await this.passwordInput().fill(password);
-    }
-    async fillPasswordConfirmation(password) {
-        await this.passwordConfirmationInput().fill(password);
-    }
-    async usePassword() {
-        await this.usePasswordToggle().click();
-    }
+class CustomRegistrationPage extends CustomRegistrable(RegistrationBasePage) {
 }
-exports.SetARootPasswordPage = SetARootPasswordPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/setup_root_user_authentication_page.ts":
-/*!**********************************************************!*\
-  !*** ./src/pages/setup_root_user_authentication_page.ts ***!
-  \**********************************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SetupRootUserAuthenticationPage = void 0;
-class SetupRootUserAuthenticationPage {
-    page;
-    rootPasswordInput = () => this.page.locator("input#rootPassword");
-    submitButton = () => this.page.locator("button[type='submit']");
-    constructor(page) {
-        this.page = page;
-    }
-    async wait(timeout) {
-        await this.rootPasswordInput().setTimeout(timeout).wait();
-    }
-    async fillPassword(password) {
-        await this.rootPasswordInput().fill(password);
-    }
-    async submit() {
-        await this.submitButton().click();
-    }
-}
-exports.SetupRootUserAuthenticationPage = SetupRootUserAuthenticationPage;
+exports.CustomRegistrationPage = CustomRegistrationPage;
 
 
 /***/ }),
@@ -1214,142 +720,10 @@ exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 /***/ }),
 
-/***/ "./src/pages/storage_page.ts":
-/*!***********************************!*\
-  !*** ./src/pages/storage_page.ts ***!
-  \***********************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StoragePage = void 0;
-class StoragePage {
-    page;
-    selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
-    editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
-    encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
-    manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
-    ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
-    addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
-    destructiveActionsList = () => this.page.locator("::-p-text(Check)");
-    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
-    constructor(page) {
-        this.page = page;
-    }
-    async selectMoreDevices() {
-        await this.selectMoreDevicesButton().click();
-    }
-    async addLvmVolumeGroup() {
-        await this.addLvmVolumeLink().click();
-    }
-    async editEncryption() {
-        await this.editEncryptionButton().click();
-    }
-    async verifyEncryptionEnabled() {
-        await this.encryptionIsEnabledText().wait();
-    }
-    async manageDasd() {
-        await this.manageDasdLink().click();
-    }
-    async activateZfcp() {
-        await this.ActivateZfcpLink().click();
-    }
-    async waitForElement(element, timeout) {
-        await this.page.locator(element).setTimeout(timeout).wait();
-    }
-    async expandDestructiveActionsList() {
-        await this.destructiveActionsList().click();
-    }
-    async verifyDestructiveAction(action) {
-        await this.destructiveActionText(action).wait();
-    }
-}
-exports.StoragePage = StoragePage;
-
-
-/***/ }),
-
-/***/ "./src/pages/users_page.ts":
-/*!*********************************!*\
-  !*** ./src/pages/users_page.ts ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UsersPage = void 0;
-class UsersPage {
-    page;
-    firstUserLink = () => this.page.locator("a[href='#/users/first']");
-    editRootUserButton = () => this.page.locator("a[href='#/users/root/edit']");
-    defineTheFirstUserButton = () => this.page.locator("a[href='#/users/first/edit']");
-    constructor(page) {
-        this.page = page;
-    }
-    async defineAUserNow() {
-        await this.firstUserLink().click();
-    }
-    async editRootUser() {
-        await this.editRootUserButton().click();
-    }
-    async defineTheFirstUser() {
-        await this.defineTheFirstUserButton().click();
-    }
-}
-exports.UsersPage = UsersPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/zfcp_page.ts":
-/*!********************************!*\
-  !*** ./src/pages/zfcp_page.ts ***!
-  \********************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ZfcpPage = void 0;
-class ZfcpPage {
-    page;
-    faDisk = () => this.page.locator("tbody > tr:first-child > td:last-child > button#zfcp_controllers_actions");
-    fcDisk = () => this.page.locator("tbody > tr:last-child > td:last-child > button#zfcp_controllers_actions");
-    activateDisk = () => this.page.locator("::-p-aria(Activate[role='menuitem'])");
-    backButton = () => this.page.locator("button::-p-text(Back)");
-    enableMultipath = () => this.page.locator("::-p-text('Yes')");
-    constructor(page) {
-        this.page = page;
-    }
-    async activateDevice(channelId) {
-        let element;
-        if (channelId === "0.0.fa00")
-            element = this.faDisk();
-        else
-            element = this.fcDisk();
-        await element.click();
-        await this.activateDisk().click();
-        await this.page.locator("::-p-text(WWPN)");
-        await element.setTimeout(90000).wait();
-    }
-    async activateMultipath() {
-        await this.enableMultipath().setTimeout(40000).click();
-    }
-    async back() {
-        await this.backButton().click();
-    }
-}
-exports.ZfcpPage = ZfcpPage;
-
-
-/***/ }),
-
-/***/ "./src/test_extended.ts":
-/*!******************************!*\
-  !*** ./src/test_extended.ts ***!
-  \******************************/
+/***/ "./src/test_rmt_registration.ts":
+/*!**************************************!*\
+  !*** ./src/test_rmt_registration.ts ***!
+  \**************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -1363,51 +737,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
-const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
-const hostname_1 = __webpack_require__(/*! ./checks/hostname */ "./src/checks/hostname.ts");
-const network_1 = __webpack_require__(/*! ./checks/network */ "./src/checks/network.ts");
-const decryption_1 = __webpack_require__(/*! ./checks/decryption */ "./src/checks/decryption.ts");
-const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ./checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
-const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
-const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
-    .option("--product-id <id>", "Product id to select a product to install", "none")
-    .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
-    .option("--registration-code <code>", "Registration code")
-    .option("--staticHostname <hostname>", "Static Hostname")
-    .option("--noCopyNetwork", "The connection will be used only during installation")
-    .option("--install", "Proceed to install the system (the default is not to install it)")
-    .option("--inst-register-url", "Custom registration url was provided by kernel cmdline")
-    .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
-    .option("--destructive-actions <actions>...", "comma separated list of actions (excluding 'Delete ')", cmdline_1.commaSeparatedList));
+    .option("--registration-code <code>", "Optional RMT registration code")
+    .option("--install", "Proceed to install the system (the default is not to install it"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
-if (options.productId !== "none")
-    if (options.acceptLicense)
-        (0, product_selection_1.productSelectionWithLicense)(options.productId);
-    else
-        (0, product_selection_1.productSelection)(options.productId);
-if (options.decryptPassword)
-    (0, decryption_1.decryptDevice)(options.decryptPassword);
-if (options.destructiveActions)
-    (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(options.destructiveActions);
-if (options.staticHostname)
-    (0, hostname_1.setPermanentHostname)(options.staticHostname);
-if (options.noCopyNetwork)
-    (0, network_1.setOnlyInstallationNetwork)();
-if (options.registrationCode)
-    if (options.instRegisterUrl)
-        (0, registration_1.enterRegistrationRegUrl)(options.registrationCode);
-    else
-        (0, registration_1.enterRegistration)(options.registrationCode);
-(0, first_user_1.createFirstUser)(options.password);
-(0, root_authentication_1.editRootUser)(options.rootPassword);
-if (options.prepareAdvancedStorage === "zfcp")
-    (0, storage_zfcp_1.prepareZfcpStorage)();
+(0, registration_1.enterRMTRegistration)(options.registrationCode);
 if (options.install)
     (0, installation_1.performInstallation)();
 
@@ -1796,7 +1134,7 @@ module.exports = require("zlib");
 /******/ 	// the startup function
 /******/ 	__webpack_require__.x = () => {
 /******/ 		// Load entry module and return exports
-/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_extended.ts")))
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_rmt_registration.ts")))
 /******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 		return __webpack_exports__;
 /******/ 	};
@@ -1900,7 +1238,7 @@ module.exports = require("zlib");
 /******/ 		// object to store loaded chunks
 /******/ 		// "1" means "loaded", otherwise not loaded yet
 /******/ 		var installedChunks = {
-/******/ 			"test_extended": 1
+/******/ 			"test_rmt_registration": 1
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.O.require = (chunkId) => (installedChunks[chunkId]);
@@ -1952,4 +1290,4 @@ module.exports = require("zlib");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=test_extended.js.map
+//# sourceMappingURL=test_rmt_registration.js.map
