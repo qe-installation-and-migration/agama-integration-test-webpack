@@ -245,6 +245,7 @@ function enterRegistrationRegUrl(code) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.editRootUser = editRootUser;
 exports.setupMandatoryRootAuth = setupMandatoryRootAuth;
+exports.verifyPasswordStrength = verifyPasswordStrength;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const setup_root_user_authentication_page_1 = __webpack_require__(/*! ../pages/setup_root_user_authentication_page */ "./src/pages/setup_root_user_authentication_page.ts");
 const root_authentication_methods_1 = __webpack_require__(/*! ../pages/root_authentication_methods */ "./src/pages/root_authentication_methods.ts");
@@ -273,6 +274,21 @@ function setupMandatoryRootAuth(password) {
         await setupRootuserAuthentication.fillPassword(password);
         await setupRootuserAuthentication.submit();
     }, 3 * 60 * 1000);
+}
+function verifyPasswordStrength() {
+    (0, helpers_1.it)("should verify the strength of typed password", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await sidebar.goToUsers();
+        await users.editRootUser();
+        await setARootPassword.fillPassword("a23b56c");
+        await setARootPassword.verifyPasswordLess8Characters();
+        await setARootPassword.fillPassword("a23b56ca");
+        await setARootPassword.verifyPasswordIsWeak();
+        await setARootPassword.fillPassword("a23b5678");
+        await setARootPassword.verifyPasswordFailDictionaryCheck();
+    });
 }
 
 
@@ -971,6 +987,9 @@ class SetARootPasswordPage {
     confirmText = () => this.page.locator("button::-p-text(Confirm)");
     passwordInput = () => this.page.locator("input#password");
     passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
+    passwordLess8Characters = () => this.page.locator("::-p-text(The password is shorter than 8 characters)");
+    passwordIsWeak = () => this.page.locator("::-p-text(The password is weak)");
+    passwordFailDisctionaryCheck = () => this.page.locator("::-p-text(it is too simplistic/systematic)");
     usePasswordToggle = () => this.page.locator("::-p-text(Use password)");
     constructor(page) {
         this.page = page;
@@ -986,6 +1005,15 @@ class SetARootPasswordPage {
     }
     async fillPasswordConfirmation(password) {
         await this.passwordConfirmationInput().fill(password);
+    }
+    async verifyPasswordLess8Characters() {
+        await this.passwordLess8Characters().wait();
+    }
+    async verifyPasswordIsWeak() {
+        await this.passwordIsWeak().wait();
+    }
+    async verifyPasswordFailDictionaryCheck() {
+        await this.passwordFailDisctionaryCheck().wait();
     }
     async usePassword() {
         await this.usePasswordToggle().click();

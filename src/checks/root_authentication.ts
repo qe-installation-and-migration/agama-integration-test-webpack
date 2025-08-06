@@ -35,3 +35,20 @@ export function setupMandatoryRootAuth(password: string) {
     3 * 60 * 1000,
   );
 }
+
+export function verifyPasswordStrength() {
+  it("should verify the strength of typed password", async function () {
+    const sidebar = new SidebarPage(page);
+    const users = new UsersPage(page);
+    const setARootPassword = new SetARootPasswordPage(page);
+
+    await sidebar.goToUsers();
+    await users.editRootUser();
+    await setARootPassword.fillPassword("a23b56c");
+    await setARootPassword.verifyPasswordLess8Characters();
+    await setARootPassword.fillPassword("a23b56ca");
+    await setARootPassword.verifyPasswordIsWeak();
+    await setARootPassword.fillPassword("a23b5678");
+    await setARootPassword.verifyPasswordFailDictionaryCheck();
+  });
+}

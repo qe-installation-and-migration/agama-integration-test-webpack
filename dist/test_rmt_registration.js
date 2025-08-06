@@ -83,8 +83,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterRegistration = enterRegistration;
 exports.enterRegistrationHa = enterRegistrationHa;
 exports.enterRegistrationRegUrl = enterRegistrationRegUrl;
-exports.enterRegistrationHaRegUrl = enterRegistrationHaRegUrl;
-exports.enterRMTRegistration = enterRMTRegistration;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const registration_page_1 = __webpack_require__(/*! ../pages/registration_page */ "./src/pages/registration_page.ts");
@@ -116,40 +114,14 @@ function enterRegistrationRegUrl(code) {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
-        await productRegistration.provideRegistrationCode();
-        await productRegistration.fillCode(code);
+        if (code) {
+            await productRegistration.provideRegistrationCode();
+            await productRegistration.fillCode(code);
+        }
         await productRegistration.register();
     });
     (0, helpers_1.it)("should display Overview", async function () {
         await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
-    });
-}
-function enterRegistrationHaRegUrl(code) {
-    (0, helpers_1.it)("should allow setting registration HA", async function () {
-        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const extensionRegistration = new registration_page_1.ExtensionHaRegistrationPage(helpers_1.page);
-        await sidebar.goToRegistration();
-        await extensionRegistration.provideRegistrationCode();
-        await extensionRegistration.fillCode(code);
-        await extensionRegistration.register();
-        await extensionRegistration.verifyExtensionRegistration();
-    });
-}
-function enterRMTRegistration(code) {
-    (0, helpers_1.it)("should allow setting RMT registration", async function () {
-        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const rmtRegistration = new registration_page_1.CustomRegistrationPage(helpers_1.page);
-        await sidebar.goToRegistration();
-        if (code)
-            await rmtRegistration.enterCustomRegistration(code);
-        await rmtRegistration.register();
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
-    });
-    (0, helpers_1.it)("should display RMT server in the registration page", async function () {
-        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const rmtRegistration = new registration_page_1.CustomRegistrationPage(helpers_1.page);
-        await sidebar.goToRegistration();
-        await rmtRegistration.verifyCustomRegistration();
     });
 }
 
@@ -599,7 +571,7 @@ exports.OverviewPage = OverviewPage;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CustomRegistrationPage = exports.ExtensionHaRegistrationPage = exports.ProductRegistrationPage = void 0;
+exports.ExtensionHaRegistrationPage = exports.ProductRegistrationPage = void 0;
 class RegistrationBasePage {
     page;
     codeInput;
@@ -633,29 +605,12 @@ function ExtensionHaRegistrable(Base) {
         }
     };
 }
-function CustomRegistrable(Base) {
-    return class extends Base {
-        codeInput = () => this.page.locator("input#code");
-        customRegistrationCodeCheckbox = () => this.page.locator("input#provide-code");
-        customRegisteredText = () => this.page.locator("::-p-text(has been registered with below information)");
-        async enterCustomRegistration(code) {
-            await this.customRegistrationCodeCheckbox().click();
-            await this.codeInput().fill(code);
-        }
-        async verifyCustomRegistration() {
-            await this.customRegisteredText().wait();
-        }
-    };
-}
 class ProductRegistrationPage extends ProductRegistrable(RegistrationBasePage) {
 }
 exports.ProductRegistrationPage = ProductRegistrationPage;
 class ExtensionHaRegistrationPage extends ExtensionHaRegistrable(RegistrationBasePage) {
 }
 exports.ExtensionHaRegistrationPage = ExtensionHaRegistrationPage;
-class CustomRegistrationPage extends CustomRegistrable(RegistrationBasePage) {
-}
-exports.CustomRegistrationPage = CustomRegistrationPage;
 
 
 /***/ }),
@@ -745,7 +700,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--install", "Proceed to install the system (the default is not to install it"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
-(0, registration_1.enterRMTRegistration)(options.registrationCode);
+(0, registration_1.enterRegistrationRegUrl)(options.registrationCode);
 if (options.install)
     (0, installation_1.performInstallation)();
 
