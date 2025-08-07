@@ -29,7 +29,7 @@ class RegistrationBasePage {
 
 function ProductRegistrable<TBase extends GConstructor<RegistrationBasePage>>(Base: TBase) {
   return class extends Base {
-    codeInput = () => this.page.locator(`input[id="code"], input[id="key"]`);
+    codeInput = () => this.page.locator("input#code");
   };
 }
 
