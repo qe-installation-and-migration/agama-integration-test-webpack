@@ -1056,10 +1056,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExtensionHaRegistrationPage = exports.ProductRegistrationPage = void 0;
 class RegistrationBasePage {
     page;
-    codeInput;
-    registerButton = () => this.page.locator("button::-p-text(Register)");
+    codeInput = () => this.page.locator("::-p-aria(Registration code)[type='password']");
+    registerButton = () => this.page.locator("::-p-aria(Register)");
     extensionRegisteredText = () => this.page.locator("::-p-text(The extension has been registered)");
-    registrationOptionCheckbox = () => this.page.locator("input#provide-code");
+    registrationOptionCheckbox = () => this.page.locator("::-p-aria(Provide registration code)");
     constructor(page) {
         this.page = page;
     }
@@ -1073,21 +1073,15 @@ class RegistrationBasePage {
         await this.registerButton().click();
     }
 }
-function ProductRegistrable(Base) {
-    return class extends Base {
-        codeInput = () => this.page.locator("input#code");
-    };
-}
 function ExtensionHaRegistrable(Base) {
     return class extends Base {
-        codeInput = () => this.page.locator("input[id^='input-reg-code-sle-ha-16.']");
         extensionRegisteredText = () => this.page.locator("::-p-text(The extension has been registered)");
         async verifyExtensionRegistration() {
             await this.extensionRegisteredText().wait();
         }
     };
 }
-class ProductRegistrationPage extends ProductRegistrable(RegistrationBasePage) {
+class ProductRegistrationPage extends RegistrationBasePage {
 }
 exports.ProductRegistrationPage = ProductRegistrationPage;
 class ExtensionHaRegistrationPage extends ExtensionHaRegistrable(RegistrationBasePage) {
