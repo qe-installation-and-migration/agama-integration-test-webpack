@@ -1,3 +1,4 @@
+import assert from "assert";
 import { type Page } from "puppeteer-core";
 
 export class StoragePage {
@@ -7,6 +8,9 @@ export class StoragePage {
   private readonly editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
   private readonly encryptionIsEnabledText = () =>
     this.page.locator("::-p-text(Encryption is enabled)");
+
+  private readonly encryptionIsDisabledText = () =>
+    this.page.locator("::-p-text(Encryption is disabled)");
 
   private readonly manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
 
@@ -36,6 +40,13 @@ export class StoragePage {
 
   async verifyEncryptionEnabled() {
     await this.encryptionIsEnabledText().wait();
+  }
+
+  async verifyEncryptionDisabled() {
+    const elementText = await this.encryptionIsDisabledText()
+      .map((span) => span.textContent)
+      .wait();
+    await assert.deepEqual(elementText, "Encryption is disabled");
   }
 
   async manageDasd() {

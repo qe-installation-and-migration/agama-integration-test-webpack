@@ -1219,17 +1219,22 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 /*!***********************************!*\
   !*** ./src/pages/storage_page.ts ***!
   \***********************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StoragePage = void 0;
+const assert_1 = __importDefault(__webpack_require__(/*! assert */ "assert"));
 class StoragePage {
     page;
     selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
     editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
+    encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
     addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
@@ -1249,6 +1254,12 @@ class StoragePage {
     }
     async verifyEncryptionEnabled() {
         await this.encryptionIsEnabledText().wait();
+    }
+    async verifyEncryptionDisabled() {
+        const elementText = await this.encryptionIsDisabledText()
+            .map((span) => span.textContent)
+            .wait();
+        await assert_1.default.deepEqual(elementText, "Encryption is disabled");
     }
     async manageDasd() {
         await this.manageDasdLink().click();
