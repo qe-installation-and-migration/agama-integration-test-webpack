@@ -1,5 +1,6 @@
 import { type Page } from "puppeteer-core";
 import { type GConstructor } from "../lib/helpers";
+import assert from "node:assert/strict";
 
 class RegistrationBasePage {
   protected readonly page: Page;
@@ -7,9 +8,6 @@ class RegistrationBasePage {
     this.page.locator("::-p-aria(Registration code)[type='password']");
 
   protected readonly registerButton = () => this.page.locator("::-p-aria(Register)");
-  protected readonly extensionRegisteredText = () =>
-    this.page.locator("::-p-text(The extension has been registered)");
-
   protected readonly registrationOptionCheckbox = () =>
     this.page.locator("::-p-aria(Provide registration code)");
 
@@ -41,5 +39,50 @@ function ExtensionHaRegistrable<TBase extends GConstructor<RegistrationBasePage>
   };
 }
 
+function CustomRegistrable<TBase extends GConstructor<RegistrationBasePage>>(Base: TBase) {
+  return class extends Base {
+    private readonly registrationServerButton = () =>
+      this.page.locator("::-p-aria(Registration server)");
+
+    private readonly registrationServerCustomOption = () =>
+      this.page.locator("::-p-aria(Custom Register using a custom registration server)");
+
+    private readonly serverUrlTextbox = () =>
+      this.page.locator("::-p-aria(Server URL)[type='text']");
+
+    protected readonly provideRegistrationCodeCheckbox = () =>
+      this.page.locator("::-p-aria(Provide registration code)");
+
+    protected readonly infoHasBeenRegisteredText = () =>
+      this.page.locator("::-p-text(has been registered with below information)");
+
+    async provideRegistrationCode() {
+      await this.provideRegistrationCodeCheckbox().click();
+    }
+
+    async selectCustomRegistrationServer() {
+      await this.registrationServerButton().click();
+      await this.registrationServerCustomOption().wait();
+      await this.registrationServerCustomOption().click();
+    }
+
+    async fillServerUrl(url: string) {
+      await this.serverUrlTextbox().wait();
+      await this.serverUrlTextbox().fill(url);
+    }
+
+    async verifyCustomRegistration() {
+      const elementText = await this.infoHasBeenRegisteredText()
+        .map((span) => span.textContent)
+        .wait();
+      await assert.match(
+        elementText,
+        /SUSE Linux Enterprise Server.*has been registered with below information/,
+      );
+    }
+  };
+}
+
 export class ProductRegistrationPage extends RegistrationBasePage {}
 export class ExtensionHaRegistrationPage extends ExtensionHaRegistrable(RegistrationBasePage) {}
+export class CustomRegistrationPage extends CustomRegistrable(RegistrationBasePage) {}
