@@ -969,21 +969,25 @@ exports.ExtensionHaRegistrationPage = ExtensionHaRegistrationPage;
 /*!**************************************************!*\
   !*** ./src/pages/root_authentication_methods.ts ***!
   \**************************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SetARootPasswordPage = void 0;
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 class SetARootPasswordPage {
     page;
     acceptText = () => this.page.locator("button::-p-text(Accept)");
     confirmText = () => this.page.locator("button::-p-text(Confirm)");
     passwordInput = () => this.page.locator("input#password");
     passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
-    passwordLess8Characters = () => this.page.locator("::-p-text(The password is shorter than 8 characters)");
-    passwordIsWeak = () => this.page.locator("::-p-text(The password is weak)");
-    passwordFailDisctionaryCheck = () => this.page.locator("::-p-text(it is too simplistic/systematic)");
+    alertPasswordLess8Characters = () => this.page.locator("::-p-text(The password is shorter than 8 characters)");
+    alertPasswordIsWeak = () => this.page.locator("::-p-text(The password is weak)");
+    alertPasswordFailDictionaryCheck = () => this.page.locator("::-p-text(it is too simplistic/systematic)");
     usePasswordToggle = () => this.page.locator("::-p-text(Use password)");
     constructor(page) {
         this.page = page;
@@ -1001,13 +1005,22 @@ class SetARootPasswordPage {
         await this.passwordConfirmationInput().fill(password);
     }
     async verifyPasswordLess8Characters() {
-        await this.passwordLess8Characters().wait();
+        const elementText = await this.alertPasswordLess8Characters()
+            .map((span) => span.textContent)
+            .wait();
+        await strict_1.default.deepEqual(elementText, "Warning alert:The password is shorter than 8 characters");
     }
     async verifyPasswordIsWeak() {
-        await this.passwordIsWeak().wait();
+        const elementText = await this.alertPasswordIsWeak()
+            .map((span) => span.textContent)
+            .wait();
+        await strict_1.default.deepEqual(elementText, "Warning alert:The password is weak");
     }
     async verifyPasswordFailDictionaryCheck() {
-        await this.passwordFailDisctionaryCheck().wait();
+        const elementText = await this.alertPasswordFailDictionaryCheck()
+            .map((span) => span.textContent)
+            .wait();
+        await strict_1.default.deepEqual(elementText, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
     }
     async usePassword() {
         await this.usePasswordToggle().click();
