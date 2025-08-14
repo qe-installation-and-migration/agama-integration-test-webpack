@@ -9,7 +9,7 @@ import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
-import { verifyAlertPopup } from "./checks/alert_popup";
+import { verifyErrorFetchingProfile } from "./checks/error_fetching_profile";
 
 // parse options from the command line
 const options = parse((cmd) =>
@@ -18,4 +18,4 @@ const options = parse((cmd) =>
 
 test_init(options);
 logIn(options.password);
-verifyAlertPopup();
+verifyErrorFetchingProfile();
