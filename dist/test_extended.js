@@ -158,38 +158,6 @@ function logIn(password) {
 
 /***/ }),
 
-/***/ "./src/checks/network.ts":
-/*!*******************************!*\
-  !*** ./src/checks/network.ts ***!
-  \*******************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setOnlyInstallationNetwork = setOnlyInstallationNetwork;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const network_page_1 = __webpack_require__(/*! ../pages/network_page */ "./src/pages/network_page.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function setOnlyInstallationNetwork() {
-    (0, helpers_1.it)("should allow setting only installation network", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
-        await sidebar.goToNetwork();
-        await networkPage.selectWiredConnection();
-        await networkPage.selectInstallationOnly();
-    });
-    (0, helpers_1.it)("should alert no network after installation", async function () {
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
-        await sidebar.goToNetwork();
-        await networkPage.waitVisibleWarningAlert();
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/product_selection.ts":
 /*!*****************************************!*\
   !*** ./src/checks/product_selection.ts ***!
@@ -919,41 +887,6 @@ exports.LoginAsRootPage = LoginAsRootPage;
 
 /***/ }),
 
-/***/ "./src/pages/network_page.ts":
-/*!***********************************!*\
-  !*** ./src/pages/network_page.ts ***!
-  \***********************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NetworkPage = void 0;
-class NetworkPage {
-    page;
-    wiredConnection = () => this.page.locator(`ul[aria-label="Wired connections"] > li`);
-    installationOnlyCheckboxNotChecked = () => this.page.locator(`input[type="checkbox"]:not(:checked)[role="switch"]`);
-    installationOnlyCheckboxChecked = () => this.page.locator(`input[type="checkbox"]:checked[role="switch"]`);
-    warningAlertHeading = () => this.page.locator(`::-p-text(Installed system may not have network connections)`);
-    constructor(page) {
-        this.page = page;
-    }
-    async selectWiredConnection() {
-        await this.wiredConnection().click();
-    }
-    async selectInstallationOnly() {
-        await this.installationOnlyCheckboxNotChecked().click();
-        await this.installationOnlyCheckboxChecked().wait();
-    }
-    async waitVisibleWarningAlert() {
-        await this.warningAlertHeading().wait();
-    }
-}
-exports.NetworkPage = NetworkPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/overview_page.ts":
 /*!************************************!*\
   !*** ./src/pages/overview_page.ts ***!
@@ -1402,7 +1335,6 @@ const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/check
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const hostname_1 = __webpack_require__(/*! ./checks/hostname */ "./src/checks/hostname.ts");
-const network_1 = __webpack_require__(/*! ./checks/network */ "./src/checks/network.ts");
 const decryption_1 = __webpack_require__(/*! ./checks/decryption */ "./src/checks/decryption.ts");
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ./checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
@@ -1414,9 +1346,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
     .option("--registration-code <code>", "Registration code")
     .option("--staticHostname <hostname>", "Static Hostname")
-    .option("--noCopyNetwork", "The connection will be used only during installation")
     .option("--install", "Proceed to install the system (the default is not to install it)")
-    .option("--inst-register-url", "Custom registration url was provided by kernel cmdline")
     .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
     .option("--destructive-actions <actions>...", "comma separated list of actions (excluding 'Delete ')", cmdline_1.commaSeparatedList));
 (0, helpers_1.test_init)(options);
@@ -1426,19 +1356,12 @@ if (options.productId !== "none")
         (0, product_selection_1.productSelectionWithLicense)(options.productId);
     else
         (0, product_selection_1.productSelection)(options.productId);
-if (options.decryptPassword)
-    (0, decryption_1.decryptDevice)(options.decryptPassword);
-if (options.destructiveActions)
-    (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(options.destructiveActions);
+(0, decryption_1.decryptDevice)(options.decryptPassword);
+(0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(options.destructiveActions);
 if (options.staticHostname)
     (0, hostname_1.setPermanentHostname)(options.staticHostname);
-if (options.noCopyNetwork)
-    (0, network_1.setOnlyInstallationNetwork)();
 if (options.registrationCode)
-    if (options.instRegisterUrl)
-        (0, registration_1.enterRegistrationRegUrl)(options.registrationCode);
-    else
-        (0, registration_1.enterRegistration)(options.registrationCode);
+    (0, registration_1.enterRegistration)(options.registrationCode);
 (0, first_user_1.createFirstUser)(options.password);
 (0, root_authentication_1.editRootUser)(options.rootPassword);
 (0, root_authentication_1.verifyPasswordStrength)();

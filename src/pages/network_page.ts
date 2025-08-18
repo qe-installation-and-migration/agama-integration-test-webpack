@@ -27,7 +27,7 @@ export class NetworkPage {
     await this.installationOnlyCheckboxChecked().wait();
   }
 
-  async waitVisibleWarningAlert() {
+  async verifyWarningAlert() {
     await this.warningAlertHeading().wait();
   }
 }
