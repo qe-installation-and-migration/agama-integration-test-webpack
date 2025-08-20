@@ -83,6 +83,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterRegistration = enterRegistration;
 exports.enterRegistrationHa = enterRegistrationHa;
 exports.enterRegistrationRegUrl = enterRegistrationRegUrl;
+exports.enterCustomRegistrationServer = enterCustomRegistrationServer;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const registration_page_1 = __webpack_require__(/*! ../pages/registration_page */ "./src/pages/registration_page.ts");
@@ -114,14 +115,29 @@ function enterRegistrationRegUrl(code) {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
-        if (code) {
-            await productRegistration.provideRegistrationCode();
-            await productRegistration.fillCode(code);
-        }
+        await productRegistration.provideRegistrationCode();
+        await productRegistration.fillCode(code);
         await productRegistration.register();
     });
     (0, helpers_1.it)("should display Overview", async function () {
         await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
+    });
+}
+function enterCustomRegistrationServer(url) {
+    (0, helpers_1.it)(`should allow setting setting custom registration server to ${url}`, async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const customRegistration = new registration_page_1.CustomRegistrationPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await customRegistration.selectCustomRegistrationServer();
+        await customRegistration.fillServerUrl(url);
+        await customRegistration.register();
+        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
+    });
+    (0, helpers_1.it)("should display product has been registered", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const customRegistration = new registration_page_1.CustomRegistrationPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await customRegistration.verifyCustomRegistration();
     });
 }
 
@@ -566,17 +582,20 @@ exports.OverviewPage = OverviewPage;
 /*!****************************************!*\
   !*** ./src/pages/registration_page.ts ***!
   \****************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ExtensionHaRegistrationPage = exports.ProductRegistrationPage = void 0;
+exports.CustomRegistrationPage = exports.ExtensionHaRegistrationPage = exports.ProductRegistrationPage = void 0;
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 class RegistrationBasePage {
     page;
     codeInput = () => this.page.locator("::-p-aria(Registration code)[type='password']");
     registerButton = () => this.page.locator("::-p-aria(Register)");
-    extensionRegisteredText = () => this.page.locator("::-p-text(The extension has been registered)");
     registrationOptionCheckbox = () => this.page.locator("::-p-aria(Provide registration code)");
     constructor(page) {
         this.page = page;
@@ -599,12 +618,42 @@ function ExtensionHaRegistrable(Base) {
         }
     };
 }
+function CustomRegistrable(Base) {
+    return class extends Base {
+        registrationServerButton = () => this.page.locator("::-p-aria(Registration server)");
+        registrationServerCustomOption = () => this.page.locator("::-p-aria(Custom Register using a custom registration server)");
+        serverUrlTextbox = () => this.page.locator("::-p-aria(Server URL)[type='text']");
+        provideRegistrationCodeCheckbox = () => this.page.locator("::-p-aria(Provide registration code)");
+        infoHasBeenRegisteredText = () => this.page.locator("::-p-text(has been registered with below information)");
+        async provideRegistrationCode() {
+            await this.provideRegistrationCodeCheckbox().click();
+        }
+        async selectCustomRegistrationServer() {
+            await this.registrationServerButton().click();
+            await this.registrationServerCustomOption().wait();
+            await this.registrationServerCustomOption().click();
+        }
+        async fillServerUrl(url) {
+            await this.serverUrlTextbox().wait();
+            await this.serverUrlTextbox().fill(url);
+        }
+        async verifyCustomRegistration() {
+            const elementText = await this.infoHasBeenRegisteredText()
+                .map((span) => span.textContent)
+                .wait();
+            await strict_1.default.match(elementText, /SUSE Linux Enterprise Server.*has been registered with below information/);
+        }
+    };
+}
 class ProductRegistrationPage extends RegistrationBasePage {
 }
 exports.ProductRegistrationPage = ProductRegistrationPage;
 class ExtensionHaRegistrationPage extends ExtensionHaRegistrable(RegistrationBasePage) {
 }
 exports.ExtensionHaRegistrationPage = ExtensionHaRegistrationPage;
+class CustomRegistrationPage extends CustomRegistrable(RegistrationBasePage) {
+}
+exports.CustomRegistrationPage = CustomRegistrationPage;
 
 
 /***/ }),
@@ -669,10 +718,10 @@ exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 /***/ }),
 
-/***/ "./src/test_rmt_registration.ts":
-/*!**************************************!*\
-  !*** ./src/test_rmt_registration.ts ***!
-  \**************************************/
+/***/ "./src/test_custom_registration_server.ts":
+/*!************************************************!*\
+  !*** ./src/test_custom_registration_server.ts ***!
+  \************************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -690,11 +739,11 @@ const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/c
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
-    .option("--registration-code <code>", "Optional RMT registration code")
+    .option("--registration-server-url <url>", "Custom registration url")
     .option("--install", "Proceed to install the system (the default is not to install it"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
-(0, registration_1.enterRegistrationRegUrl)(options.registrationCode);
+(0, registration_1.enterCustomRegistrationServer)(options.registrationServerUrl);
 if (options.install)
     (0, installation_1.performInstallation)();
 
@@ -1083,7 +1132,7 @@ module.exports = require("zlib");
 /******/ 	// the startup function
 /******/ 	__webpack_require__.x = () => {
 /******/ 		// Load entry module and return exports
-/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_rmt_registration.ts")))
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_custom_registration_server.ts")))
 /******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 		return __webpack_exports__;
 /******/ 	};
@@ -1187,7 +1236,7 @@ module.exports = require("zlib");
 /******/ 		// object to store loaded chunks
 /******/ 		// "1" means "loaded", otherwise not loaded yet
 /******/ 		var installedChunks = {
-/******/ 			"test_rmt_registration": 1
+/******/ 			"test_custom_registration_server": 1
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.O.require = (chunkId) => (installedChunks[chunkId]);
@@ -1239,4 +1288,4 @@ module.exports = require("zlib");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=test_rmt_registration.js.map
+//# sourceMappingURL=test_custom_registration_server.js.map

@@ -9,17 +9,17 @@ import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
-import { enterRegistrationRegUrl } from "./checks/registration";
+import { enterCustomRegistrationServer } from "./checks/registration";
 import { performInstallation } from "./checks/installation";
 
 // parse options from the command line
 const options = parse((cmd) =>
   cmd
-    .option("--registration-code <code>", "Optional RMT registration code")
+    .option("--registration-server-url <url>", "Custom registration url")
     .option("--install", "Proceed to install the system (the default is not to install it"),
 );
 
 test_init(options);
 logIn(options.password);
-enterRegistrationRegUrl(options.registrationCode);
+enterCustomRegistrationServer(options.registrationServerUrl);
 if (options.install) performInstallation();
