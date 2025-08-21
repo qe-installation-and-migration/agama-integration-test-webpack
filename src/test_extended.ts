@@ -11,9 +11,8 @@ import { test_init } from "./lib/helpers";
 import { logIn } from "./checks/login";
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser, verifyPasswordStrength } from "./checks/root_authentication";
-import { enterRegistration, enterRegistrationRegUrl } from "./checks/registration";
+import { enterRegistration } from "./checks/registration";
 import { setPermanentHostname } from "./checks/hostname";
-import { setOnlyInstallationNetwork } from "./checks/network";
 import { decryptDevice } from "./checks/decryption";
 import { verifyDecryptDestructiveActions } from "./checks/storage_result_destructive_actions_planned";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
@@ -30,9 +29,7 @@ const options = parse((cmd) =>
     )
     .option("--registration-code <code>", "Registration code")
     .option("--staticHostname <hostname>", "Static Hostname")
-    .option("--noCopyNetwork", "The connection will be used only during installation")
     .option("--install", "Proceed to install the system (the default is not to install it)")
-    .option("--inst-register-url", "Custom registration url was provided by kernel cmdline")
     .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
     .option(
       "--destructive-actions <actions>...",
@@ -46,13 +43,10 @@ logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
-if (options.decryptPassword) decryptDevice(options.decryptPassword);
-if (options.destructiveActions) verifyDecryptDestructiveActions(options.destructiveActions);
+decryptDevice(options.decryptPassword);
+verifyDecryptDestructiveActions(options.destructiveActions);
 if (options.staticHostname) setPermanentHostname(options.staticHostname);
-if (options.noCopyNetwork) setOnlyInstallationNetwork();
-if (options.registrationCode)
-  if (options.instRegisterUrl) enterRegistrationRegUrl(options.registrationCode);
-  else enterRegistration(options.registrationCode);
+if (options.registrationCode) enterRegistration(options.registrationCode);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
 verifyPasswordStrength();

@@ -71,6 +71,38 @@ function logIn(password) {
 
 /***/ }),
 
+/***/ "./src/checks/network.ts":
+/*!*******************************!*\
+  !*** ./src/checks/network.ts ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.setOnlyInstallationNetwork = setOnlyInstallationNetwork;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const network_page_1 = __webpack_require__(/*! ../pages/network_page */ "./src/pages/network_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+function setOnlyInstallationNetwork() {
+    (0, helpers_1.it)("should allow setting only installation network", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
+        await sidebar.goToNetwork();
+        await networkPage.selectWiredConnection();
+        await networkPage.selectInstallationOnly();
+    });
+    (0, helpers_1.it)("should alert no network after installation", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
+        await sidebar.goToNetwork();
+        await networkPage.verifyWarningAlert();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/storage_select_installation_device.ts":
 /*!**********************************************************!*\
   !*** ./src/checks/storage_select_installation_device.ts ***!
@@ -530,6 +562,41 @@ exports.LoginAsRootPage = LoginAsRootPage;
 
 /***/ }),
 
+/***/ "./src/pages/network_page.ts":
+/*!***********************************!*\
+  !*** ./src/pages/network_page.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkPage = void 0;
+class NetworkPage {
+    page;
+    wiredConnection = () => this.page.locator(`ul[aria-label="Wired connections"] > li`);
+    installationOnlyCheckboxNotChecked = () => this.page.locator(`input[type="checkbox"]:not(:checked)[role="switch"]`);
+    installationOnlyCheckboxChecked = () => this.page.locator(`input[type="checkbox"]:checked[role="switch"]`);
+    warningAlertHeading = () => this.page.locator(`::-p-text(Installed system may not have network connections)`);
+    constructor(page) {
+        this.page = page;
+    }
+    async selectWiredConnection() {
+        await this.wiredConnection().click();
+    }
+    async selectInstallationOnly() {
+        await this.installationOnlyCheckboxNotChecked().click();
+        await this.installationOnlyCheckboxChecked().wait();
+    }
+    async verifyWarningAlert() {
+        await this.warningAlertHeading().wait();
+    }
+}
+exports.NetworkPage = NetworkPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/overview_page.ts":
 /*!************************************!*\
   !*** ./src/pages/overview_page.ts ***!
@@ -692,13 +759,18 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const storage_select_installation_device_1 = __webpack_require__(/*! ./checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
+const network_1 = __webpack_require__(/*! ./checks/network */ "./src/checks/network.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 // parse options from the command line
-const options = (0, cmdline_1.parse)((cmd) => cmd.option("--install", "Proceed to install the system (the default is not to install it)"));
+const options = (0, cmdline_1.parse)((cmd) => cmd
+    .option("--install", "Proceed to install the system (the default is not to install it)")
+    .option("--connections-only-for-installation", "The connections will be used only during installation"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 (0, storage_select_installation_device_1.selectMoreDevices)();
+if (options.connectionsOnlyForInstallation)
+    (0, network_1.setOnlyInstallationNetwork)();
 if (options.install)
     (0, installation_1.performInstallation)();
 

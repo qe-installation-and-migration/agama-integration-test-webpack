@@ -17,6 +17,6 @@ export function setOnlyInstallationNetwork() {
     const networkPage = new NetworkPage(page);
 
     await sidebar.goToNetwork();
-    await networkPage.waitVisibleWarningAlert();
+    await networkPage.verifyWarningAlert();
   });
 }
