@@ -2,22 +2,22 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/checks/alert_popup.ts":
-/*!***********************************!*\
-  !*** ./src/checks/alert_popup.ts ***!
-  \***********************************/
+/***/ "./src/checks/error_fetching_profile.ts":
+/*!**********************************************!*\
+  !*** ./src/checks/error_fetching_profile.ts ***!
+  \**********************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.verifyAlertPopup = verifyAlertPopup;
+exports.verifyErrorFetchingProfile = verifyErrorFetchingProfile;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const alert_popup_page_1 = __webpack_require__(/*! ../pages/alert_popup_page */ "./src/pages/alert_popup_page.ts");
-function verifyAlertPopup() {
-    (0, helpers_1.it)(`should show alert popup`, async function () {
-        const alertPopupPage = new alert_popup_page_1.AlertPopupPage(helpers_1.page);
-        await alertPopupPage.verifyInvalidUrl();
+const error_fetching_profile_page_1 = __webpack_require__(/*! ../pages/error_fetching_profile_page */ "./src/pages/error_fetching_profile_page.ts");
+function verifyErrorFetchingProfile() {
+    (0, helpers_1.it)(`should show error fetching profile`, async function () {
+        const errorFetchingProfilePage = new error_fetching_profile_page_1.ErrorFetchingProfilePage(helpers_1.page);
+        await errorFetchingProfilePage.verifyContent();
     });
 }
 
@@ -380,27 +380,34 @@ var Desktop;
 
 /***/ }),
 
-/***/ "./src/pages/alert_popup_page.ts":
-/*!***************************************!*\
-  !*** ./src/pages/alert_popup_page.ts ***!
-  \***************************************/
-/***/ ((__unused_webpack_module, exports) => {
+/***/ "./src/pages/error_fetching_profile_page.ts":
+/*!**************************************************!*\
+  !*** ./src/pages/error_fetching_profile_page.ts ***!
+  \**************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AlertPopupPage = void 0;
-class AlertPopupPage {
+exports.ErrorFetchingProfilePage = void 0;
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+class ErrorFetchingProfilePage {
     page;
-    warningAlertHeading = () => this.page.locator(`::-p-text(It was not possible to load the configuration)`);
+    alertWarningMsg = () => this.page.locator("::-p-text(It was not possible to load the configuration)");
     constructor(page) {
         this.page = page;
     }
-    async verifyInvalidUrl() {
-        await this.warningAlertHeading().wait();
+    async verifyContent() {
+        const elementText = await this.alertWarningMsg()
+            .map((span) => span.textContent)
+            .wait();
+        await strict_1.default.match(elementText, /It was not possible to load the configuration/);
     }
 }
-exports.AlertPopupPage = AlertPopupPage;
+exports.ErrorFetchingProfilePage = ErrorFetchingProfilePage;
 
 
 /***/ }),
@@ -434,10 +441,10 @@ exports.LoginAsRootPage = LoginAsRootPage;
 
 /***/ }),
 
-/***/ "./src/test_alert_popup.ts":
-/*!*********************************!*\
-  !*** ./src/test_alert_popup.ts ***!
-  \*********************************/
+/***/ "./src/test_error_fetching_profile.ts":
+/*!********************************************!*\
+  !*** ./src/test_error_fetching_profile.ts ***!
+  \********************************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -451,12 +458,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const alert_popup_1 = __webpack_require__(/*! ./checks/alert_popup */ "./src/checks/alert_popup.ts");
+const error_fetching_profile_1 = __webpack_require__(/*! ./checks/error_fetching_profile */ "./src/checks/error_fetching_profile.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd.option("--install", "Proceed to install the system (the default is not to install it)"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
-(0, alert_popup_1.verifyAlertPopup)();
+(0, error_fetching_profile_1.verifyErrorFetchingProfile)();
 
 
 /***/ }),
@@ -843,7 +850,7 @@ module.exports = require("zlib");
 /******/ 	// the startup function
 /******/ 	__webpack_require__.x = () => {
 /******/ 		// Load entry module and return exports
-/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_alert_popup.ts")))
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__(__webpack_require__.s = "./src/test_error_fetching_profile.ts")))
 /******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 		return __webpack_exports__;
 /******/ 	};
@@ -947,7 +954,7 @@ module.exports = require("zlib");
 /******/ 		// object to store loaded chunks
 /******/ 		// "1" means "loaded", otherwise not loaded yet
 /******/ 		var installedChunks = {
-/******/ 			"test_alert_popup": 1
+/******/ 			"test_error_fetching_profile": 1
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.O.require = (chunkId) => (installedChunks[chunkId]);
@@ -999,4 +1006,4 @@ module.exports = require("zlib");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=test_alert_popup.js.map
+//# sourceMappingURL=test_error_fetching_profile.js.map
