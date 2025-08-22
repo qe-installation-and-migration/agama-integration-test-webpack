@@ -35,8 +35,7 @@ function LicenseAcceptable<TBase extends GConstructor<ProductSelectionPage>>(Bas
 
     private readonly licenseOpenButton = () => this.page.locator("::-p-text(license)");
     private readonly licenseCloseButton = () => this.page.locator("::-p-text(Close)");
-    private readonly licenseText = () =>
-      this.page.locator("::-p-text(SUSE(R) End User License Agreement for Beta Software)");
+    private readonly licenseText = () => this.page.locator("::-p-text(End User License Agreement)");
 
     async acceptLicense() {
       await this.licenseAcceptanceCheckbox().click();

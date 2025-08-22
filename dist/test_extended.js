@@ -216,22 +216,37 @@ function productSelectionWithLicense(productId) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterRegistration = enterRegistration;
 exports.enterRegistrationHa = enterRegistrationHa;
-exports.enterRegistrationRegUrl = enterRegistrationRegUrl;
-exports.enterCustomRegistrationServer = enterCustomRegistrationServer;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const registration_page_1 = __webpack_require__(/*! ../pages/registration_page */ "./src/pages/registration_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function enterRegistration(code) {
+function enterRegistration({ use_custom, code, provide_code, url, }) {
     (0, helpers_1.it)("should allow setting registration", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
-        await productRegistration.fillCode(code);
+        if (use_custom) {
+            if (url) {
+                const customRegistration = new registration_page_1.CustomRegistrationPage(helpers_1.page);
+                await customRegistration.selectCustomRegistrationServer();
+                await customRegistration.fillServerUrl(url);
+            }
+            if (provide_code) {
+                await productRegistration.selectProvideRegistrationCode();
+                await productRegistration.fillCode(code);
+            }
+        }
+        else {
+            await productRegistration.fillCode(code);
+        }
         await productRegistration.register();
-    });
-    (0, helpers_1.it)("should display Overview", async function () {
         await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
+    });
+    (0, helpers_1.it)("should display product has been registered", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await productRegistration.verifyCustomRegistration();
     });
 }
 function enterRegistrationHa(code) {
@@ -242,36 +257,6 @@ function enterRegistrationHa(code) {
         await extensionRegistration.fillCode(code);
         await extensionRegistration.register();
         await extensionRegistration.verifyExtensionRegistration();
-    });
-}
-function enterRegistrationRegUrl(code) {
-    (0, helpers_1.it)("should allow setting registration", async function () {
-        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
-        await sidebar.goToRegistration();
-        await productRegistration.provideRegistrationCode();
-        await productRegistration.fillCode(code);
-        await productRegistration.register();
-    });
-    (0, helpers_1.it)("should display Overview", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
-    });
-}
-function enterCustomRegistrationServer(url) {
-    (0, helpers_1.it)(`should allow setting setting custom registration server to ${url}`, async function () {
-        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const customRegistration = new registration_page_1.CustomRegistrationPage(helpers_1.page);
-        await sidebar.goToRegistration();
-        await customRegistration.selectCustomRegistrationServer();
-        await customRegistration.fillServerUrl(url);
-        await customRegistration.register();
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
-    });
-    (0, helpers_1.it)("should display product has been registered", async function () {
-        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const customRegistration = new registration_page_1.CustomRegistrationPage(helpers_1.page);
-        await sidebar.goToRegistration();
-        await customRegistration.verifyCustomRegistration();
     });
 }
 
@@ -968,7 +953,7 @@ function LicenseAcceptable(Base) {
         licenseAcceptanceCheckbox = () => this.page.locator("::-p-text(I have read and)");
         licenseOpenButton = () => this.page.locator("::-p-text(license)");
         licenseCloseButton = () => this.page.locator("::-p-text(Close)");
-        licenseText = () => this.page.locator("::-p-text(SUSE(R) End User License Agreement for Beta Software)");
+        licenseText = () => this.page.locator("::-p-text(End User License Agreement)");
         async acceptLicense() {
             await this.licenseAcceptanceCheckbox().click();
         }
@@ -1010,12 +995,13 @@ const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "
 class RegistrationBasePage {
     page;
     codeInput = () => this.page.locator("::-p-aria(Registration code)[type='password']");
+    infoHasBeenRegisteredText = () => this.page.locator("::-p-text(has been registered with below information)");
     registerButton = () => this.page.locator("::-p-aria(Register)");
     registrationOptionCheckbox = () => this.page.locator("::-p-aria(Provide registration code)");
     constructor(page) {
         this.page = page;
     }
-    async provideRegistrationCode() {
+    async selectProvideRegistrationCode() {
         await this.registrationOptionCheckbox().click();
     }
     async fillCode(code) {
@@ -1023,6 +1009,12 @@ class RegistrationBasePage {
     }
     async register() {
         await this.registerButton().click();
+    }
+    async verifyCustomRegistration() {
+        const elementText = await this.infoHasBeenRegisteredText()
+            .map((span) => span.textContent)
+            .wait();
+        await strict_1.default.match(elementText, /SUSE Linux Enterprise Server.*has been registered with below information/);
     }
 }
 function ExtensionHaRegistrable(Base) {
@@ -1039,7 +1031,6 @@ function CustomRegistrable(Base) {
         registrationServerCustomOption = () => this.page.locator("::-p-aria(Custom Register using a custom registration server)");
         serverUrlTextbox = () => this.page.locator("::-p-aria(Server URL)[type='text']");
         provideRegistrationCodeCheckbox = () => this.page.locator("::-p-aria(Provide registration code)");
-        infoHasBeenRegisteredText = () => this.page.locator("::-p-text(has been registered with below information)");
         async provideRegistrationCode() {
             await this.provideRegistrationCodeCheckbox().click();
         }
@@ -1051,12 +1042,6 @@ function CustomRegistrable(Base) {
         async fillServerUrl(url) {
             await this.serverUrlTextbox().wait();
             await this.serverUrlTextbox().fill(url);
-        }
-        async verifyCustomRegistration() {
-            const elementText = await this.infoHasBeenRegisteredText()
-                .map((span) => span.textContent)
-                .wait();
-            await strict_1.default.match(elementText, /SUSE Linux Enterprise Server.*has been registered with below information/);
         }
     };
 }
@@ -1394,6 +1379,8 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
     .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
     .option("--registration-code <code>", "Registration code")
+    .option("--use-custom-registration-server", "Enable custom registration server")
+    .option("--provide-registration-code", "provide registration code for customer registration")
     .option("--staticHostname <hostname>", "Static Hostname")
     .option("--install", "Proceed to install the system (the default is not to install it)")
     .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
@@ -1410,7 +1397,11 @@ if (options.productId !== "none")
 if (options.staticHostname)
     (0, hostname_1.setPermanentHostname)(options.staticHostname);
 if (options.registrationCode)
-    (0, registration_1.enterRegistration)(options.registrationCode);
+    (0, registration_1.enterRegistration)({
+        use_custom: options.useCustomRegistrationServer,
+        code: options.registrationCode,
+        provide_code: options.provideRegistrationCode,
+    });
 (0, first_user_1.createFirstUser)(options.password);
 (0, root_authentication_1.editRootUser)(options.rootPassword);
 (0, root_authentication_1.verifyPasswordStrength)();

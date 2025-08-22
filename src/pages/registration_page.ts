@@ -7,6 +7,9 @@ class RegistrationBasePage {
   protected readonly codeInput = () =>
     this.page.locator("::-p-aria(Registration code)[type='password']");
 
+  protected readonly infoHasBeenRegisteredText = () =>
+    this.page.locator("::-p-text(has been registered with below information)");
+
   protected readonly registerButton = () => this.page.locator("::-p-aria(Register)");
   protected readonly registrationOptionCheckbox = () =>
     this.page.locator("::-p-aria(Provide registration code)");
@@ -15,7 +18,7 @@ class RegistrationBasePage {
     this.page = page;
   }
 
-  async provideRegistrationCode() {
+  async selectProvideRegistrationCode() {
     await this.registrationOptionCheckbox().click();
   }
 
@@ -25,6 +28,16 @@ class RegistrationBasePage {
 
   async register() {
     await this.registerButton().click();
+  }
+
+  async verifyCustomRegistration() {
+    const elementText = await this.infoHasBeenRegisteredText()
+      .map((span) => span.textContent)
+      .wait();
+    await assert.match(
+      elementText,
+      /SUSE Linux Enterprise Server.*has been registered with below information/,
+    );
   }
 }
 
@@ -53,9 +66,6 @@ function CustomRegistrable<TBase extends GConstructor<RegistrationBasePage>>(Bas
     protected readonly provideRegistrationCodeCheckbox = () =>
       this.page.locator("::-p-aria(Provide registration code)");
 
-    protected readonly infoHasBeenRegisteredText = () =>
-      this.page.locator("::-p-text(has been registered with below information)");
-
     async provideRegistrationCode() {
       await this.provideRegistrationCodeCheckbox().click();
     }
@@ -69,16 +79,6 @@ function CustomRegistrable<TBase extends GConstructor<RegistrationBasePage>>(Bas
     async fillServerUrl(url: string) {
       await this.serverUrlTextbox().wait();
       await this.serverUrlTextbox().fill(url);
-    }
-
-    async verifyCustomRegistration() {
-      const elementText = await this.infoHasBeenRegisteredText()
-        .map((span) => span.textContent)
-        .wait();
-      await assert.match(
-        elementText,
-        /SUSE Linux Enterprise Server.*has been registered with below information/,
-      );
     }
   };
 }
