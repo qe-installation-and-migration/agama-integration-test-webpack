@@ -9,17 +9,21 @@ import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
-import { enterCustomRegistrationServer } from "./checks/registration";
+import { enterRegistration } from "./checks/registration";
 import { performInstallation } from "./checks/installation";
 
 // parse options from the command line
 const options = parse((cmd) =>
   cmd
+    .option("--use-custom-registration-server", "Enable custom registration server")
     .option("--registration-server-url <url>", "Custom registration url")
     .option("--install", "Proceed to install the system (the default is not to install it"),
 );
 
 test_init(options);
 logIn(options.password);
-enterCustomRegistrationServer(options.registrationServerUrl);
+enterRegistration({
+  use_custom: options.useCustomRegistrationServer,
+  url: options.registrationServerUrl,
+});
 if (options.install) performInstallation();

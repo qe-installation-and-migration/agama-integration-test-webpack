@@ -12,11 +12,7 @@ import { Option } from "commander";
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser } from "./checks/root_authentication";
 import { ensureProductConfigurationStarted } from "./checks/configuration_started";
-import {
-  enterRegistration,
-  enterRegistrationHa,
-  enterRegistrationRegUrl,
-} from "./checks/registration";
+import { enterRegistration, enterRegistrationHa } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
@@ -35,7 +31,8 @@ const options = parse((cmd) =>
     .option("--registration-code-ha <code>", "Registration code for Extension High Availability")
     .option("--patterns <pattern>...", "comma-separated list of patterns", commaSeparatedList)
     .option("--install", "Proceed to install the system (the default is not to install it)")
-    .option("--inst-register-url", "Custom registration url was provided by kernel cmdline")
+    .option("--use-custom-registration-server", "Enable custom registration server")
+    .option("--provide-registration-code", "provide registration code for customer registration")
     .addOption(
       new Option(
         "--prepare-advanced-storage <storage-type>",
@@ -52,8 +49,11 @@ if (options.productId !== "none")
   else productSelection(options.productId);
 ensureProductConfigurationStarted();
 if (options.registrationCode)
-  if (options.instRegisterUrl) enterRegistrationRegUrl(options.registrationCode);
-  else enterRegistration(options.registrationCode);
+  enterRegistration({
+    use_custom: options.useCustomRegistrationServer,
+    code: options.registrationCode,
+    provide_code: options.provideRegistrationCode,
+  });
 if (options.registrationCodeHa) enterRegistrationHa(options.registrationCodeHa);
 if (options.patterns) selectPatterns(options.patterns);
 createFirstUser(options.password);
