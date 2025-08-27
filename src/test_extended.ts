@@ -8,16 +8,17 @@
 import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
-import { logIn } from "./checks/login";
 import { createFirstUser } from "./checks/first_user";
-import { editRootUser, verifyPasswordStrength } from "./checks/root_authentication";
-import { enterRegistration } from "./checks/registration";
-import { setPermanentHostname } from "./checks/hostname";
 import { decryptDevice } from "./checks/decryption";
-import { verifyDecryptDestructiveActions } from "./checks/storage_result_destructive_actions_planned";
-import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
+import { editRootUser, verifyPasswordStrength } from "./checks/root_authentication";
+import { enableEncryption, verifyEncryptionEnabled, disableEncryption } from "./checks/encryption";
+import { enterRegistration } from "./checks/registration";
+import { logIn } from "./checks/login";
 import { performInstallation } from "./checks/installation";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
+import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
+import { setPermanentHostname } from "./checks/hostname";
+import { verifyDecryptDestructiveActions } from "./checks/storage_result_destructive_actions_planned";
 
 // parse options from the command line
 const options = parse((cmd) =>
@@ -48,12 +49,15 @@ if (options.productId !== "none")
 decryptDevice(options.decryptPassword);
 verifyDecryptDestructiveActions(options.destructiveActions);
 if (options.staticHostname) setPermanentHostname(options.staticHostname);
+enableEncryption(options.password);
 if (options.registrationCode)
   enterRegistration({
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
   });
+verifyEncryptionEnabled();
+disableEncryption();
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
 verifyPasswordStrength();
