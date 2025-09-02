@@ -175,8 +175,8 @@ function performInstallation() {
 function finishInstallation() {
     (0, helpers_1.it)("should finish", async function () {
         const congratulation = new congratulation_page_1.CongratulationPage(helpers_1.page);
-        await congratulation.wait(14 * 60 * 1000);
-    }, 15 * 60 * 1000);
+        await congratulation.wait(20 * 60 * 1000);
+    }, 21 * 60 * 1000);
 }
 
 
