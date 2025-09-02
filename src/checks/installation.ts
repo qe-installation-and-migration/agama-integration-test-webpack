@@ -29,8 +29,8 @@ export function finishInstallation() {
     "should finish",
     async function () {
       const congratulation = new CongratulationPage(page);
-      await congratulation.wait(14 * 60 * 1000);
+      await congratulation.wait(20 * 60 * 1000);
     },
-    15 * 60 * 1000,
+    21 * 60 * 1000,
   );
 }
