@@ -10,7 +10,7 @@ import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
 import { selectPatterns } from "./checks/software_selection";
-import { performInstallation } from "./checks/installation";
+import { performInstallation, finishInstallation } from "./checks/installation";
 
 // parse options from the command line
 const options = parse((cmd) =>
@@ -22,4 +22,7 @@ const options = parse((cmd) =>
 test_init(options);
 logIn(options.password);
 if (options.patterns) selectPatterns(options.patterns);
-if (options.install) performInstallation();
+if (options.install) {
+  performInstallation();
+  finishInstallation();
+}

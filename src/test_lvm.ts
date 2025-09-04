@@ -11,7 +11,7 @@ import { test_init } from "./lib/helpers";
 import { selectMoreDevices } from "./checks/storage_select_installation_device";
 import { setOnlyInstallationNetwork } from "./checks/network";
 import { logIn } from "./checks/login";
-import { performInstallation } from "./checks/installation";
+import { performInstallation, finishInstallation } from "./checks/installation";
 
 // parse options from the command line
 const options = parse((cmd) =>
@@ -27,4 +27,7 @@ test_init(options);
 logIn(options.password);
 selectMoreDevices();
 if (options.connectionsOnlyForInstallation) setOnlyInstallationNetwork();
-if (options.install) performInstallation();
+if (options.install) {
+  performInstallation();
+  finishInstallation();
+}

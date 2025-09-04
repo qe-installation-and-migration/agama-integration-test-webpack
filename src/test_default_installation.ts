@@ -14,7 +14,7 @@ import { editRootUser } from "./checks/root_authentication";
 import { ensureProductConfigurationStarted } from "./checks/configuration_started";
 import { enterRegistration, enterRegistrationHa } from "./checks/registration";
 import { logIn } from "./checks/login";
-import { performInstallation } from "./checks/installation";
+import { performInstallation, finishInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { selectPatterns } from "./checks/software_selection";
@@ -59,4 +59,7 @@ if (options.patterns) selectPatterns(options.patterns);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);
 if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
-if (options.install) performInstallation();
+if (options.install) {
+  performInstallation();
+  finishInstallation();
+}

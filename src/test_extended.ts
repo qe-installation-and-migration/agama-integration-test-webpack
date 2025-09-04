@@ -14,7 +14,7 @@ import { editRootUser, verifyPasswordStrength } from "./checks/root_authenticati
 import { enableEncryption, verifyEncryptionEnabled, disableEncryption } from "./checks/encryption";
 import { enterRegistration } from "./checks/registration";
 import { logIn } from "./checks/login";
-import { performInstallation } from "./checks/installation";
+import { performInstallation, checkInstallation, finishInstallation } from "./checks/installation";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { setPermanentHostname } from "./checks/hostname";
@@ -62,4 +62,8 @@ createFirstUser(options.password);
 editRootUser(options.rootPassword);
 verifyPasswordStrength();
 if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
-if (options.install) performInstallation();
+if (options.install) {
+  performInstallation();
+  checkInstallation();
+  finishInstallation();
+}

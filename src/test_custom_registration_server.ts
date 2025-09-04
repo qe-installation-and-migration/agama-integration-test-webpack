@@ -10,7 +10,7 @@ import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
 import { enterRegistration } from "./checks/registration";
-import { performInstallation } from "./checks/installation";
+import { performInstallation, finishInstallation } from "./checks/installation";
 
 // parse options from the command line
 const options = parse((cmd) =>
@@ -26,4 +26,7 @@ enterRegistration({
   use_custom: options.useCustomRegistrationServer,
   url: options.registrationServerUrl,
 });
-if (options.install) performInstallation();
+if (options.install) {
+  performInstallation();
+  finishInstallation();
+}

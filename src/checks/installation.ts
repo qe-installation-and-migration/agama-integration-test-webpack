@@ -1,8 +1,10 @@
-import { it, page } from "../lib/helpers";
+import { it, page, getTextContent } from "../lib/helpers";
 import { ConfirmInstallationPage } from "../pages/confirm_installation_page";
 import { CongratulationPage } from "../pages/congratulation_page";
 import { OverviewPage } from "../pages/overview_page";
 import { SidebarPage } from "../pages/sidebar_page";
+import { InstallationPage } from "../pages/installation_page";
+import assert from "node:assert/strict";
 
 export function performInstallation() {
   it("should start installation", async function () {
@@ -14,19 +16,31 @@ export function performInstallation() {
     await overview.install();
     await confirmInstallation.continue();
   });
+}
 
-  it(
-    "should finish installation",
-    async function () {
-      await new CongratulationPage(page).wait(14 * 60 * 1000);
-    },
-    15 * 60 * 1000,
-  );
+export function checkInstallation() {
+  it("should check installation progress", async function () {
+    const installation = new InstallationPage(page);
+
+    assert.deepEqual(await getTextContent(installation.prepareDisksText()), "Prepare disks");
+
+    assert.deepEqual(
+      await getTextContent(installation.installingSystemText()),
+      "Installing the system, please wait...",
+    );
+
+    assert.deepEqual(await getTextContent(installation.installSoftwareText()), "Install software");
+
+    assert.deepEqual(
+      await getTextContent(installation.configureTheSystemText()),
+      "Configure the system",
+    );
+  });
 }
 
 export function finishInstallation() {
   it(
-    "should finish",
+    "should finish installation",
     async function () {
       const congratulation = new CongratulationPage(page);
       await congratulation.wait(20 * 60 * 1000);

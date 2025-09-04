@@ -60,18 +60,24 @@ function disableEncryption() {
 /*!************************************!*\
   !*** ./src/checks/installation.ts ***!
   \************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.performInstallation = performInstallation;
+exports.checkInstallation = checkInstallation;
 exports.finishInstallation = finishInstallation;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const confirm_installation_page_1 = __webpack_require__(/*! ../pages/confirm_installation_page */ "./src/pages/confirm_installation_page.ts");
 const congratulation_page_1 = __webpack_require__(/*! ../pages/congratulation_page */ "./src/pages/congratulation_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const installation_page_1 = __webpack_require__(/*! ../pages/installation_page */ "./src/pages/installation_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 function performInstallation() {
     (0, helpers_1.it)("should start installation", async function () {
         const confirmInstallation = new confirm_installation_page_1.ConfirmInstallationPage(helpers_1.page);
@@ -81,12 +87,18 @@ function performInstallation() {
         await overview.install();
         await confirmInstallation.continue();
     });
-    (0, helpers_1.it)("should finish installation", async function () {
-        await new congratulation_page_1.CongratulationPage(helpers_1.page).wait(14 * 60 * 1000);
-    }, 15 * 60 * 1000);
+}
+function checkInstallation() {
+    (0, helpers_1.it)("should check installation progress", async function () {
+        const installation = new installation_page_1.InstallationPage(helpers_1.page);
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installation.prepareDisksText()), "Prepare disks");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installation.installingSystemText()), "Installing the system, please wait...");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installation.installSoftwareText()), "Install software");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(installation.configureTheSystemText()), "Configure the system");
+    });
 }
 function finishInstallation() {
-    (0, helpers_1.it)("should finish", async function () {
+    (0, helpers_1.it)("should finish installation", async function () {
         const congratulation = new congratulation_page_1.CongratulationPage(helpers_1.page);
         await congratulation.wait(20 * 60 * 1000);
     }, 21 * 60 * 1000);
@@ -298,6 +310,7 @@ exports.setContinueOnError = setContinueOnError;
 exports.dumpPage = dumpPage;
 exports.it = it;
 exports.sleep = sleep;
+exports.getTextContent = getTextContent;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
 const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
 const http_1 = __importDefault(__webpack_require__(/*! http */ "http"));
@@ -455,6 +468,9 @@ async function it(label, test, timeout) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+function getTextContent(locator) {
+    return locator.map((element) => element.textContent).wait();
+}
 // for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
 var ProductId;
 (function (ProductId) {
@@ -595,6 +611,31 @@ class EncryptionSettingsPage {
     }
 }
 exports.EncryptionSettingsPage = EncryptionSettingsPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/installation_page.ts":
+/*!****************************************!*\
+  !*** ./src/pages/installation_page.ts ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.InstallationPage = void 0;
+class InstallationPage {
+    page;
+    prepareDisksText = () => this.page.locator("::-p-text(Prepare disks)");
+    installingSystemText = () => this.page.locator(`::-p-text(Installing the system, please wait...)`);
+    installSoftwareText = () => this.page.locator(`::-p-text(Install software)`);
+    configureTheSystemText = () => this.page.locator(`::-p-text(Configure the system)`);
+    constructor(page) {
+        this.page = page;
+    }
+}
+exports.InstallationPage = InstallationPage;
 
 
 /***/ }),
@@ -805,8 +846,10 @@ const options = (0, cmdline_1.parse)((cmd) => cmd.option("--install", "Proceed t
 (0, login_1.logIn)(options.password);
 (0, storage_select_installation_device_1.selectMoreDevices)();
 (0, encryption_1.enableEncryption)(options.password);
-if (options.install)
+if (options.install) {
     (0, installation_1.performInstallation)();
+    (0, installation_1.finishInstallation)();
+}
 
 
 /***/ }),

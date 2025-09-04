@@ -186,6 +186,10 @@ export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+export function getTextContent(locator): Promise<string> {
+  return locator.map((element) => element.textContent).wait();
+}
+
 // eslint-disable-next-line
 export type GConstructor<T = {}> = new (...args: any[]) => T;
 
