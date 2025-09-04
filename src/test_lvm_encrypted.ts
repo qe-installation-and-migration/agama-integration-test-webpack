@@ -2,7 +2,7 @@ import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
-import { performInstallation } from "./checks/installation";
+import { performInstallation, finishInstallation } from "./checks/installation";
 import { selectMoreDevices } from "./checks/storage_select_installation_device";
 import { enableEncryption } from "./checks/encryption";
 
@@ -15,4 +15,7 @@ test_init(options);
 logIn(options.password);
 selectMoreDevices();
 enableEncryption(options.password);
-if (options.install) performInstallation();
+if (options.install) {
+  performInstallation();
+  finishInstallation();
+}

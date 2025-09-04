@@ -214,6 +214,7 @@ exports.setContinueOnError = setContinueOnError;
 exports.dumpPage = dumpPage;
 exports.it = it;
 exports.sleep = sleep;
+exports.getTextContent = getTextContent;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
 const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
 const http_1 = __importDefault(__webpack_require__(/*! http */ "http"));
@@ -370,6 +371,9 @@ async function it(label, test, timeout) {
 }
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+function getTextContent(locator) {
+    return locator.map((element) => element.textContent).wait();
 }
 // for product ids, please check https://github.com/agama-project/agama/tree/master/products.d
 var ProductId;
