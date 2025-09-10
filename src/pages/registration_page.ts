@@ -46,15 +46,14 @@ function ExtensionHaRegistrable<TBase extends GConstructor<RegistrationBasePage>
     readonly extensionRegisteredText = () =>
       this.page.locator("::-p-text(The extension has been registered)");
 
-    protected readonly registerHaButton = () =>
-      this.page.locator("::-p-aria(Register)[type='submit']");
+    protected readonly registerButton = () => this.page.locator("[id*='register-button-sle-ha']");
   };
 }
 
 function ExtensionPhubRegistrable<TBase extends GConstructor<RegistrationBasePage>>(Base: TBase) {
   return class extends Base {
-    protected readonly registerPhubButton = () =>
-      this.page.locator("::-p-aria(Register)[type='button']");
+    protected readonly registerButton = () =>
+      this.page.locator("[id*='register-button-PackageHub']");
 
     readonly extensionRegisteredText = () =>
       this.page.locator("::-p-text(The extension was registered without any registration code)");

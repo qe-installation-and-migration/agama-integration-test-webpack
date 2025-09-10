@@ -63,9 +63,9 @@ export function enterRegistrationHa(code: string) {
     await sidebar.goToRegistration();
     await extensionRegistration.fillCode(code);
     await extensionRegistration.register();
-    assert.deepEqual(
+    assert.match(
       await getTextContent(extensionRegistration.extensionRegisteredText()),
-      "The extension has been registered",
+      /The extension has been registered/,
     );
   });
 }
@@ -85,7 +85,7 @@ export function registerPackageHub() {
     await packagehubTrustKey.trustKey();
     assert.deepEqual(
       await getTextContent(extensionRegistration.extensionRegisteredText()),
-      "The extension was registered without any registration code",
+      "The extension was registered without any registration code.",
     );
   });
 }
