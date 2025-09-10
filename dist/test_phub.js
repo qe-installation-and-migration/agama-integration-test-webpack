@@ -140,7 +140,7 @@ function enterRegistrationHa(code) {
         await sidebar.goToRegistration();
         await extensionRegistration.fillCode(code);
         await extensionRegistration.register();
-        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(extensionRegistration.extensionRegisteredText()), "The extension has been registered");
+        strict_1.default.match(await (0, helpers_1.getTextContent)(extensionRegistration.extensionRegisteredText()), /The extension has been registered/);
     });
 }
 function registerPackageHub() {
@@ -152,7 +152,7 @@ function registerPackageHub() {
         await extensionRegistration.register();
         strict_1.default.match(await (0, helpers_1.getTextContent)(packagehubTrustKey.trustKeyText()), /is unknown. Do you want to trust this key?/);
         await packagehubTrustKey.trustKey();
-        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(extensionRegistration.extensionRegisteredText()), "The extension was registered without any registration code");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(extensionRegistration.extensionRegisteredText()), "The extension was registered without any registration code.");
     });
 }
 
@@ -694,12 +694,12 @@ class RegistrationBasePage {
 function ExtensionHaRegistrable(Base) {
     return class extends Base {
         extensionRegisteredText = () => this.page.locator("::-p-text(The extension has been registered)");
-        registerHaButton = () => this.page.locator("::-p-aria(Register)[type='submit']");
+        registerButton = () => this.page.locator("[id*='register-button-sle-ha']");
     };
 }
 function ExtensionPhubRegistrable(Base) {
     return class extends Base {
-        registerPhubButton = () => this.page.locator("::-p-aria(Register)[type='button']");
+        registerButton = () => this.page.locator("[id*='register-button-PackageHub']");
         extensionRegisteredText = () => this.page.locator("::-p-text(The extension was registered without any registration code)");
     };
 }
