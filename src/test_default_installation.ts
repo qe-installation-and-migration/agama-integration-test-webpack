@@ -1,10 +1,3 @@
-// This is an example file for running Agama integration tests using Puppeteer.
-// If the test fails it saves the page screenshot and the HTML page dump to
-// ./log/ subdirectory. For more details about customization see the README.md
-// file.
-
-// see https://nodejs.org/docs/latest-v20.x/api/test.html
-
 import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { Option } from "commander";
@@ -12,7 +5,7 @@ import { Option } from "commander";
 import { createFirstUser } from "./checks/first_user";
 import { editRootUser } from "./checks/root_authentication";
 import { ensureProductConfigurationStarted } from "./checks/configuration_started";
-import { enterRegistration, enterRegistrationHa } from "./checks/registration";
+import { enterProductRegistration, enterExtensionRegistrationHA } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation, finishInstallation } from "./checks/installation";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
@@ -49,12 +42,12 @@ if (options.productId !== "none")
   else productSelection(options.productId);
 ensureProductConfigurationStarted();
 if (options.registrationCode)
-  enterRegistration({
+  enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
   });
-if (options.registrationCodeHa) enterRegistrationHa(options.registrationCodeHa);
+if (options.registrationCodeHa) enterExtensionRegistrationHA(options.registrationCodeHa);
 if (options.patterns) selectPatterns(options.patterns);
 createFirstUser(options.password);
 editRootUser(options.rootPassword);

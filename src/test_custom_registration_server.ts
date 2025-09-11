@@ -2,7 +2,7 @@ import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
-import { enterRegistration } from "./checks/registration";
+import { enterProductRegistration } from "./checks/registration";
 import { performInstallation, finishInstallation } from "./checks/installation";
 
 // parse options from the command line
@@ -16,7 +16,7 @@ const options = parse((cmd) =>
 
 test_init(options);
 logIn(options.password);
-enterRegistration({
+enterProductRegistration({
   use_custom: options.useCustomRegistrationServer,
   url: options.registrationServerUrl,
   code: options.registrationCode,

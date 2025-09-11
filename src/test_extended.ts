@@ -5,7 +5,7 @@ import { createFirstUser } from "./checks/first_user";
 import { decryptDevice } from "./checks/decryption";
 import { editRootUser, verifyPasswordStrength } from "./checks/root_authentication";
 import { enableEncryption, verifyEncryptionEnabled, disableEncryption } from "./checks/encryption";
-import { enterRegistration } from "./checks/registration";
+import { enterProductRegistration } from "./checks/registration";
 import { logIn } from "./checks/login";
 import { performInstallation, checkInstallation, finishInstallation } from "./checks/installation";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
@@ -45,7 +45,7 @@ verifyDecryptDestructiveActions(options.destructiveActions);
 if (options.staticHostname) setPermanentHostname(options.staticHostname);
 enableEncryption(options.password);
 if (options.registrationCode)
-  enterRegistration({
+  enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,

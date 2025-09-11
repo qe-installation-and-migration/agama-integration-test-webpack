@@ -95,24 +95,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.enterRegistration = enterRegistration;
-exports.enterRegistrationHa = enterRegistrationHa;
-exports.registerPackageHub = registerPackageHub;
+exports.enterProductRegistration = enterProductRegistration;
+exports.enterExtensionRegistrationHA = enterExtensionRegistrationHA;
+exports.enterExtensionRegistrationPHub = enterExtensionRegistrationPHub;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
-const registration_page_1 = __webpack_require__(/*! ../pages/registration_page */ "./src/pages/registration_page.ts");
+const product_registration_page_1 = __webpack_require__(/*! ../pages/product_registration_page */ "./src/pages/product_registration_page.ts");
+const extension_registration_phub_page_1 = __webpack_require__(/*! ../pages/extension_registration_phub_page */ "./src/pages/extension_registration_phub_page.ts");
+const extension_registration_ha_page_1 = __webpack_require__(/*! ../pages/extension_registration_ha_page */ "./src/pages/extension_registration_ha_page.ts");
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const trust_registration_certificate_page_1 = __webpack_require__(/*! ../pages/trust_registration_certificate_page */ "./src/pages/trust_registration_certificate_page.ts");
-const trust_key_page_1 = __webpack_require__(/*! ../pages/trust_key_page */ "./src/pages/trust_key_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-function enterRegistration({ use_custom, code, provide_code, url, }) {
+function enterProductRegistration({ use_custom, code, provide_code, url, }) {
     (0, helpers_1.it)("should allow setting registration", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
+        const productRegistration = new product_registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
         if (use_custom) {
             if (url) {
-                const customRegistration = new registration_page_1.CustomRegistrationPage(helpers_1.page);
+                const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
                 await customRegistration.selectCustomRegistrationServer();
                 await customRegistration.fillServerUrl(url);
             }
@@ -139,31 +140,30 @@ function enterRegistration({ use_custom, code, provide_code, url, }) {
     (0, helpers_1.it)("should display product has been registered", async function () {
         await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(60000);
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
+        const productRegistration = new product_registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
         await productRegistration.verifyCustomRegistration();
     });
 }
-function enterRegistrationHa(code) {
-    (0, helpers_1.it)("should allow setting registration HA", async function () {
+function enterExtensionRegistrationHA(code) {
+    (0, helpers_1.it)("should allow registering HA extension", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const extensionRegistration = new registration_page_1.ExtensionHaRegistrationPage(helpers_1.page);
+        const extensionRegistrationHA = new extension_registration_ha_page_1.ExtensionRegistrationHAPage(helpers_1.page);
         await sidebar.goToRegistration();
-        await extensionRegistration.fillCode(code);
-        await extensionRegistration.register();
-        strict_1.default.match(await (0, helpers_1.getTextContent)(extensionRegistration.extensionRegisteredText()), /The extension has been registered/);
+        await extensionRegistrationHA.fillCode(code);
+        await extensionRegistrationHA.register();
+        strict_1.default.match(await (0, helpers_1.getTextContent)(extensionRegistrationHA.extensionRegisteredText()), /The extension has been registered/);
     });
 }
-function registerPackageHub() {
-    (0, helpers_1.it)("should allow register PackageHub", async function () {
+function enterExtensionRegistrationPHub() {
+    (0, helpers_1.it)("should allow registering Package Hub extension", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
-        const extensionRegistration = new registration_page_1.ExtensionPhubRegistrationPage(helpers_1.page);
-        const packagehubTrustKey = new trust_key_page_1.TrustKeyPage(helpers_1.page);
+        const extensionRegistrationPHub = new extension_registration_phub_page_1.ExtensionRegistrationPHubPage(helpers_1.page);
         await sidebar.goToRegistration();
-        await extensionRegistration.register();
-        strict_1.default.match(await (0, helpers_1.getTextContent)(packagehubTrustKey.trustKeyText()), /is unknown. Do you want to trust this key?/);
-        await packagehubTrustKey.trustKey();
-        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(extensionRegistration.extensionRegisteredText()), "The extension was registered without any registration code.");
+        await extensionRegistrationPHub.register();
+        strict_1.default.match(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.trustKeyText()), /is unknown. Do you want to trust this key?/);
+        await extensionRegistrationPHub.trustKey();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.registeredText()), "The extension was registered without any registration code.");
     });
 }
 
@@ -597,6 +597,67 @@ exports.CongratulationPage = CongratulationPage;
 
 /***/ }),
 
+/***/ "./src/pages/extension_registration_ha_page.ts":
+/*!*****************************************************!*\
+  !*** ./src/pages/extension_registration_ha_page.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExtensionRegistrationHAPage = void 0;
+class ExtensionRegistrationHAPage {
+    page;
+    codeInput = () => this.page.locator("::-p-aria(Registration code)[type='password']");
+    registerButton = () => this.page.locator("[id*='register-button-sle-ha']");
+    extensionRegisteredText = () => this.page.locator("::-p-text(The extension has been registered)");
+    constructor(page) {
+        this.page = page;
+    }
+    async fillCode(code) {
+        await this.codeInput().fill(code);
+    }
+    async register() {
+        await this.registerButton().click();
+    }
+}
+exports.ExtensionRegistrationHAPage = ExtensionRegistrationHAPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/extension_registration_phub_page.ts":
+/*!*******************************************************!*\
+  !*** ./src/pages/extension_registration_phub_page.ts ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ExtensionRegistrationPHubPage = void 0;
+class ExtensionRegistrationPHubPage {
+    page;
+    registerButton = () => this.page.locator("[id*='register-button-PackageHub']");
+    registeredText = () => this.page.locator("::-p-text(The extension was registered without any registration code)");
+    trustKeyText = () => this.page.locator("::-p-text(Do you want to trust this key?)");
+    trustKeyButton = () => this.page.locator("::-p-text(Trust)");
+    constructor(page) {
+        this.page = page;
+    }
+    async register() {
+        await this.registerButton().click();
+    }
+    async trustKey() {
+        await this.trustKeyButton().click();
+    }
+}
+exports.ExtensionRegistrationPHubPage = ExtensionRegistrationPHubPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/installation_page.ts":
 /*!****************************************!*\
   !*** ./src/pages/installation_page.ts ***!
@@ -680,10 +741,10 @@ exports.OverviewPage = OverviewPage;
 
 /***/ }),
 
-/***/ "./src/pages/registration_page.ts":
-/*!****************************************!*\
-  !*** ./src/pages/registration_page.ts ***!
-  \****************************************/
+/***/ "./src/pages/product_registration_page.ts":
+/*!************************************************!*\
+  !*** ./src/pages/product_registration_page.ts ***!
+  \************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -692,7 +753,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ExtensionPhubRegistrationPage = exports.CustomRegistrationPage = exports.ExtensionHaRegistrationPage = exports.ProductRegistrationPage = void 0;
+exports.CustomRegistrationPage = exports.ProductRegistrationPage = void 0;
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 class RegistrationBasePage {
     page;
@@ -719,18 +780,6 @@ class RegistrationBasePage {
         await strict_1.default.match(elementText, /SUSE Linux Enterprise Server.*has been registered with below information/);
     }
 }
-function ExtensionHaRegistrable(Base) {
-    return class extends Base {
-        extensionRegisteredText = () => this.page.locator("::-p-text(The extension has been registered)");
-        registerButton = () => this.page.locator("[id*='register-button-sle-ha']");
-    };
-}
-function ExtensionPhubRegistrable(Base) {
-    return class extends Base {
-        registerButton = () => this.page.locator("[id*='register-button-PackageHub']");
-        extensionRegisteredText = () => this.page.locator("::-p-text(The extension was registered without any registration code)");
-    };
-}
 function CustomRegistrable(Base) {
     return class extends Base {
         registrationServerButton = () => this.page.locator("::-p-aria(Registration server)");
@@ -754,15 +803,9 @@ function CustomRegistrable(Base) {
 class ProductRegistrationPage extends RegistrationBasePage {
 }
 exports.ProductRegistrationPage = ProductRegistrationPage;
-class ExtensionHaRegistrationPage extends ExtensionHaRegistrable(RegistrationBasePage) {
-}
-exports.ExtensionHaRegistrationPage = ExtensionHaRegistrationPage;
 class CustomRegistrationPage extends CustomRegistrable(RegistrationBasePage) {
 }
 exports.CustomRegistrationPage = CustomRegistrationPage;
-class ExtensionPhubRegistrationPage extends ExtensionPhubRegistrable(RegistrationBasePage) {
-}
-exports.ExtensionPhubRegistrationPage = ExtensionPhubRegistrationPage;
 
 
 /***/ }),
@@ -885,32 +928,6 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 
 /***/ }),
 
-/***/ "./src/pages/trust_key_page.ts":
-/*!*************************************!*\
-  !*** ./src/pages/trust_key_page.ts ***!
-  \*************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.TrustKeyPage = void 0;
-class TrustKeyPage {
-    page;
-    trustKeyText = () => this.page.locator("::-p-text(Do you want to trust this key?)");
-    trustKeyButton = () => this.page.locator("::-p-text(Trust)");
-    constructor(page) {
-        this.page = page;
-    }
-    async trustKey() {
-        await this.trustKeyButton().click();
-    }
-}
-exports.TrustKeyPage = TrustKeyPage;
-
-
-/***/ }),
-
 /***/ "./src/pages/trust_registration_certificate_page.ts":
 /*!**********************************************************!*\
   !*** ./src/pages/trust_registration_certificate_page.ts ***!
@@ -960,7 +977,7 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--patterns <pattern>...", "comma-separated list of patterns", cmdline_1.commaSeparatedList));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
-(0, registration_1.registerPackageHub)();
+(0, registration_1.enterExtensionRegistrationPHub)();
 (0, software_selection_1.selectPatterns)(options.patterns);
 (0, installation_1.performInstallation)();
 (0, installation_1.finishInstallation)();
