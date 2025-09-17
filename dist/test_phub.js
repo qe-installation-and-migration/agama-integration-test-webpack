@@ -98,6 +98,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enterProductRegistration = enterProductRegistration;
 exports.enterExtensionRegistrationHA = enterExtensionRegistrationHA;
 exports.enterExtensionRegistrationPHub = enterExtensionRegistrationPHub;
+exports.verifyRegistrationWarniningAlerts = verifyRegistrationWarniningAlerts;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const product_registration_page_1 = __webpack_require__(/*! ../pages/product_registration_page */ "./src/pages/product_registration_page.ts");
@@ -164,6 +165,45 @@ function enterExtensionRegistrationPHub() {
         strict_1.default.match(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.trustKeyText()), /is unknown. Do you want to trust this key?/);
         await extensionRegistrationPHub.trustKey();
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.registeredText()), "The extension was registered without any registration code.");
+    });
+}
+function verifyRegistrationWarniningAlerts() {
+    (0, helpers_1.it)("should show warning alert for invalid registration", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
+        const invalid_regcode = "123XX432";
+        let originalCustomServer = null;
+        await sidebar.goToRegistration();
+        const isCustomServer = (await helpers_1.page.$("#url")) !== null;
+        await customRegistration.register();
+        if (isCustomServer) {
+            originalCustomServer = await helpers_1.page.$eval('input[type="text"][id="url"]', (el) => el.value);
+            strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.connectionToRegistrationServerFailedText()), "Warning alert:Connection to registration server failed: Please provide Registration Code.");
+        }
+        else {
+            strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.checkTheFollowingBeforeContinuingText()), "Warning alert:Check the following before continuing");
+        }
+        const invalidUrls = ["http://scc.example.net", "https://scc.example.net"];
+        for (const invalidUrl of invalidUrls) {
+            await customRegistration.selectCustomRegistrationServer();
+            await customRegistration.fillServerUrl(invalidUrl);
+            await customRegistration.register();
+            strict_1.default.match(await (0, helpers_1.getTextContent)(customRegistration.connectionToRegistrationServerFailedText()), /Connection to registration server failed: dial tcp: lookup .+ on .+: no such host \(network error\)/);
+        }
+        if (isCustomServer) {
+            await customRegistration.fillServerUrl(originalCustomServer);
+            await customRegistration.selectProvideRegistrationCode();
+        }
+        else {
+            await customRegistration.selectSUSERegistrationServer();
+        }
+        await customRegistration.fillCode(invalid_regcode);
+        await customRegistration.register();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(customRegistration.connectionToRegistrationServerFailedText()), "Warning alert:Connection to registration server failed: Unknown Registration Code.");
+        if (isCustomServer) {
+            await customRegistration.selectProvideRegistrationCode();
+            await customRegistration.register();
+        }
     });
 }
 
@@ -761,6 +801,8 @@ class RegistrationBasePage {
     infoHasBeenRegisteredText = () => this.page.locator("::-p-text(has been registered with below information)");
     registerButton = () => this.page.locator("::-p-aria(Register)");
     registrationOptionCheckbox = () => this.page.locator("::-p-aria(Provide registration code)");
+    connectionToRegistrationServerFailedText = () => this.page.locator("::-p-text(Connection to registration server failed:)");
+    checkTheFollowingBeforeContinuingText = () => this.page.locator("::-p-text(Check the following before continuing)");
     constructor(page) {
         this.page = page;
     }
@@ -784,6 +826,7 @@ function CustomRegistrable(Base) {
     return class extends Base {
         registrationServerButton = () => this.page.locator("::-p-aria(Registration server)");
         registrationServerCustomOption = () => this.page.locator("::-p-aria(Custom Register using a custom registration server)");
+        registrationSUSEServerOption = () => this.page.locator("::-p-aria(SUSE Customer Center (SCC) Register using SUSE server)");
         serverUrlTextbox = () => this.page.locator("::-p-aria(Server URL)[type='text']");
         provideRegistrationCodeCheckbox = () => this.page.locator("::-p-aria(Provide registration code)");
         async provideRegistrationCode() {
@@ -793,6 +836,11 @@ function CustomRegistrable(Base) {
             await this.registrationServerButton().click();
             await this.registrationServerCustomOption().wait();
             await this.registrationServerCustomOption().click();
+        }
+        async selectSUSERegistrationServer() {
+            await this.registrationServerButton().click();
+            await this.registrationSUSEServerOption().wait();
+            await this.registrationSUSEServerOption().click();
         }
         async fillServerUrl(url) {
             await this.serverUrlTextbox().wait();
