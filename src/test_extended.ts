@@ -1,10 +1,3 @@
-// This is an example file for running Agama integration tests using Puppeteer.
-// If the test fails it saves the page screenshot and the HTML page dump to
-// ./log/ subdirectory. For more details about customization see the README.md
-// file.
-
-// see https://nodejs.org/docs/latest-v20.x/api/test.html
-
 import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
@@ -19,6 +12,7 @@ import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { setPermanentHostname } from "./checks/hostname";
 import { verifyDecryptDestructiveActions } from "./checks/storage_result_destructive_actions_planned";
+import { downloadLogs } from "./checks/download_logs";
 
 // parse options from the command line
 const options = parse((cmd) =>
@@ -62,6 +56,7 @@ createFirstUser(options.password);
 editRootUser(options.rootPassword);
 verifyPasswordStrength();
 if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
+downloadLogs();
 if (options.install) {
   performInstallation();
   checkInstallation();

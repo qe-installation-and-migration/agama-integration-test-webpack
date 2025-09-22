@@ -334,11 +334,13 @@ exports.dumpPage = dumpPage;
 exports.it = it;
 exports.sleep = sleep;
 exports.getTextContent = getTextContent;
+exports.waitOnFile = waitOnFile;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
 const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
 const http_1 = __importDefault(__webpack_require__(/*! http */ "http"));
 const https_1 = __importDefault(__webpack_require__(/*! https */ "https"));
 const zlib_1 = __importDefault(__webpack_require__(/*! zlib */ "zlib"));
+const wait_on_1 = __importDefault(__webpack_require__(/*! wait-on */ "./node_modules/wait-on/lib/wait-on.js"));
 const puppeteer = __importStar(__webpack_require__(/*! puppeteer-core */ "./node_modules/puppeteer-core/lib/cjs/puppeteer/puppeteer-core.js"));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
@@ -514,6 +516,21 @@ var Desktop;
     Desktop["basic"] = "A basic desktop (based on IceWM)";
     Desktop["none"] = "None";
 })(Desktop || (exports.Desktop = Desktop = {}));
+;
+async function waitOnFile(filePath) {
+    const opts = {
+        resources: [filePath],
+        interval: 100,
+        timeout: 20000,
+        window: 1000,
+    };
+    try {
+        await (0, wait_on_1.default)(opts);
+    }
+    catch (error) {
+        throw new Error("waitOnFile failed!", { cause: error });
+    }
+}
 ;
 
 
@@ -1328,6 +1345,18 @@ module.exports = require("zlib");
 /******/ 				}
 /******/ 			}
 /******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
 /******/ 		};
 /******/ 	})();
 /******/ 	

@@ -3,6 +3,7 @@ import path from "path";
 import http from "http";
 import https from "https";
 import zlib from "zlib";
+import waitOn from "wait-on";
 
 import * as puppeteer from "puppeteer-core";
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
@@ -210,4 +211,19 @@ export enum Desktop {
   xfce = "XFCE Desktop Environment",
   basic = "A basic desktop (based on IceWM)",
   none = "None"
+};
+
+export async function waitOnFile(filePath: string): Promise<void> {
+  const opts = {
+    resources: [filePath],
+    interval: 100,
+    timeout: 20000,
+    window: 1000,
+  };
+
+  try {
+    await waitOn(opts);
+  } catch (error) {
+    throw new Error("waitOnFile failed!", { cause: error });
+  }
 };
