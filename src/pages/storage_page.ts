@@ -4,6 +4,9 @@ import { type Page } from "puppeteer-core";
 export class StoragePage {
   private readonly page: Page;
   private readonly selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
+  private readonly changeButton = () => this.page.locator("::-p-text(Change)");
+  private readonly selectDiskToInstallButton = () =>
+    this.page.locator("::-p-text(Select a disk to install the system)");
 
   private readonly editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
   private readonly encryptionIsEnabledText = () =>
@@ -22,6 +25,9 @@ export class StoragePage {
   private readonly destructiveActionText = (name: string) =>
     this.page.locator(`::-p-text(Delete ${name})`);
 
+  private readonly alertFailedCalculateStorageLayout = () =>
+    this.page.locator("::-p-text(Failed to calculate a storage layout)");
+
   constructor(page: Page) {
     this.page = page;
   }
@@ -30,12 +36,27 @@ export class StoragePage {
     await this.selectMoreDevicesButton().click();
   }
 
+  async changeDevice() {
+    await this.changeButton().click();
+  }
+
+  async selectAnotherDisk() {
+    await this.selectDiskToInstallButton().click();
+  }
+
   async addLvmVolumeGroup() {
     await this.addLvmVolumeLink().click();
   }
 
   async editEncryption() {
     await this.editEncryptionButton().click();
+  }
+
+  async verifySpaceAllocationFailed() {
+    const elementText = await this.alertFailedCalculateStorageLayout()
+      .map((span) => span.textContent)
+      .wait();
+    await assert.match(elementText, /Warning alert:Failed to calculate a storage layout/);
   }
 
   async verifyEncryptionEnabled() {
