@@ -28,6 +28,36 @@ function decryptDevice(password) {
 
 /***/ }),
 
+/***/ "./src/checks/download_logs.ts":
+/*!*************************************!*\
+  !*** ./src/checks/download_logs.ts ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.downloadLogs = downloadLogs;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const options_toggle_page_1 = __webpack_require__(/*! ../pages/options_toggle_page */ "./src/pages/options_toggle_page.ts");
+const filePath = "/root/Downloads/agama-logs.tar.gz";
+async function downloadLogs() {
+    (0, helpers_1.it)(`should download logs`, async function () {
+        await new options_toggle_page_1.OptionsTogglePage(helpers_1.page).downloadLogs();
+        await (0, helpers_1.waitOnFile)(filePath);
+        const fileSize = fs_1.default.statSync(filePath).size;
+        (0, strict_1.default)(fileSize > 0, "Agama Logfile is empty.");
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/encryption.ts":
 /*!**********************************!*\
   !*** ./src/checks/encryption.ts ***!
@@ -611,11 +641,13 @@ exports.dumpPage = dumpPage;
 exports.it = it;
 exports.sleep = sleep;
 exports.getTextContent = getTextContent;
+exports.waitOnFile = waitOnFile;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
 const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
 const http_1 = __importDefault(__webpack_require__(/*! http */ "http"));
 const https_1 = __importDefault(__webpack_require__(/*! https */ "https"));
 const zlib_1 = __importDefault(__webpack_require__(/*! zlib */ "zlib"));
+const wait_on_1 = __importDefault(__webpack_require__(/*! wait-on */ "./node_modules/wait-on/lib/wait-on.js"));
 const puppeteer = __importStar(__webpack_require__(/*! puppeteer-core */ "./node_modules/puppeteer-core/lib/cjs/puppeteer/puppeteer-core.js"));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
@@ -791,6 +823,21 @@ var Desktop;
     Desktop["basic"] = "A basic desktop (based on IceWM)";
     Desktop["none"] = "None";
 })(Desktop || (exports.Desktop = Desktop = {}));
+;
+async function waitOnFile(filePath) {
+    const opts = {
+        resources: [filePath],
+        interval: 100,
+        timeout: 20000,
+        window: 1000,
+    };
+    try {
+        await (0, wait_on_1.default)(opts);
+    }
+    catch (error) {
+        throw new Error("waitOnFile failed!", { cause: error });
+    }
+}
 ;
 
 
@@ -1041,6 +1088,33 @@ class LoginAsRootPage {
     }
 }
 exports.LoginAsRootPage = LoginAsRootPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/options_toggle_page.ts":
+/*!******************************************!*\
+  !*** ./src/pages/options_toggle_page.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.OptionsTogglePage = void 0;
+class OptionsTogglePage {
+    page;
+    optionsToggle = () => this.page.locator("::-p-aria(Options toggle)");
+    downloadLogsMenuItem = () => this.page.locator("::-p-aria(Download logs)");
+    constructor(page) {
+        this.page = page;
+    }
+    async downloadLogs() {
+        await this.optionsToggle().click();
+        await this.downloadLogsMenuItem().click();
+    }
+}
+exports.OptionsTogglePage = OptionsTogglePage;
 
 
 /***/ }),
@@ -1557,12 +1631,7 @@ exports.ZfcpPage = ZfcpPage;
 
 "use strict";
 
-// This is an example file for running Agama integration tests using Puppeteer.
-// If the test fails it saves the page screenshot and the HTML page dump to
-// ./log/ subdirectory. For more details about customization see the README.md
-// file.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-// see https://nodejs.org/docs/latest-v20.x/api/test.html
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
@@ -1576,6 +1645,7 @@ const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/c
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const hostname_1 = __webpack_require__(/*! ./checks/hostname */ "./src/checks/hostname.ts");
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ./checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
+const download_logs_1 = __webpack_require__(/*! ./checks/download_logs */ "./src/checks/download_logs.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
@@ -1612,6 +1682,7 @@ if (options.registrationCode)
 (0, root_authentication_1.verifyPasswordStrength)();
 if (options.prepareAdvancedStorage === "zfcp")
     (0, storage_zfcp_1.prepareZfcpStorage)();
+(0, download_logs_1.downloadLogs)();
 if (options.install) {
     (0, installation_1.performInstallation)();
     (0, installation_1.checkInstallation)();
@@ -2038,6 +2109,18 @@ module.exports = require("zlib");
 /******/ 				}
 /******/ 			}
 /******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
 /******/ 		};
 /******/ 	})();
 /******/ 	
