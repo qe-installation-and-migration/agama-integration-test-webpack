@@ -102,6 +102,7 @@ const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.t
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const registration_page_1 = __webpack_require__(/*! ../pages/registration_page */ "./src/pages/registration_page.ts");
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const trust_registration_certificate_page_1 = __webpack_require__(/*! ../pages/trust_registration_certificate_page */ "./src/pages/trust_registration_certificate_page.ts");
 const trust_key_page_1 = __webpack_require__(/*! ../pages/trust_key_page */ "./src/pages/trust_key_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 function enterRegistration({ use_custom, code, provide_code, url, }) {
@@ -124,9 +125,19 @@ function enterRegistration({ use_custom, code, provide_code, url, }) {
             await productRegistration.fillCode(code);
         }
         await productRegistration.register();
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
     });
+    if (url?.startsWith("https")) {
+        (0, helpers_1.it)("should handle HTTPS certificate trust for custom registration server", async function () {
+            const trustRegistration = new trust_registration_certificate_page_1.TrustRegistrationCertificatePage(helpers_1.page);
+            strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(trustRegistration.titleText()), "Registration certificate");
+            strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(trustRegistration.questionText()), "Trying to import a self signed certificate. Do you want to trust it and register the product?");
+            strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(trustRegistration.issuerText()), "RMT Certificate Authority");
+            strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(trustRegistration.urlText(url)), url);
+            await trustRegistration.trustCertificate();
+        });
+    }
     (0, helpers_1.it)("should display product has been registered", async function () {
+        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
@@ -812,6 +823,35 @@ exports.TrustKeyPage = TrustKeyPage;
 
 /***/ }),
 
+/***/ "./src/pages/trust_registration_certificate_page.ts":
+/*!**********************************************************!*\
+  !*** ./src/pages/trust_registration_certificate_page.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.TrustRegistrationCertificatePage = void 0;
+class TrustRegistrationCertificatePage {
+    page;
+    titleText = () => this.page.locator("::-p-text(Registration certificate)");
+    questionText = () => this.page.locator("::-p-text(Do you want to trust it and register the product?)");
+    urlText = (expectedUrl) => this.page.locator(`xpath=//text()[contains(., "${expectedUrl}")]/..`);
+    issuerText = () => this.page.locator("::-p-text(RMT Certificate Authority)");
+    trustCertificateButton = () => this.page.locator("::-p-text(Trust)");
+    constructor(page) {
+        this.page = page;
+    }
+    async trustCertificate() {
+        await this.trustCertificateButton().click();
+    }
+}
+exports.TrustRegistrationCertificatePage = TrustRegistrationCertificatePage;
+
+
+/***/ }),
+
 /***/ "./src/test_custom_registration_server.ts":
 /*!************************************************!*\
   !*** ./src/test_custom_registration_server.ts ***!
@@ -820,12 +860,7 @@ exports.TrustKeyPage = TrustKeyPage;
 
 "use strict";
 
-// This is an example file for running Agama integration tests using Puppeteer.
-// If the test fails it saves the page screenshot and the HTML page dump to
-// ./log/ subdirectory. For more details about customization see the README.md
-// file.
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-// see https://nodejs.org/docs/latest-v20.x/api/test.html
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
