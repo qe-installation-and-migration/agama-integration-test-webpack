@@ -870,12 +870,14 @@ const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/c
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--use-custom-registration-server", "Enable custom registration server")
     .option("--registration-server-url <url>", "Custom registration url")
+    .option("--registration-code <code>", "Custom registration code")
     .option("--install", "Proceed to install the system (the default is not to install it"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 (0, registration_1.enterRegistration)({
     use_custom: options.useCustomRegistrationServer,
     url: options.registrationServerUrl,
+    code: options.registrationCode,
 });
 if (options.install) {
     (0, installation_1.performInstallation)();
