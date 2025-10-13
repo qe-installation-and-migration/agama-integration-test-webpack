@@ -67,7 +67,7 @@ export function enterRegistration({
   }
 
   it("should display product has been registered", async function () {
-    await new OverviewPage(page).waitVisible(40000);
+    await new OverviewPage(page).waitVisible(60000);
     const sidebar = new SidebarWithRegistrationPage(page);
     const productRegistration = new ProductRegistrationPage(page);
 

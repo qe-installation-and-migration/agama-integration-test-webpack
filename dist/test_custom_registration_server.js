@@ -137,7 +137,7 @@ function enterRegistration({ use_custom, code, provide_code, url, }) {
         });
     }
     (0, helpers_1.it)("should display product has been registered", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
+        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(60000);
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();

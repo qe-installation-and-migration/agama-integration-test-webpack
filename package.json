@@ -30,7 +30,7 @@
   "dependencies": {
     "bufferutil": "^4.0.8",
     "commander": "^12.1.0",
-    "puppeteer-core": "22.13.0",
+    "puppeteer-core": "^22.15.0",
     "utf-8-validate": "^6.0.4",
     "wait-on": "^9.0.1"
   }
