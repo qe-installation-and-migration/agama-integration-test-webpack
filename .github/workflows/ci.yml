@@ -28,6 +28,9 @@ jobs:
       - name: Build the application
         run: npm run build
 
+      - name: Create archive
+        run: tar -czf dist.tar.gz dist
+
       - name: Run ESLint
         run: npm run eslint
 
@@ -35,6 +38,6 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/*
+          files: dist.tar.gz
           tag_name: latest
           overwrite: true
