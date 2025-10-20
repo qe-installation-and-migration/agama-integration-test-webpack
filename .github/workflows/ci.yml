@@ -30,3 +30,11 @@ jobs:
 
       - name: Run ESLint
         run: npm run eslint
+
+      - name: Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
+          tag_name: latest
+          overwrite: true
