@@ -12,12 +12,14 @@
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enableEncryption = enableEncryption;
+exports.enableEncryptionDevel = enableEncryptionDevel;
 exports.verifyEncryptionEnabled = verifyEncryptionEnabled;
 exports.disableEncryption = disableEncryption;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const encryption_settings_page_1 = __webpack_require__(/*! ../pages/encryption_settings_page */ "./src/pages/encryption_settings_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 function enableEncryption(password) {
     (0, helpers_1.it)("should enable encryption", async function () {
         const storage = new storage_page_1.StoragePage(helpers_1.page);
@@ -30,6 +32,21 @@ function enableEncryption(password) {
         await encryptionSettings.fillPasswordConfirmation(password);
         await encryptionSettings.accept();
         await storage.verifyEncryptionEnabled();
+    });
+}
+function enableEncryptionDevel(password) {
+    (0, helpers_1.it)("should enable encryption", async function () {
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storageSettings.selectEncryption();
+        await storageSettings.changeEncryption();
+        await encryptionSettings.checkEncryption();
+        await encryptionSettings.fillPassword(password);
+        await encryptionSettings.fillPasswordConfirmation(password);
+        await encryptionSettings.accept();
+        await storageSettings.verifyEncryptionEnabled();
     });
 }
 function verifyEncryptionEnabled() {
@@ -206,6 +223,7 @@ function parse(callback) {
     // define the command line arguments and parse them
     const prg = commander_1.program
         .description("Run a simple Agama integration test")
+        .option("--devel", "Target Agama version")
         .option("-u, --url <url>", "Agama server URL", "http://localhost")
         .option("-p, --password <password>", "Agama login password", "linux")
         .addOption(new commander_1.Option("-b, --browser <browser>", "Browser used for running the test")
@@ -788,6 +806,69 @@ exports.StoragePage = StoragePage;
 
 /***/ }),
 
+/***/ "./src/pages/storage_settings_page.ts":
+/*!********************************************!*\
+  !*** ./src/pages/storage_settings_page.ts ***!
+  \********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageSettingsPage = void 0;
+const assert_1 = __importDefault(__webpack_require__(/*! assert */ "assert"));
+class StorageSettingsPage {
+    page;
+    selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
+    encryptionTab = () => this.page.locator("::-p-text(Encryption)");
+    changeEncryptionButton = () => this.page.locator("span::-p-text(Change)");
+    encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
+    encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
+    manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
+    ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
+    addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
+    constructor(page) {
+        this.page = page;
+    }
+    async selectMoreDevices() {
+        await this.selectMoreDevicesButton().click();
+    }
+    async addLvmVolumeGroup() {
+        await this.addLvmVolumeLink().click();
+    }
+    async selectEncryption() {
+        await this.encryptionTab().click();
+    }
+    async changeEncryption() {
+        await this.changeEncryptionButton().click();
+    }
+    async verifyEncryptionEnabled() {
+        await this.encryptionIsEnabledText().wait();
+    }
+    async verifyEncryptionDisabled() {
+        const elementText = await this.encryptionIsDisabledText()
+            .map((span) => span.textContent)
+            .wait();
+        await assert_1.default.deepEqual(elementText, "Encryption is disabled");
+    }
+    async manageDasd() {
+        await this.manageDasdLink().click();
+    }
+    async activateZfcp() {
+        await this.ActivateZfcpLink().click();
+    }
+    async waitForElement(element, timeout) {
+        await this.page.locator(element).setTimeout(timeout).wait();
+    }
+}
+exports.StorageSettingsPage = StorageSettingsPage;
+
+
+/***/ }),
+
 /***/ "./src/test_encrypted.ts":
 /*!*******************************!*\
   !*** ./src/test_encrypted.ts ***!
@@ -811,7 +892,12 @@ const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/c
 const options = (0, cmdline_1.parse)((cmd) => cmd.option("--install", "Proceed to install the system (the default is not to install it)"));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
-(0, encryption_1.enableEncryption)(options.password);
+if (options.devel) {
+    (0, encryption_1.enableEncryptionDevel)(options.password);
+}
+else {
+    (0, encryption_1.enableEncryption)(options.password);
+}
 if (options.install) {
     (0, installation_1.performInstallation)();
     (0, installation_1.finishInstallation)();
