@@ -123,6 +123,7 @@ function parse(callback) {
     // define the command line arguments and parse them
     const prg = commander_1.program
         .description("Run a simple Agama integration test")
+        .option("--devel", "Target Agama version")
         .option("-u, --url <url>", "Agama server URL", "http://localhost")
         .option("-p, --password <password>", "Agama login password", "linux")
         .addOption(new commander_1.Option("-b, --browser <browser>", "Browser used for running the test")
