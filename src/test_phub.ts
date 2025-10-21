@@ -2,7 +2,7 @@ import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
-import { registerPackageHub } from "./checks/registration";
+import { enterExtensionRegistrationPHub } from "./checks/registration";
 import { selectPatterns } from "./checks/software_selection";
 import { performInstallation, finishInstallation } from "./checks/installation";
 
@@ -14,7 +14,7 @@ const options = parse((cmd) =>
 
 test_init(options);
 logIn(options.password);
-registerPackageHub();
+enterExtensionRegistrationPHub();
 selectPatterns(options.patterns);
 performInstallation();
 finishInstallation();

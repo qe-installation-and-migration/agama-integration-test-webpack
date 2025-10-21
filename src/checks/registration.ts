@@ -2,29 +2,28 @@ import { it, page, getTextContent } from "../lib/helpers";
 import { OverviewPage } from "../pages/overview_page";
 import {
   ProductRegistrationPage,
-  ExtensionHaRegistrationPage,
   CustomRegistrationPage,
-  ExtensionPhubRegistrationPage,
-} from "../pages/registration_page";
+} from "../pages/product_registration_page";
+import { ExtensionRegistrationPHubPage } from "../pages/extension_registration_phub_page";
+import { ExtensionRegistrationHAPage } from "../pages/extension_registration_ha_page";
 import assert from "node:assert/strict";
 
 import { TrustRegistrationCertificatePage } from "../pages/trust_registration_certificate_page";
-import { TrustKeyPage } from "../pages/trust_key_page";
 import { SidebarWithRegistrationPage } from "../pages/sidebar_page";
 
-interface RegistratinOptions {
+interface RegistrationOptions {
   use_custom?: string;
   code?: string;
   provide_code?: string;
   url?: string;
 }
 
-export function enterRegistration({
+export function enterProductRegistration({
   use_custom,
   code,
   provide_code,
   url,
-}: RegistratinOptions): void {
+}: RegistrationOptions): void {
   it("should allow setting registration", async function () {
     const sidebar = new SidebarWithRegistrationPage(page);
     const productRegistration = new ProductRegistrationPage(page);
@@ -76,36 +75,35 @@ export function enterRegistration({
   });
 }
 
-export function enterRegistrationHa(code: string) {
-  it("should allow setting registration HA", async function () {
+export function enterExtensionRegistrationHA(code: string) {
+  it("should allow registering HA extension", async function () {
     const sidebar = new SidebarWithRegistrationPage(page);
-    const extensionRegistration = new ExtensionHaRegistrationPage(page);
+    const extensionRegistrationHA = new ExtensionRegistrationHAPage(page);
 
     await sidebar.goToRegistration();
-    await extensionRegistration.fillCode(code);
-    await extensionRegistration.register();
+    await extensionRegistrationHA.fillCode(code);
+    await extensionRegistrationHA.register();
     assert.match(
-      await getTextContent(extensionRegistration.extensionRegisteredText()),
+      await getTextContent(extensionRegistrationHA.extensionRegisteredText()),
       /The extension has been registered/,
     );
   });
 }
 
-export function registerPackageHub() {
-  it("should allow register PackageHub", async function () {
+export function enterExtensionRegistrationPHub() {
+  it("should allow registering Package Hub extension", async function () {
     const sidebar = new SidebarWithRegistrationPage(page);
-    const extensionRegistration = new ExtensionPhubRegistrationPage(page);
-    const packagehubTrustKey = new TrustKeyPage(page);
+    const extensionRegistrationPHub = new ExtensionRegistrationPHubPage(page);
 
     await sidebar.goToRegistration();
-    await extensionRegistration.register();
+    await extensionRegistrationPHub.register();
     assert.match(
-      await getTextContent(packagehubTrustKey.trustKeyText()),
+      await getTextContent(extensionRegistrationPHub.trustKeyText()),
       /is unknown. Do you want to trust this key?/,
     );
-    await packagehubTrustKey.trustKey();
+    await extensionRegistrationPHub.trustKey();
     assert.deepEqual(
-      await getTextContent(extensionRegistration.extensionRegisteredText()),
+      await getTextContent(extensionRegistrationPHub.registeredText()),
       "The extension was registered without any registration code.",
     );
   });
