@@ -42,14 +42,14 @@ export class SetARootPasswordPage {
     const elementText = await this.alertPasswordLess8Characters()
       .map((span) => span.textContent)
       .wait();
-    await assert.deepEqual(elementText, "Warning alert:The password is shorter than 8 characters");
+    await assert.deepEqual(elementText, "The password is shorter than 8 characters");
   }
 
   async verifyPasswordIsWeak() {
     const elementText = await this.alertPasswordIsWeak()
       .map((span) => span.textContent)
       .wait();
-    await assert.deepEqual(elementText, "Warning alert:The password is weak");
+    await assert.deepEqual(elementText, "The password is weak");
   }
 
   async verifyPasswordFailDictionaryCheck() {
@@ -58,7 +58,7 @@ export class SetARootPasswordPage {
       .wait();
     await assert.deepEqual(
       elementText,
-      "Warning alert:The password fails the dictionary check - it is too simplistic/systematic",
+      "The password fails the dictionary check - it is too simplistic/systematic",
     );
   }
 

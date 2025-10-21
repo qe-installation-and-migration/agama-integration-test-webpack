@@ -73,14 +73,20 @@ exports.disableEncryption = disableEncryption;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const encryption_settings_page_1 = __webpack_require__(/*! ../pages/encryption_settings_page */ "./src/pages/encryption_settings_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 function enableEncryption(password) {
     (0, helpers_1.it)("should enable encryption", async function () {
-        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
+<<<<<<< HEAD
+        await storage.selectEncryption();
+        await storage.changeEncryption();
+=======
+        await storage.selectEncryptionTab();
         await storage.editEncryption();
+>>>>>>> 189792-adapt-interactive-extended
         await encryptionSettings.checkEncryption();
         await encryptionSettings.fillPassword(password);
         await encryptionSettings.fillPasswordConfirmation(password);
@@ -91,18 +97,24 @@ function enableEncryption(password) {
 function verifyEncryptionEnabled() {
     (0, helpers_1.it)("should verify that encryption is enabled", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         await sidebar.goToStorage();
         await storage.verifyEncryptionEnabled();
     });
 }
 function disableEncryption() {
     (0, helpers_1.it)("should disable encryption", async function () {
-        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
+<<<<<<< HEAD
+        await storage.selectEncryption();
+        await storage.changeEncryption();
+=======
+        await storage.selectEncryptionTab();
         await storage.editEncryption();
+>>>>>>> 189792-adapt-interactive-extended
         await encryptionSettings.uncheckEncryption();
         await encryptionSettings.accept();
         await storage.verifyEncryptionDisabled();
@@ -460,13 +472,18 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.verifyDecryptDestructiveActions = verifyDecryptDestructiveActions;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+const storage_result_page_1 = __webpack_require__(/*! ../pages/storage_result_page */ "./src/pages/storage_result_page.ts");
 function verifyDecryptDestructiveActions(destructiveActions) {
     (0, helpers_1.it)("should display a list of destructive actions", async function () {
         await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
-        await new storage_page_1.StoragePage(helpers_1.page).expandDestructiveActionsList();
+<<<<<<< HEAD
+        await new storage_result_page_1.StorageResultPage(helpers_1.page).expandDestructiveActionsList();
+=======
+        //await new StoragePage(page).expandDestructiveActionsList();
+        await new storage_page_1.StoragePage(helpers_1.page).scrollToDestructiveActionsList();
+>>>>>>> 189792-adapt-interactive-extended
         for (const action of destructiveActions) {
-            await new storage_page_1.StoragePage(helpers_1.page).verifyDestructiveAction(action);
+            await new storage_result_page_1.StorageResultPage(helpers_1.page).verifyDestructiveAction(action);
         }
     });
 }
@@ -486,11 +503,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareZfcpStorage = prepareZfcpStorage;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
 function prepareZfcpStorage() {
     (0, helpers_1.it)("should prepare zFCP storage", async function () {
-        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
@@ -1393,19 +1410,19 @@ class SetARootPasswordPage {
         const elementText = await this.alertPasswordLess8Characters()
             .map((span) => span.textContent)
             .wait();
-        await strict_1.default.deepEqual(elementText, "Warning alert:The password is shorter than 8 characters");
+        await strict_1.default.deepEqual(elementText, "The password is shorter than 8 characters");
     }
     async verifyPasswordIsWeak() {
         const elementText = await this.alertPasswordIsWeak()
             .map((span) => span.textContent)
             .wait();
-        await strict_1.default.deepEqual(elementText, "Warning alert:The password is weak");
+        await strict_1.default.deepEqual(elementText, "The password is weak");
     }
     async verifyPasswordFailDictionaryCheck() {
         const elementText = await this.alertPasswordFailDictionaryCheck()
             .map((span) => span.textContent)
             .wait();
-        await strict_1.default.deepEqual(elementText, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
+        await strict_1.default.deepEqual(elementText, "The password fails the dictionary check - it is too simplistic/systematic");
     }
     async usePassword() {
         await this.usePasswordToggle().click();
@@ -1508,10 +1525,39 @@ exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 /***/ }),
 
-/***/ "./src/pages/storage_page.ts":
-/*!***********************************!*\
-  !*** ./src/pages/storage_page.ts ***!
-  \***********************************/
+/***/ "./src/pages/storage_result_page.ts":
+/*!******************************************!*\
+  !*** ./src/pages/storage_result_page.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageResultPage = void 0;
+class StorageResultPage {
+    page;
+    destructiveActionsList = () => this.page.locator("::-p-text(Check)");
+    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
+    constructor(page) {
+        this.page = page;
+    }
+    async expandDestructiveActionsList() {
+        await this.destructiveActionsList().click();
+    }
+    async verifyDestructiveAction(action) {
+        await this.destructiveActionText(action).wait();
+    }
+}
+exports.StorageResultPage = StorageResultPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/storage_settings_page.ts":
+/*!********************************************!*\
+  !*** ./src/pages/storage_settings_page.ts ***!
+  \********************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -1520,19 +1566,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StoragePage = void 0;
+exports.StorageSettingsPage = void 0;
 const assert_1 = __importDefault(__webpack_require__(/*! assert */ "assert"));
-class StoragePage {
+class StorageSettingsPage {
     page;
     selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
-    editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
+    encryptionTab = () => this.page.locator("::-p-text(Encryption)");
+    changeEncryptionButton = () => this.page.locator("span::-p-text(Change)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
     addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
-    destructiveActionsList = () => this.page.locator("::-p-text(Check)");
-    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
     constructor(page) {
         this.page = page;
     }
@@ -1542,8 +1587,11 @@ class StoragePage {
     async addLvmVolumeGroup() {
         await this.addLvmVolumeLink().click();
     }
-    async editEncryption() {
-        await this.editEncryptionButton().click();
+    async selectEncryption() {
+        await this.encryptionTab().click();
+    }
+    async changeEncryption() {
+        await this.changeEncryptionButton().click();
     }
     async verifyEncryptionEnabled() {
         await this.encryptionIsEnabledText().wait();
@@ -1563,14 +1611,8 @@ class StoragePage {
     async waitForElement(element, timeout) {
         await this.page.locator(element).setTimeout(timeout).wait();
     }
-    async expandDestructiveActionsList() {
-        await this.destructiveActionsList().click();
-    }
-    async verifyDestructiveAction(action) {
-        await this.destructiveActionText(action).wait();
-    }
 }
-exports.StoragePage = StoragePage;
+exports.StorageSettingsPage = StorageSettingsPage;
 
 
 /***/ }),

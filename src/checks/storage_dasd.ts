@@ -1,11 +1,11 @@
 import { it, page, sleep } from "../lib/helpers";
 import { SidebarPage } from "../pages/sidebar_page";
-import { StoragePage } from "../pages/storage_page";
+import { StorageSettingsPage } from "../pages/storage_settings_page";
 import { DasdPage } from "../pages/dasd_page";
 
 export function prepareDasdStorage() {
   it("should prepare DASD storage", async function () {
-    const storage = new StoragePage(page);
+    const storage = new StorageSettingsPage(page);
     const dasd = new DasdPage(page);
     const sidebar = new SidebarPage(page);
 
