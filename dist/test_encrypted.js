@@ -738,6 +738,8 @@ const assert_1 = __importDefault(__webpack_require__(/*! assert */ "assert"));
 class StoragePage {
     page;
     selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
+    changeButton = () => this.page.locator("::-p-text(Change)");
+    selectDiskToInstallButton = () => this.page.locator("::-p-text(Select a disk to install the system)");
     editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
@@ -746,17 +748,30 @@ class StoragePage {
     addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
     destructiveActionsList = () => this.page.locator("::-p-text(Check)");
     destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
+    alertFailedCalculateStorageLayout = () => this.page.locator("::-p-text(Failed to calculate a storage layout)");
     constructor(page) {
         this.page = page;
     }
     async selectMoreDevices() {
         await this.selectMoreDevicesButton().click();
     }
+    async changeDevice() {
+        await this.changeButton().click();
+    }
+    async selectAnotherDisk() {
+        await this.selectDiskToInstallButton().click();
+    }
     async addLvmVolumeGroup() {
         await this.addLvmVolumeLink().click();
     }
     async editEncryption() {
         await this.editEncryptionButton().click();
+    }
+    async verifySpaceAllocationFailed() {
+        const elementText = await this.alertFailedCalculateStorageLayout()
+            .map((span) => span.textContent)
+            .wait();
+        await assert_1.default.match(elementText, /Warning alert:Failed to calculate a storage layout/);
     }
     async verifyEncryptionEnabled() {
         await this.encryptionIsEnabledText().wait();
