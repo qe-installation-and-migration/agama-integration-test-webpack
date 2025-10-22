@@ -52,11 +52,17 @@ function readTable() {
         const storageResult = new storage_result_page_1.StorageResultPage(helpers_1.page);
         await sidebar.goToStorage();
         await storageResult.waitVisible();
-        console.log(await (0, table_1.readCellbyRowSelection)(helpers_1.page, storageResult.resultTableSelector, "Mount Point", "/", "Size"));
-        const cell = await (0, table_1.getCellbyRowSelection)(helpers_1.page, storageResult.resultTableSelector, "Device", "vda1", "Details");
+        console.log(await (0, table_1.readCellbyRowSelection)(helpers_1.page, storageResult.resultTableSelector, "Mount Point", "swap", "Size"));
+        // const cell = await getCellbyRowSelection(
+        //   page,
+        //   storageResult.resultTableSelector,
+        //   "Device",
+        //   "vda1",
+        //   "Details"
+        // );
         // console.log(await cell.evaluate((node: Element) => node.textContent));
         // (await cell.waitForSelector("button")).click();
-        cell.click();
+        // cell.click();
         await (0, helpers_1.sleep)(2000);
     });
 }

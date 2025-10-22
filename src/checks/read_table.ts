@@ -15,21 +15,21 @@ export function readTable() {
         page,
         storageResult.resultTableSelector,
         "Mount Point",
-        "/",
+        "swap",
         "Size",
       ),
     );
 
-    const cell = await getCellbyRowSelection(
-      page,
-      storageResult.resultTableSelector,
-      "Device",
-      "vda1",
-      "Details"
-    );
+    // const cell = await getCellbyRowSelection(
+    //   page,
+    //   storageResult.resultTableSelector,
+    //   "Device",
+    //   "vda1",
+    //   "Details"
+    // );
     // console.log(await cell.evaluate((node: Element) => node.textContent));
     // (await cell.waitForSelector("button")).click();
-    cell.click();
+    // cell.click();
 
     await sleep(2000);
   });
