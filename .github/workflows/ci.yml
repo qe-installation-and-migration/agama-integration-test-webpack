@@ -6,6 +6,8 @@ on: ["push", "pull_request", "workflow_dispatch"]
 jobs:
   ci:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     strategy:
       matrix:
@@ -44,7 +46,7 @@ jobs:
 
       - name: Create PR release
         if: github.event_name == 'pull_request'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: "Build for PR #${{ github.event.pull_request.number }} by @${{ github.actor }}"
           tag_name: ${{ steps.pr_release_tag.outputs.tag_name }}
@@ -54,7 +56,7 @@ jobs:
 
       - name: Release on merge to main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: dist.tar.gz
           tag_name: latest
