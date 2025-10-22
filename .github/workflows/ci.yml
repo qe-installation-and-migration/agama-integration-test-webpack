@@ -7,6 +7,7 @@ permissions:
 
 jobs:
   ci:
+    permissions: write-all
     runs-on: ubuntu-latest
 
     strategy:
