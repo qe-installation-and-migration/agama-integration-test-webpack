@@ -39,5 +39,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: dist.tar.gz
-          tag_name: latest
+          tag_name: ${{ github.ref == 'refs/heads/main' && 'latest' || format('latest-{0}', github.ref_name) }}
           overwrite: true
