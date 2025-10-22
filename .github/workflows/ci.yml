@@ -28,16 +28,34 @@ jobs:
       - name: Build the application
         run: npm run build
 
-      - name: Create archive
-        run: tar -czf dist.tar.gz dist
-
       - name: Run ESLint
         run: npm run eslint
 
-      - name: Release
-        if: github.event_name == 'push'
+      - name: Create archive
+        run: tar -czf dist.tar.gz dist
+
+      - name: Set PR release tag
+        if: github.event_name == 'pull_request'
+        id: pr_release_tag
+        run: |
+          head_ref=${{ github.head_ref }}
+          sanitized_head_ref=$(echo "$head_ref" | sed 's|/|-|g')
+          echo "tag_name=pr-${{ github.actor }}-${sanitized_head_ref}" >> $GITHUB_OUTPUT
+
+      - name: Create PR release
+        if: github.event_name == 'pull_request'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "Build for PR #${{ github.event.pull_request.number }} by @${{ github.actor }}"
+          tag_name: ${{ steps.pr_release_tag.outputs.tag_name }}
+          files: dist.tar.gz
+          prerelease: true
+          overwrite: true
+
+      - name: Release on merge to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v1
         with:
           files: dist.tar.gz
-          tag_name: ${{ github.ref == 'refs/heads/main' && 'latest' || format('latest-{0}', github.ref_name) }}
+          tag_name: latest
           overwrite: true
