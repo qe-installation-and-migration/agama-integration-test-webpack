@@ -42,7 +42,7 @@ export class SetARootPasswordPage {
     const elementText = await this.alertPasswordLess8Characters()
       .map((span) => span.textContent)
       .wait();
-    await assert.deepEqual(elementText, "Warning alert:The password is shorter than 8 characters");
+    assert.deepEqual(elementText, "Warning alert:The password is shorter than 8 characters");
   }
 
   async verifyPasswordIsWeak() {
