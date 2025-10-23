@@ -2,13 +2,12 @@ name: CI
 
 # allow also running manually
 on: ["push", "pull_request", "workflow_dispatch"]
-permissions:
-  contents: write
 
 jobs:
   ci:
-    permissions: write-all
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     strategy:
       matrix:
