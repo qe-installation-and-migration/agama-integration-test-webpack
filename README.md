@@ -4,6 +4,7 @@ This is experimental repository for compiling the
 [Agama](https://github.com/agama-project/agama) integration tests and bundling
 all dependencies into a single file.
 
+## For dummy
 ## Advantages
 
 - Puppeteer and it's dependencies are not needed on the Live ISO
