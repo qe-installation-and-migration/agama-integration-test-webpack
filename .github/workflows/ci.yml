@@ -36,28 +36,24 @@ jobs:
       - name: Create archive
         run: tar -czf dist.tar.gz dist
 
-      - name: Set PR release tag
-        if: github.event_name == 'pull_request'
-        id: pr_release_tag
-        run: |
-          head_ref=${{ github.head_ref }}
-          sanitized_head_ref=$(echo "$head_ref" | sed 's|/|-|g')
-          echo "tag_name=pr-${{ github.actor }}-${sanitized_head_ref}" >> $GITHUB_OUTPUT
-
-      - name: Create PR release
-        if: github.event_name == 'pull_request'
+      - name: Create commit release on the Fork
+        if: github.event_name == 'push'
         uses: softprops/action-gh-release@v2
-        with:
-          name: "Build for PR #${{ github.event.pull_request.number }} by @${{ github.actor }}"
-          tag_name: ${{ steps.pr_release_tag.outputs.tag_name }}
+        with:          
+          # This is the key that tells the action where to create the release:
+          # It defaults to ${{ github.repository }}, which, for a fork PR,
+          # is the fork itself: owner/fork-name.
+          repository: ${{ github.repository }} 
+
+          tag_name: tag_${{ github.ref_name }} # Use the PR branch name as the tag
+          name: "Build for commit ${{ github.sha }}"
           files: dist.tar.gz
-          prerelease: true
-          overwrite: true
+          overwrite_files: true
 
       - name: Release on merge to main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
           files: dist.tar.gz
-          tag_name: latest
-          overwrite: true
+          tag_name: main
+          overwrite_files: true
