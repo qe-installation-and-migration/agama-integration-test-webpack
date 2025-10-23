@@ -68,6 +68,8 @@ https://www.nearform.com/insights/writing-a-node-js-test-reporter/).
 The test currently accepts several optional arguments, run
 `./dist/test_root_password.js --help`:
 
+
+
 ```
 Usage: test_root_password [options]
 Run a simple Agama integration test
