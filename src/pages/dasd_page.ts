@@ -1,4 +1,4 @@
-import { type Page } from "puppeteer-core";
+import { Locator, type Page } from "puppeteer-core";
 
 export class DasdPage {
   private readonly page: Page;
@@ -13,8 +13,18 @@ export class DasdPage {
 
   private readonly backButton = () => this.page.locator("button::-p-text(Back)");
 
+  private readonly selectAllRowsCheckbox: Locator<Element>;
+
+  public readonly deviceTableSelector: string;
+
   constructor(page: Page) {
     this.page = page;
+    this.deviceTableSelector = 'table[data-type="agama/expandable-selector"]';
+    this.selectAllRowsCheckbox = this.page.locator('table[data-type="agama/expandable-selector"] thead input[name="check-all"]');
+  }
+
+  async selectAllRows() {
+    await this.selectAllRowsCheckbox.click();
   }
 
   async activateDevice() {
