@@ -48,12 +48,12 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: softprops/action-gh-release@v2
         with:
+          token: ${{ secrets.RELEASE_TOKEN }}
           name: "Build for PR #${{ github.event.pull_request.number }} by @${{ github.actor }}"
           tag_name: ${{ steps.pr_release_tag.outputs.tag_name }}
           files: dist.tar.gz
           prerelease: true
           overwrite: true
-        token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release on merge to main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
