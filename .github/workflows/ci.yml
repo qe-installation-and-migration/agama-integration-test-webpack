@@ -34,18 +34,17 @@ jobs:
         run: npm run eslint
 
       - name: Create archive
+        if: github.event_name == 'push'
         run: tar -czf dist.tar.gz dist
 
-      - name: Create commit release on the Fork
-        if: github.event_name == 'push'
+      - name: Release on push to branch from fork
+        if: github.event_name == 'push' && github.ref != 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:          
-          # This is the key that tells the action where to create the release:
-          # It defaults to ${{ github.repository }}, which, for a fork PR,
-          # is the fork itself: owner/fork-name.
+          # for a fork PR is the fork itself: owner/fork-name
           repository: ${{ github.repository }} 
 
-          tag_name: tag_${{ github.ref_name }} # Use the PR branch name as the tag
+          tag_name: ${{ github.ref_name }} # Use the PR branch name as the tag
           name: "Build for commit ${{ github.sha }}"
           files: dist.tar.gz
           overwrite_files: true
