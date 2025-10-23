@@ -65,7 +65,7 @@ To use the TAP output format, use the `--test-reporter` Node.js option:
 Alternatively it is possible to implement [own test reporter](
 https://www.nearform.com/insights/writing-a-node-js-test-reporter/).
 
-The test currently accepts several optional arguments, run
+The test currently accepts several optional arguments, run the following command
 `./dist/test_root_password.js --help`:
 
 ```
