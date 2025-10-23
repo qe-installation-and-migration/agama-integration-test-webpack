@@ -53,7 +53,6 @@ jobs:
           tag_name: ${{ steps.pr_release_tag.outputs.tag_name }}
           files: dist.tar.gz
           prerelease: true
-          overwrite: true
 
       - name: Release on merge to main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
