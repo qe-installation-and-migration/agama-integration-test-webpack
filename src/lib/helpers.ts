@@ -57,6 +57,7 @@ export async function startBrowser(
     headless,
     ignoreHTTPSErrors: true,
     timeout: 30000,
+    protocolTimeout: 350000,
     slowMo,
     defaultViewport: {
       width: 1280,

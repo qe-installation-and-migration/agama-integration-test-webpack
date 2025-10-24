@@ -4,6 +4,7 @@ import { type Page } from "puppeteer-core";
 export class StoragePage {
   private readonly page: Page;
   private readonly selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
+  private readonly otherOptionsButton = () => this.page.locator("::-p-aria(Other options toggle)");
 
   private readonly editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
   private readonly encryptionIsEnabledText = () =>
@@ -13,6 +14,8 @@ export class StoragePage {
     this.page.locator("::-p-text(Encryption is disabled)");
 
   private readonly manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
+
+  private readonly configureDasdLink = () => this.page.locator("::-p-text(Configure DASD)");
 
   private readonly ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
 
@@ -51,6 +54,11 @@ export class StoragePage {
 
   async manageDasd() {
     await this.manageDasdLink().click();
+  }
+
+  async configureDasd() {
+    await this.otherOptionsButton().click();
+    await this.configureDasdLink().click();
   }
 
   async activateZfcp() {
