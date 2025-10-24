@@ -2,7 +2,6 @@ import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
 import { createFirstUser } from "./checks/first_user";
-import { decryptDevice } from "./checks/decryption";
 import { editRootUser, verifyPasswordStrength } from "./checks/root_authentication";
 import { enableEncryption, verifyEncryptionEnabled, disableEncryption } from "./checks/encryption";
 import { enterProductRegistration } from "./checks/registration";
@@ -11,7 +10,6 @@ import { performInstallation, checkInstallation, finishInstallation } from "./ch
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { productSelection, productSelectionWithLicense } from "./checks/product_selection";
 import { setPermanentHostname } from "./checks/hostname";
-import { verifyDecryptDestructiveActions } from "./checks/storage_result_destructive_actions_planned";
 import { downloadLogs } from "./checks/download_logs";
 
 // parse options from the command line
@@ -40,8 +38,6 @@ logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
-decryptDevice(options.decryptPassword);
-verifyDecryptDestructiveActions(options.destructiveActions);
 if (options.staticHostname) setPermanentHostname(options.staticHostname);
 enableEncryption(options.password);
 if (options.registrationCode)
