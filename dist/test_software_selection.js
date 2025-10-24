@@ -113,6 +113,38 @@ function selectPatterns(patterns) {
 
 /***/ }),
 
+/***/ "./src/checks/storage_dasd.ts":
+/*!************************************!*\
+  !*** ./src/checks/storage_dasd.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.prepareDasdStorage = prepareDasdStorage;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+const dasd_page_1 = __webpack_require__(/*! ../pages/dasd_page */ "./src/pages/dasd_page.ts");
+function prepareDasdStorage() {
+    (0, helpers_1.it)("should prepare DASD storage", async function () {
+        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const dasd = new dasd_page_1.DasdPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.manageDasd();
+        await dasd.activateDevice();
+        await dasd.formatDevice();
+        await dasd.waitFormattingDevice();
+        await dasd.back();
+        await storage.waitForElement("::-p-text(Installation Devices)", 60000);
+    }, 6 * 60 * 1000);
+}
+
+
+/***/ }),
+
 /***/ "./src/lib/cmdline.ts":
 /*!****************************!*\
   !*** ./src/lib/cmdline.ts ***!
@@ -302,7 +334,9 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         headless,
         ignoreHTTPSErrors: true,
         timeout: 30000,
+        protocolTimeout: 350000,
         slowMo,
+        devtools: true,
         defaultViewport: {
             width: 1280,
             height: 800,
@@ -510,6 +544,60 @@ exports.CongratulationPage = CongratulationPage;
 
 /***/ }),
 
+/***/ "./src/pages/dasd_page.ts":
+/*!********************************!*\
+  !*** ./src/pages/dasd_page.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DasdPage = void 0;
+class DasdPage {
+    page;
+    selectRow = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
+    actionsForDisk = () => this.page.locator("xpath/descendant-or-self::button[starts-with(@aria-label, 'Actions for')]");
+    activateDisk = () => this.page
+        .locator('button[role="menuitem"]')
+        .filter((item) => item.getAttribute("tabindex") === "0");
+    checkActiveDisk = () => this.page.locator("table tbody tr:nth-child(1) td:nth-child(4)");
+    formatDiskButton = () => this.page.locator("button::-p-text(Format)");
+    formatNowDiskButton = () => this.page.locator("::-p-text(Format now)");
+    formattingDasdText = () => this.page.locator("::-p-text(Formatting DASD devices)");
+    backButton = () => this.page.locator("button::-p-text(Back)");
+    constructor(page) {
+        this.page = page;
+    }
+    async activateDevice() {
+        await this.actionsForDisk().click();
+        await this.activateDisk().click();
+        await this.page.waitForFunction((selector, text) => {
+            const element = document.querySelector(selector);
+            return element && element.textContent.trim() !== text;
+        }, { timeout: 5000 }, "table tbody tr:nth-child(1) td:nth-child(4)", "offline");
+    }
+    async formatDevice() {
+        await this.selectRow(0).click();
+        await this.formatDiskButton().click();
+        await this.formatNowDiskButton().click();
+    }
+    async waitFormattingDevice() {
+        await this.formattingDasdText().wait();
+        await this.page.waitForSelector('div[role="dialog"][aria-modal="true"]', {
+            hidden: true,
+            timeout: 5 * 60 * 1000,
+        });
+    }
+    async back() {
+        await this.backButton().click();
+    }
+}
+exports.DasdPage = DasdPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/installation_page.ts":
 /*!****************************************!*\
   !*** ./src/pages/installation_page.ts ***!
@@ -711,6 +799,79 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 
 /***/ }),
 
+/***/ "./src/pages/storage_page.ts":
+/*!***********************************!*\
+  !*** ./src/pages/storage_page.ts ***!
+  \***********************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StoragePage = void 0;
+const assert_1 = __importDefault(__webpack_require__(/*! assert */ "assert"));
+class StoragePage {
+    page;
+    selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
+    otherOptionsButton = () => this.page.locator("::-p-aria(Other options toggle)");
+    editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
+    encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
+    encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
+    manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
+    configureDasdLink = () => this.page.locator("::-p-text(Configure DASD)");
+    ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
+    addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
+    destructiveActionsList = () => this.page.locator("::-p-text(Check)");
+    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
+    constructor(page) {
+        this.page = page;
+    }
+    async selectMoreDevices() {
+        await this.selectMoreDevicesButton().click();
+    }
+    async addLvmVolumeGroup() {
+        await this.addLvmVolumeLink().click();
+    }
+    async editEncryption() {
+        await this.editEncryptionButton().click();
+    }
+    async verifyEncryptionEnabled() {
+        await this.encryptionIsEnabledText().wait();
+    }
+    async verifyEncryptionDisabled() {
+        const elementText = await this.encryptionIsDisabledText()
+            .map((span) => span.textContent)
+            .wait();
+        await assert_1.default.deepEqual(elementText, "Encryption is disabled");
+    }
+    async manageDasd() {
+        await this.manageDasdLink().click();
+    }
+    async configureDasd() {
+        await this.otherOptionsButton().click();
+        await this.configureDasdLink().click();
+    }
+    async activateZfcp() {
+        await this.ActivateZfcpLink().click();
+    }
+    async waitForElement(element, timeout) {
+        await this.page.locator(element).setTimeout(timeout).wait();
+    }
+    async expandDestructiveActionsList() {
+        await this.destructiveActionsList().click();
+    }
+    async verifyDestructiveAction(action) {
+        await this.destructiveActionText(action).wait();
+    }
+}
+exports.StoragePage = StoragePage;
+
+
+/***/ }),
+
 /***/ "./src/test_software_selection.ts":
 /*!****************************************!*\
   !*** ./src/test_software_selection.ts ***!
@@ -727,17 +888,22 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
+const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
 const software_selection_1 = __webpack_require__(/*! ./checks/software_selection */ "./src/checks/software_selection.ts");
+const storage_dasd_1 = __webpack_require__(/*! ./checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--patterns <pattern>...", "comma-separated list of patterns", cmdline_1.commaSeparatedList)
-    .option("--install", "Proceed to install the system (the default is not to install it)"));
+    .option("--install", "Proceed to install the system (the default is not to install it)")
+    .addOption(new commander_1.Option("--prepare-advanced-storage <storage-type>", "Prepare advance storage for installation").choices(["dasd", "zfcp"])));
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
 if (options.patterns)
     (0, software_selection_1.selectPatterns)(options.patterns);
+if (options.prepareAdvancedStorage === "dasd")
+    (0, storage_dasd_1.prepareDasdStorage)();
 if (options.install) {
     (0, installation_1.performInstallation)();
     (0, installation_1.finishInstallation)();

@@ -355,7 +355,9 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         headless,
         ignoreHTTPSErrors: true,
         timeout: 30000,
+        protocolTimeout: 350000,
         slowMo,
+        devtools: true,
         defaultViewport: {
             width: 1280,
             height: 800,
@@ -792,10 +794,12 @@ const assert_1 = __importDefault(__webpack_require__(/*! assert */ "assert"));
 class StoragePage {
     page;
     selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
+    otherOptionsButton = () => this.page.locator("::-p-aria(Other options toggle)");
     editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
+    configureDasdLink = () => this.page.locator("::-p-text(Configure DASD)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
     addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
     destructiveActionsList = () => this.page.locator("::-p-text(Check)");
@@ -823,6 +827,10 @@ class StoragePage {
     }
     async manageDasd() {
         await this.manageDasdLink().click();
+    }
+    async configureDasd() {
+        await this.otherOptionsButton().click();
+        await this.configureDasdLink().click();
     }
     async activateZfcp() {
         await this.ActivateZfcpLink().click();
