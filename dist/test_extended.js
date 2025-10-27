@@ -2,32 +2,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/checks/decryption.ts":
-/*!**********************************!*\
-  !*** ./src/checks/decryption.ts ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.decryptDevice = decryptDevice;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const encrypted_device_page_1 = __webpack_require__(/*! ../pages/encrypted_device_page */ "./src/pages/encrypted_device_page.ts");
-const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
-function decryptDevice(password) {
-    (0, helpers_1.it)("Should decrypt encrypted device", async function () {
-        const storageDecryption = new encrypted_device_page_1.EncryptedDevice(helpers_1.page);
-        await storageDecryption.decrypt(password, 3 * 60 * 1000);
-    });
-    (0, helpers_1.it)("should display Overview", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/download_logs.ts":
 /*!*************************************!*\
   !*** ./src/checks/download_logs.ts ***!
@@ -442,32 +416,6 @@ function verifyPasswordStrength() {
         await setARootPassword.verifyPasswordIsWeak();
         await setARootPassword.fillPassword("a23b5678");
         await setARootPassword.verifyPasswordFailDictionaryCheck();
-    });
-}
-
-
-/***/ }),
-
-/***/ "./src/checks/storage_result_destructive_actions_planned.ts":
-/*!******************************************************************!*\
-  !*** ./src/checks/storage_result_destructive_actions_planned.ts ***!
-  \******************************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.verifyDecryptDestructiveActions = verifyDecryptDestructiveActions;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
-function verifyDecryptDestructiveActions(destructiveActions) {
-    (0, helpers_1.it)("should display a list of destructive actions", async function () {
-        await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
-        await new storage_page_1.StoragePage(helpers_1.page).expandDestructiveActionsList();
-        for (const action of destructiveActions) {
-            await new storage_page_1.StoragePage(helpers_1.page).verifyDestructiveAction(action);
-        }
     });
 }
 
@@ -941,33 +889,6 @@ class CreateFirstUserPage {
     }
 }
 exports.CreateFirstUserPage = CreateFirstUserPage;
-
-
-/***/ }),
-
-/***/ "./src/pages/encrypted_device_page.ts":
-/*!********************************************!*\
-  !*** ./src/pages/encrypted_device_page.ts ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EncryptedDevice = void 0;
-class EncryptedDevice {
-    page;
-    encryptionPasswordInput = () => this.page.locator("input#luks-password");
-    decryptButton = () => this.page.locator("button::-p-text(Decrypt)");
-    constructor(page) {
-        this.page = page;
-    }
-    async decrypt(password, timeout) {
-        await this.encryptionPasswordInput().setTimeout(timeout).fill(password);
-        await this.decryptButton().click();
-    }
-}
-exports.EncryptedDevice = EncryptedDevice;
 
 
 /***/ }),
@@ -1688,7 +1609,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
-const decryption_1 = __webpack_require__(/*! ./checks/decryption */ "./src/checks/decryption.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 const encryption_1 = __webpack_require__(/*! ./checks/encryption */ "./src/checks/encryption.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
@@ -1697,7 +1617,6 @@ const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/c
 const storage_zfcp_1 = __webpack_require__(/*! ./checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
 const hostname_1 = __webpack_require__(/*! ./checks/hostname */ "./src/checks/hostname.ts");
-const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ./checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const download_logs_1 = __webpack_require__(/*! ./checks/download_logs */ "./src/checks/download_logs.ts");
 // parse options from the command line
 const options = (0, cmdline_1.parse)((cmd) => cmd
@@ -1717,8 +1636,6 @@ if (options.productId !== "none")
         (0, product_selection_1.productSelectionWithLicense)(options.productId);
     else
         (0, product_selection_1.productSelection)(options.productId);
-(0, decryption_1.decryptDevice)(options.decryptPassword);
-(0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(options.destructiveActions);
 if (options.staticHostname)
     (0, hostname_1.setPermanentHostname)(options.staticHostname);
 (0, encryption_1.enableEncryption)(options.password);
