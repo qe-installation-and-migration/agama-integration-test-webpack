@@ -378,11 +378,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareZfcpStorage = prepareZfcpStorage;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+const storage_without_tabs_page_1 = __webpack_require__(/*! ../pages/storage_without_tabs_page */ "./src/pages/storage_without_tabs_page.ts");
 const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
 function prepareZfcpStorage() {
     (0, helpers_1.it)("should prepare zFCP storage", async function () {
-        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
         const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
@@ -1352,10 +1352,10 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 
 /***/ }),
 
-/***/ "./src/pages/storage_page.ts":
-/*!***********************************!*\
-  !*** ./src/pages/storage_page.ts ***!
-  \***********************************/
+/***/ "./src/pages/storage_without_tabs_page.ts":
+/*!************************************************!*\
+  !*** ./src/pages/storage_without_tabs_page.ts ***!
+  \************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -1364,9 +1364,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StoragePage = void 0;
+exports.StorageWithoutTabsPage = void 0;
 const assert_1 = __importDefault(__webpack_require__(/*! assert */ "assert"));
-class StoragePage {
+class StorageWithoutTabsPage {
     page;
     selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
     editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
@@ -1414,7 +1414,7 @@ class StoragePage {
         await this.destructiveActionText(action).wait();
     }
 }
-exports.StoragePage = StoragePage;
+exports.StorageWithoutTabsPage = StorageWithoutTabsPage;
 
 
 /***/ }),
