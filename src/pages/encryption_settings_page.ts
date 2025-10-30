@@ -2,8 +2,6 @@ import { type Page } from "puppeteer-core";
 
 export class EncryptionSettingsPage {
   private readonly page: Page;
-  private readonly encryptTheSystemCheckbox = () =>
-    this.page.locator("::-p-text(Encrypt the system)");
 
   private readonly encryptTheSystemCheckedCheckbox = () =>
     this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:checked");
@@ -19,12 +17,12 @@ export class EncryptionSettingsPage {
     this.page = page;
   }
 
-  async checkEncryption() {
+  async markEncryptTheSystem() {
     await this.encryptTheSystemNotCheckedCheckbox().click();
     await this.encryptTheSystemCheckedCheckbox().wait();
   }
 
-  async uncheckEncryption() {
+  async unmarkEncryptTheSystem() {
     await this.encryptTheSystemCheckedCheckbox().click();
     await this.encryptTheSystemNotCheckedCheckbox().wait();
   }

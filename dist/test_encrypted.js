@@ -14,42 +14,59 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enableEncryption = enableEncryption;
 exports.verifyEncryptionEnabled = verifyEncryptionEnabled;
 exports.disableEncryption = disableEncryption;
+exports.enableEncryptionWithoutTabs = enableEncryptionWithoutTabs;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const encryption_settings_page_1 = __webpack_require__(/*! ../pages/encryption_settings_page */ "./src/pages/encryption_settings_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+const storage_without_tabs_page_1 = __webpack_require__(/*! ../pages/storage_without_tabs_page */ "./src/pages/storage_without_tabs_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 function enableEncryption(password) {
     (0, helpers_1.it)("should enable encryption", async function () {
-        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.editEncryption();
-        await encryptionSettings.checkEncryption();
+        await storageSettings.selectEncryption();
+        await storageSettings.changeEncryption();
+        await encryptionSettings.markEncryptTheSystem();
         await encryptionSettings.fillPassword(password);
         await encryptionSettings.fillPasswordConfirmation(password);
         await encryptionSettings.accept();
-        await storage.verifyEncryptionEnabled();
+        await storageSettings.encryptionIsEnabledText().wait();
     });
 }
 function verifyEncryptionEnabled() {
     (0, helpers_1.it)("should verify that encryption is enabled", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
         await sidebar.goToStorage();
         await storage.verifyEncryptionEnabled();
     });
 }
 function disableEncryption() {
     (0, helpers_1.it)("should disable encryption", async function () {
-        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
         const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
         await storage.editEncryption();
-        await encryptionSettings.uncheckEncryption();
+        await encryptionSettings.unmarkEncryptTheSystem();
         await encryptionSettings.accept();
         await storage.verifyEncryptionDisabled();
+    });
+}
+function enableEncryptionWithoutTabs(password) {
+    (0, helpers_1.it)("should enable encryption", async function () {
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.editEncryption();
+        await encryptionSettings.markEncryptTheSystem();
+        await encryptionSettings.fillPassword(password);
+        await encryptionSettings.fillPasswordConfirmation(password);
+        await encryptionSettings.accept();
+        await storage.verifyEncryptionEnabled();
     });
 }
 
@@ -546,7 +563,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EncryptionSettingsPage = void 0;
 class EncryptionSettingsPage {
     page;
-    encryptTheSystemCheckbox = () => this.page.locator("::-p-text(Encrypt the system)");
     encryptTheSystemCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:checked");
     encryptTheSystemNotCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:not(:checked)");
     passwordInput = () => this.page.locator("#password");
@@ -555,11 +571,11 @@ class EncryptionSettingsPage {
     constructor(page) {
         this.page = page;
     }
-    async checkEncryption() {
+    async markEncryptTheSystem() {
         await this.encryptTheSystemNotCheckedCheckbox().click();
         await this.encryptTheSystemCheckedCheckbox().wait();
     }
-    async uncheckEncryption() {
+    async unmarkEncryptTheSystem() {
         await this.encryptTheSystemCheckedCheckbox().click();
         await this.encryptTheSystemNotCheckedCheckbox().wait();
     }
@@ -721,10 +737,56 @@ exports.SidebarWithRegistrationPage = SidebarWithRegistrationPage;
 
 /***/ }),
 
-/***/ "./src/pages/storage_page.ts":
-/*!***********************************!*\
-  !*** ./src/pages/storage_page.ts ***!
-  \***********************************/
+/***/ "./src/pages/storage_settings_page.ts":
+/*!********************************************!*\
+  !*** ./src/pages/storage_settings_page.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageSettingsPage = void 0;
+class StorageSettingsPage {
+    page;
+    selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
+    encryptionTab = () => this.page.locator("::-p-text(Encryption)");
+    changeEncryptionLink = () => this.page.locator('::-p-aria([name="Change"][role="link"])');
+    encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
+    encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
+    manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
+    ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
+    constructor(page) {
+        this.page = page;
+    }
+    async selectMoreDevices() {
+        await this.selectMoreDevicesButton().click();
+    }
+    async selectEncryption() {
+        await this.encryptionTab().click();
+    }
+    async changeEncryption() {
+        await this.changeEncryptionLink().click();
+    }
+    async manageDasd() {
+        await this.manageDasdLink().click();
+    }
+    async activateZfcp() {
+        await this.ActivateZfcpLink().click();
+    }
+    async waitForElement(element, timeout) {
+        await this.page.locator(element).setTimeout(timeout).wait();
+    }
+}
+exports.StorageSettingsPage = StorageSettingsPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/storage_without_tabs_page.ts":
+/*!************************************************!*\
+  !*** ./src/pages/storage_without_tabs_page.ts ***!
+  \************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -733,9 +795,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StoragePage = void 0;
+exports.StorageWithoutTabsPage = void 0;
 const assert_1 = __importDefault(__webpack_require__(/*! assert */ "assert"));
-class StoragePage {
+class StorageWithoutTabsPage {
     page;
     selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
     editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
@@ -783,7 +845,7 @@ class StoragePage {
         await this.destructiveActionText(action).wait();
     }
 }
-exports.StoragePage = StoragePage;
+exports.StorageWithoutTabsPage = StorageWithoutTabsPage;
 
 
 /***/ }),

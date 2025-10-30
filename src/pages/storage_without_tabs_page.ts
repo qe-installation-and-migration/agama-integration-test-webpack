@@ -1,7 +1,7 @@
 import assert from "assert";
 import { type Page } from "puppeteer-core";
 
-export class StoragePage {
+export class StorageWithoutTabsPage {
   private readonly page: Page;
   private readonly selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
 
