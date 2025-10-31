@@ -1185,13 +1185,13 @@ class SetARootPasswordPage {
         const elementText = await this.alertPasswordIsWeak()
             .map((span) => span.textContent)
             .wait();
-        await strict_1.default.deepEqual(elementText, "Warning alert:The password is weak");
+        strict_1.default.deepEqual(elementText, "Warning alert:The password is weak");
     }
     async verifyPasswordFailDictionaryCheck() {
         const elementText = await this.alertPasswordFailDictionaryCheck()
             .map((span) => span.textContent)
             .wait();
-        await strict_1.default.deepEqual(elementText, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
+        strict_1.default.deepEqual(elementText, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
     }
     async usePassword() {
         await this.usePasswordToggle().click();

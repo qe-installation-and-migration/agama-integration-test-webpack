@@ -469,26 +469,22 @@ function verifyPasswordStrength() {
 /*!******************************************************************!*\
   !*** ./src/checks/storage_result_destructive_actions_planned.ts ***!
   \******************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.verifyDecryptDestructiveActions = verifyDecryptDestructiveActions;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_result_page_1 = __webpack_require__(/*! ../pages/storage_result_page */ "./src/pages/storage_result_page.ts");
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 function verifyDecryptDestructiveActions(destructiveActions) {
     (0, helpers_1.it)("should display a list of destructive actions", async function () {
         await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
         const storage = new storage_result_page_1.StorageResultPage(helpers_1.page);
         storage.expandDestructiveActionsList();
         for (const action of destructiveActions) {
-            (0, strict_1.default)(storage.destructiveActionText(action).wait());
+            await storage.destructiveActionText(action).wait();
         }
     });
 }
@@ -1420,13 +1416,13 @@ class SetARootPasswordPage {
         const elementText = await this.alertPasswordIsWeak()
             .map((span) => span.textContent)
             .wait();
-        await strict_1.default.deepEqual(elementText, "Warning alert:The password is weak");
+        strict_1.default.deepEqual(elementText, "Warning alert:The password is weak");
     }
     async verifyPasswordFailDictionaryCheck() {
         const elementText = await this.alertPasswordFailDictionaryCheck()
             .map((span) => span.textContent)
             .wait();
-        await strict_1.default.deepEqual(elementText, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
+        strict_1.default.deepEqual(elementText, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
     }
     async usePassword() {
         await this.usePasswordToggle().click();
