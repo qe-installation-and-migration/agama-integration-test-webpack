@@ -62,20 +62,26 @@ async function downloadLogs() {
 /*!**********************************!*\
   !*** ./src/checks/encryption.ts ***!
   \**********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.enableEncryption = enableEncryption;
 exports.verifyEncryptionEnabled = verifyEncryptionEnabled;
 exports.disableEncryption = disableEncryption;
 exports.enableEncryptionWithoutTabs = enableEncryptionWithoutTabs;
+exports.verifyEncryptionEnabledWithoutTabs = verifyEncryptionEnabledWithoutTabs;
+exports.disableEncryptionWithoutTabs = disableEncryptionWithoutTabs;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const encryption_settings_page_1 = __webpack_require__(/*! ../pages/encryption_settings_page */ "./src/pages/encryption_settings_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_without_tabs_page_1 = __webpack_require__(/*! ../pages/storage_without_tabs_page */ "./src/pages/storage_without_tabs_page.ts");
 const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 function enableEncryption(password) {
     (0, helpers_1.it)("should enable encryption", async function () {
         const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
@@ -94,21 +100,26 @@ function enableEncryption(password) {
 function verifyEncryptionEnabled() {
     (0, helpers_1.it)("should verify that encryption is enabled", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.verifyEncryptionEnabled();
+        await storageSettings.encryptionIsEnabledText().wait();
     });
 }
 function disableEncryption() {
     (0, helpers_1.it)("should disable encryption", async function () {
-        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.editEncryption();
+        await storageSettings.selectEncryption();
+        await storageSettings.changeEncryption();
         await encryptionSettings.unmarkEncryptTheSystem();
         await encryptionSettings.accept();
-        await storage.verifyEncryptionDisabled();
+        const elementText = await storageSettings
+            .encryptionIsDisabledText()
+            .map((span) => span.textContent)
+            .wait();
+        strict_1.default.deepEqual(elementText, "Encryption is disabled");
     });
 }
 function enableEncryptionWithoutTabs(password) {
@@ -117,12 +128,32 @@ function enableEncryptionWithoutTabs(password) {
         const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.editEncryption();
+        await storage.changeEncryption();
         await encryptionSettings.markEncryptTheSystem();
         await encryptionSettings.fillPassword(password);
         await encryptionSettings.fillPasswordConfirmation(password);
         await encryptionSettings.accept();
         await storage.verifyEncryptionEnabled();
+    });
+}
+function verifyEncryptionEnabledWithoutTabs() {
+    (0, helpers_1.it)("should verify that encryption is enabled", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.verifyEncryptionEnabled();
+    });
+}
+function disableEncryptionWithoutTabs() {
+    (0, helpers_1.it)("should disable encryption", async function () {
+        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.changeEncryption();
+        await encryptionSettings.unmarkEncryptTheSystem();
+        await encryptionSettings.accept();
+        await storage.verifyEncryptionDisabled();
     });
 }
 
@@ -409,10 +440,13 @@ function enterExtensionRegistrationPHub() {
 /*!*******************************************!*\
   !*** ./src/checks/root_authentication.ts ***!
   \*******************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.editRootUser = editRootUser;
 exports.setupMandatoryRootAuth = setupMandatoryRootAuth;
@@ -422,6 +456,7 @@ const setup_root_user_authentication_page_1 = __webpack_require__(/*! ../pages/s
 const root_authentication_methods_1 = __webpack_require__(/*! ../pages/root_authentication_methods */ "./src/pages/root_authentication_methods.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 function editRootUser(password) {
     (0, helpers_1.it)("should edit the root user", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
@@ -454,11 +489,23 @@ function verifyPasswordStrength() {
         await sidebar.goToUsers();
         await users.editRootUser();
         await setARootPassword.fillPassword("a23b56c");
-        await setARootPassword.verifyPasswordLess8Characters();
+        const elementTextPasswordLess8Characters = await setARootPassword
+            .alertPasswordLess8Characters()
+            .map((span) => span.textContent)
+            .wait();
+        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "The password is shorter than 8 characters");
         await setARootPassword.fillPassword("a23b56ca");
-        await setARootPassword.verifyPasswordIsWeak();
+        const elementTextPasswordIsWeak = await setARootPassword
+            .alertPasswordIsWeak()
+            .map((span) => span.textContent)
+            .wait();
+        strict_1.default.deepEqual(elementTextPasswordIsWeak, "The password is weak");
         await setARootPassword.fillPassword("a23b5678");
-        await setARootPassword.verifyPasswordFailDictionaryCheck();
+        const elementTextPasswordFailDictionary = await setARootPassword
+            .alertPasswordFailDictionaryCheck()
+            .map((span) => span.textContent)
+            .wait();
+        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "The password fails the dictionary check - it is too simplistic/systematic");
     });
 }
 
@@ -469,26 +516,22 @@ function verifyPasswordStrength() {
 /*!******************************************************************!*\
   !*** ./src/checks/storage_result_destructive_actions_planned.ts ***!
   \******************************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.verifyDecryptDestructiveActions = verifyDecryptDestructiveActions;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_result_page_1 = __webpack_require__(/*! ../pages/storage_result_page */ "./src/pages/storage_result_page.ts");
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 function verifyDecryptDestructiveActions(destructiveActions) {
     (0, helpers_1.it)("should display a list of destructive actions", async function () {
         await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
         const storage = new storage_result_page_1.StorageResultPage(helpers_1.page);
-        storage.expandDestructiveActionsList();
+        await storage.scrollToDestructiveActionsList();
         for (const action of destructiveActions) {
-            (0, strict_1.default)(storage.destructiveActionText(action).wait());
+            await storage.destructiveActionText(action).wait();
         }
     });
 }
@@ -508,11 +551,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareZfcpStorage = prepareZfcpStorage;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_without_tabs_page_1 = __webpack_require__(/*! ../pages/storage_without_tabs_page */ "./src/pages/storage_without_tabs_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
 function prepareZfcpStorage() {
     (0, helpers_1.it)("should prepare zFCP storage", async function () {
-        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
@@ -1375,16 +1418,12 @@ exports.ProductSelectionWithRegistrationPage = ProductSelectionWithRegistrationP
 /*!**************************************************!*\
   !*** ./src/pages/root_authentication_methods.ts ***!
   \**************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SetARootPasswordPage = void 0;
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 class SetARootPasswordPage {
     page;
     acceptText = () => this.page.locator("button::-p-text(Accept)");
@@ -1409,24 +1448,6 @@ class SetARootPasswordPage {
     }
     async fillPasswordConfirmation(password) {
         await this.passwordConfirmationInput().fill(password);
-    }
-    async verifyPasswordLess8Characters() {
-        const elementText = await this.alertPasswordLess8Characters()
-            .map((span) => span.textContent)
-            .wait();
-        strict_1.default.deepEqual(elementText, "Warning alert:The password is shorter than 8 characters");
-    }
-    async verifyPasswordIsWeak() {
-        const elementText = await this.alertPasswordIsWeak()
-            .map((span) => span.textContent)
-            .wait();
-        await strict_1.default.deepEqual(elementText, "Warning alert:The password is weak");
-    }
-    async verifyPasswordFailDictionaryCheck() {
-        const elementText = await this.alertPasswordFailDictionaryCheck()
-            .map((span) => span.textContent)
-            .wait();
-        await strict_1.default.deepEqual(elementText, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
     }
     async usePassword() {
         await this.usePasswordToggle().click();
@@ -1541,13 +1562,16 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StorageResultPage = void 0;
 class StorageResultPage {
     page;
-    destructiveActionsList = () => this.page.locator("::-p-text(Check)");
+    destructiveActionsList = () => this.page.locator("::-p-text(Actions)");
     destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
     constructor(page) {
         this.page = page;
     }
-    async expandDestructiveActionsList() {
+    async expandDestructiveActionsListWithoutTabs() {
         await this.destructiveActionsList().click();
+    }
+    async scrollToDestructiveActionsList() {
+        (await this.destructiveActionsList().waitHandle()).scrollIntoView();
     }
 }
 exports.StorageResultPage = StorageResultPage;
@@ -1618,14 +1642,13 @@ const assert_1 = __importDefault(__webpack_require__(/*! assert */ "assert"));
 class StorageWithoutTabsPage {
     page;
     selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
-    editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
+    encryptionTab = () => this.page.locator("::-p-text(Encryption)");
+    changeEncryptionButton = () => this.page.locator("span::-p-text(Change)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
     addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
-    destructiveActionsList = () => this.page.locator("::-p-text(Check)");
-    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
     constructor(page) {
         this.page = page;
     }
@@ -1635,8 +1658,11 @@ class StorageWithoutTabsPage {
     async addLvmVolumeGroup() {
         await this.addLvmVolumeLink().click();
     }
-    async editEncryption() {
-        await this.editEncryptionButton().click();
+    async selectEncryption() {
+        await this.encryptionTab().click();
+    }
+    async changeEncryption() {
+        await this.changeEncryptionButton().click();
     }
     async verifyEncryptionEnabled() {
         await this.encryptionIsEnabledText().wait();
@@ -1655,12 +1681,6 @@ class StorageWithoutTabsPage {
     }
     async waitForElement(element, timeout) {
         await this.page.locator(element).setTimeout(timeout).wait();
-    }
-    async expandDestructiveActionsList() {
-        await this.destructiveActionsList().click();
-    }
-    async verifyDestructiveAction(action) {
-        await this.destructiveActionText(action).wait();
     }
 }
 exports.StorageWithoutTabsPage = StorageWithoutTabsPage;

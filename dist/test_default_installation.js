@@ -280,10 +280,13 @@ function enterExtensionRegistrationPHub() {
 /*!*******************************************!*\
   !*** ./src/checks/root_authentication.ts ***!
   \*******************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.editRootUser = editRootUser;
 exports.setupMandatoryRootAuth = setupMandatoryRootAuth;
@@ -293,6 +296,7 @@ const setup_root_user_authentication_page_1 = __webpack_require__(/*! ../pages/s
 const root_authentication_methods_1 = __webpack_require__(/*! ../pages/root_authentication_methods */ "./src/pages/root_authentication_methods.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 function editRootUser(password) {
     (0, helpers_1.it)("should edit the root user", async function () {
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
@@ -325,11 +329,23 @@ function verifyPasswordStrength() {
         await sidebar.goToUsers();
         await users.editRootUser();
         await setARootPassword.fillPassword("a23b56c");
-        await setARootPassword.verifyPasswordLess8Characters();
+        const elementTextPasswordLess8Characters = await setARootPassword
+            .alertPasswordLess8Characters()
+            .map((span) => span.textContent)
+            .wait();
+        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "The password is shorter than 8 characters");
         await setARootPassword.fillPassword("a23b56ca");
-        await setARootPassword.verifyPasswordIsWeak();
+        const elementTextPasswordIsWeak = await setARootPassword
+            .alertPasswordIsWeak()
+            .map((span) => span.textContent)
+            .wait();
+        strict_1.default.deepEqual(elementTextPasswordIsWeak, "The password is weak");
         await setARootPassword.fillPassword("a23b5678");
-        await setARootPassword.verifyPasswordFailDictionaryCheck();
+        const elementTextPasswordFailDictionary = await setARootPassword
+            .alertPasswordFailDictionaryCheck()
+            .map((span) => span.textContent)
+            .wait();
+        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "The password fails the dictionary check - it is too simplistic/systematic");
     });
 }
 
@@ -378,11 +394,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareZfcpStorage = prepareZfcpStorage;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
-const storage_without_tabs_page_1 = __webpack_require__(/*! ../pages/storage_without_tabs_page */ "./src/pages/storage_without_tabs_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
 function prepareZfcpStorage() {
     (0, helpers_1.it)("should prepare zFCP storage", async function () {
-        const storage = new storage_without_tabs_page_1.StorageWithoutTabsPage(helpers_1.page);
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
@@ -1140,16 +1156,12 @@ exports.ProductSelectionWithRegistrationPage = ProductSelectionWithRegistrationP
 /*!**************************************************!*\
   !*** ./src/pages/root_authentication_methods.ts ***!
   \**************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SetARootPasswordPage = void 0;
-const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 class SetARootPasswordPage {
     page;
     acceptText = () => this.page.locator("button::-p-text(Accept)");
@@ -1174,24 +1186,6 @@ class SetARootPasswordPage {
     }
     async fillPasswordConfirmation(password) {
         await this.passwordConfirmationInput().fill(password);
-    }
-    async verifyPasswordLess8Characters() {
-        const elementText = await this.alertPasswordLess8Characters()
-            .map((span) => span.textContent)
-            .wait();
-        strict_1.default.deepEqual(elementText, "Warning alert:The password is shorter than 8 characters");
-    }
-    async verifyPasswordIsWeak() {
-        const elementText = await this.alertPasswordIsWeak()
-            .map((span) => span.textContent)
-            .wait();
-        await strict_1.default.deepEqual(elementText, "Warning alert:The password is weak");
-    }
-    async verifyPasswordFailDictionaryCheck() {
-        const elementText = await this.alertPasswordFailDictionaryCheck()
-            .map((span) => span.textContent)
-            .wait();
-        await strict_1.default.deepEqual(elementText, "Warning alert:The password fails the dictionary check - it is too simplistic/systematic");
     }
     async usePassword() {
         await this.usePasswordToggle().click();
@@ -1352,51 +1346,36 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 
 /***/ }),
 
-/***/ "./src/pages/storage_without_tabs_page.ts":
-/*!************************************************!*\
-  !*** ./src/pages/storage_without_tabs_page.ts ***!
-  \************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ "./src/pages/storage_settings_page.ts":
+/*!********************************************!*\
+  !*** ./src/pages/storage_settings_page.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StorageWithoutTabsPage = void 0;
-const assert_1 = __importDefault(__webpack_require__(/*! assert */ "assert"));
-class StorageWithoutTabsPage {
+exports.StorageSettingsPage = void 0;
+class StorageSettingsPage {
     page;
     selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
-    editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
+    encryptionTab = () => this.page.locator("::-p-text(Encryption)");
+    changeEncryptionLink = () => this.page.locator('::-p-aria([name="Change"][role="link"])');
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
-    addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
-    destructiveActionsList = () => this.page.locator("::-p-text(Check)");
-    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
     constructor(page) {
         this.page = page;
     }
     async selectMoreDevices() {
         await this.selectMoreDevicesButton().click();
     }
-    async addLvmVolumeGroup() {
-        await this.addLvmVolumeLink().click();
+    async selectEncryption() {
+        await this.encryptionTab().click();
     }
-    async editEncryption() {
-        await this.editEncryptionButton().click();
-    }
-    async verifyEncryptionEnabled() {
-        await this.encryptionIsEnabledText().wait();
-    }
-    async verifyEncryptionDisabled() {
-        const elementText = await this.encryptionIsDisabledText()
-            .map((span) => span.textContent)
-            .wait();
-        await assert_1.default.deepEqual(elementText, "Encryption is disabled");
+    async changeEncryption() {
+        await this.changeEncryptionLink().click();
     }
     async manageDasd() {
         await this.manageDasdLink().click();
@@ -1407,14 +1386,8 @@ class StorageWithoutTabsPage {
     async waitForElement(element, timeout) {
         await this.page.locator(element).setTimeout(timeout).wait();
     }
-    async expandDestructiveActionsList() {
-        await this.destructiveActionsList().click();
-    }
-    async verifyDestructiveAction(action) {
-        await this.destructiveActionText(action).wait();
-    }
 }
-exports.StorageWithoutTabsPage = StorageWithoutTabsPage;
+exports.StorageSettingsPage = StorageSettingsPage;
 
 
 /***/ }),

@@ -761,14 +761,13 @@ const assert_1 = __importDefault(__webpack_require__(/*! assert */ "assert"));
 class StorageWithoutTabsPage {
     page;
     selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
-    editEncryptionButton = () => this.page.locator("::-p-text(Edit)");
+    encryptionTab = () => this.page.locator("::-p-text(Encryption)");
+    changeEncryptionButton = () => this.page.locator("span::-p-text(Change)");
     encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
     encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
     manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
     ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
     addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
-    destructiveActionsList = () => this.page.locator("::-p-text(Check)");
-    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
     constructor(page) {
         this.page = page;
     }
@@ -778,8 +777,11 @@ class StorageWithoutTabsPage {
     async addLvmVolumeGroup() {
         await this.addLvmVolumeLink().click();
     }
-    async editEncryption() {
-        await this.editEncryptionButton().click();
+    async selectEncryption() {
+        await this.encryptionTab().click();
+    }
+    async changeEncryption() {
+        await this.changeEncryptionButton().click();
     }
     async verifyEncryptionEnabled() {
         await this.encryptionIsEnabledText().wait();
@@ -798,12 +800,6 @@ class StorageWithoutTabsPage {
     }
     async waitForElement(element, timeout) {
         await this.page.locator(element).setTimeout(timeout).wait();
-    }
-    async expandDestructiveActionsList() {
-        await this.destructiveActionsList().click();
-    }
-    async verifyDestructiveAction(action) {
-        await this.destructiveActionText(action).wait();
     }
 }
 exports.StorageWithoutTabsPage = StorageWithoutTabsPage;

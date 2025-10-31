@@ -1,13 +1,13 @@
 import { it, page } from "../lib/helpers";
 import { SidebarPage } from "../pages/sidebar_page";
-import { StorageWithoutTabsPage } from "../pages/storage_without_tabs_page";
+import { StorageSettingsPage } from "../pages/storage_settings_page";
 import { ZfcpPage } from "../pages/zfcp_page";
 
 export function prepareZfcpStorage() {
   it(
     "should prepare zFCP storage",
     async function () {
-      const storage = new StorageWithoutTabsPage(page);
+      const storage = new StorageSettingsPage(page);
       const zfcp = new ZfcpPage(page);
       const sidebar = new SidebarPage(page);
 

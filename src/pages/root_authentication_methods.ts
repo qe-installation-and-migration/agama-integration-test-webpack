@@ -1,5 +1,4 @@
 import { type Page } from "puppeteer-core";
-import assert from "node:assert/strict";
 
 export class SetARootPasswordPage {
   private readonly page: Page;
@@ -9,11 +8,11 @@ export class SetARootPasswordPage {
   private readonly passwordConfirmationInput = () =>
     this.page.locator("input#passwordConfirmation");
 
-  private readonly alertPasswordLess8Characters = () =>
+  public readonly alertPasswordLess8Characters = () =>
     this.page.locator("::-p-text(The password is shorter than 8 characters)");
 
-  private readonly alertPasswordIsWeak = () => this.page.locator("::-p-text(The password is weak)");
-  private readonly alertPasswordFailDictionaryCheck = () =>
+  public readonly alertPasswordIsWeak = () => this.page.locator("::-p-text(The password is weak)");
+  public readonly alertPasswordFailDictionaryCheck = () =>
     this.page.locator("::-p-text(it is too simplistic/systematic)");
 
   private readonly usePasswordToggle = () => this.page.locator("::-p-text(Use password)");
@@ -36,30 +35,6 @@ export class SetARootPasswordPage {
 
   async fillPasswordConfirmation(password: string) {
     await this.passwordConfirmationInput().fill(password);
-  }
-
-  async verifyPasswordLess8Characters() {
-    const elementText = await this.alertPasswordLess8Characters()
-      .map((span) => span.textContent)
-      .wait();
-    assert.deepEqual(elementText, "Warning alert:The password is shorter than 8 characters");
-  }
-
-  async verifyPasswordIsWeak() {
-    const elementText = await this.alertPasswordIsWeak()
-      .map((span) => span.textContent)
-      .wait();
-    assert.deepEqual(elementText, "Warning alert:The password is weak");
-  }
-
-  async verifyPasswordFailDictionaryCheck() {
-    const elementText = await this.alertPasswordFailDictionaryCheck()
-      .map((span) => span.textContent)
-      .wait();
-    assert.deepEqual(
-      elementText,
-      "Warning alert:The password fails the dictionary check - it is too simplistic/systematic",
-    );
   }
 
   async usePassword() {
