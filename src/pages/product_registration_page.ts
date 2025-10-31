@@ -14,6 +14,12 @@ class RegistrationBasePage {
   protected readonly registrationOptionCheckbox = () =>
     this.page.locator("::-p-aria(Provide registration code)");
 
+  readonly connectionToRegistrationServerFailedText = () =>
+    this.page.locator("::-p-text(Connection to registration server failed:)");
+
+  readonly checkTheFollowingBeforeContinuingText = () =>
+    this.page.locator("::-p-text(Check the following before continuing)");
+
   constructor(page: Page) {
     this.page = page;
   }
@@ -49,6 +55,9 @@ function CustomRegistrable<TBase extends GConstructor<RegistrationBasePage>>(Bas
     private readonly registrationServerCustomOption = () =>
       this.page.locator("::-p-aria(Custom Register using a custom registration server)");
 
+    private readonly registrationSUSEServerOption = () =>
+      this.page.locator("::-p-aria(SUSE Customer Center (SCC) Register using SUSE server)");
+
     private readonly serverUrlTextbox = () =>
       this.page.locator("::-p-aria(Server URL)[type='text']");
 
@@ -63,6 +72,12 @@ function CustomRegistrable<TBase extends GConstructor<RegistrationBasePage>>(Bas
       await this.registrationServerButton().click();
       await this.registrationServerCustomOption().wait();
       await this.registrationServerCustomOption().click();
+    }
+
+    async selectSUSERegistrationServer() {
+      await this.registrationServerButton().click();
+      await this.registrationSUSEServerOption().wait();
+      await this.registrationSUSEServerOption().click();
     }
 
     async fillServerUrl(url: string) {

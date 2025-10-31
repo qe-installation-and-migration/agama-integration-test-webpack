@@ -108,3 +108,60 @@ export function enterExtensionRegistrationPHub() {
     );
   });
 }
+
+export function verifyRegistrationWarniningAlerts() {
+  it("should show warning alert for invalid registration", async function () {
+    const sidebar = new SidebarWithRegistrationPage(page);
+    const customRegistration = new CustomRegistrationPage(page);
+    const invalid_regcode = "123XX432";
+    let originalCustomServer: string | null = null;
+
+    await sidebar.goToRegistration();
+    const isCustomServer = (await page.$("#url")) !== null;
+    await customRegistration.register();
+
+    if (isCustomServer) {
+      originalCustomServer = await page.$eval('input[type="text"][id="url"]', (el) => el.value);
+      assert.deepEqual(
+        await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
+        "Warning alert:Connection to registration server failed: Please provide Registration Code.",
+      );
+    } else {
+      assert.deepEqual(
+        await getTextContent(customRegistration.checkTheFollowingBeforeContinuingText()),
+        "Warning alert:Check the following before continuing",
+      );
+    }
+
+    const invalidUrls = ["http://scc.example.net", "https://scc.example.net"];
+    for (const invalidUrl of invalidUrls) {
+      await customRegistration.selectCustomRegistrationServer();
+      await customRegistration.fillServerUrl(invalidUrl);
+      await customRegistration.register();
+
+      assert.match(
+        await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
+        /Connection to registration server failed: dial tcp: lookup .+ on .+: no such host \(network error\)/,
+      );
+    }
+
+    if (isCustomServer) {
+      await customRegistration.fillServerUrl(originalCustomServer);
+      await customRegistration.selectProvideRegistrationCode();
+    } else {
+      await customRegistration.selectSUSERegistrationServer();
+    }
+
+    await customRegistration.fillCode(invalid_regcode);
+    await customRegistration.register();
+    assert.deepEqual(
+      await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
+      "Warning alert:Connection to registration server failed: Unknown Registration Code.",
+    );
+
+    if (isCustomServer) {
+      await customRegistration.selectProvideRegistrationCode();
+      await customRegistration.register();
+    }
+  });
+}
