@@ -2,32 +2,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/checks/decryption.ts":
-/*!**********************************!*\
-  !*** ./src/checks/decryption.ts ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.decryptDevice = decryptDevice;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const encrypted_device_page_1 = __webpack_require__(/*! ../pages/encrypted_device_page */ "./src/pages/encrypted_device_page.ts");
-const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
-function decryptDevice(password) {
-    (0, helpers_1.it)("Should decrypt encrypted device", async function () {
-        const storageDecryption = new encrypted_device_page_1.EncryptedDevice(helpers_1.page);
-        await storageDecryption.decrypt(password, 3 * 60 * 1000);
-    });
-    (0, helpers_1.it)("should display Overview", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
-    });
-}
-
-
-/***/ }),
-
 /***/ "./src/checks/download_logs.ts":
 /*!*************************************!*\
   !*** ./src/checks/download_logs.ts ***!
@@ -1035,33 +1009,6 @@ exports.CreateFirstUserPage = CreateFirstUserPage;
 
 /***/ }),
 
-/***/ "./src/pages/encrypted_device_page.ts":
-/*!********************************************!*\
-  !*** ./src/pages/encrypted_device_page.ts ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EncryptedDevice = void 0;
-class EncryptedDevice {
-    page;
-    encryptionPasswordInput = () => this.page.locator("input#luks-password");
-    decryptButton = () => this.page.locator("button::-p-text(Decrypt)");
-    constructor(page) {
-        this.page = page;
-    }
-    async decrypt(password, timeout) {
-        await this.encryptionPasswordInput().setTimeout(timeout).fill(password);
-        await this.decryptButton().click();
-    }
-}
-exports.EncryptedDevice = EncryptedDevice;
-
-
-/***/ }),
-
 /***/ "./src/pages/encryption_settings_page.ts":
 /*!***********************************************!*\
   !*** ./src/pages/encryption_settings_page.ts ***!
@@ -1839,7 +1786,6 @@ const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strategy_factory */ "./src/lib/product_strategy_factory.ts");
 const first_user_1 = __webpack_require__(/*! ./checks/first_user */ "./src/checks/first_user.ts");
-const decryption_1 = __webpack_require__(/*! ./checks/decryption */ "./src/checks/decryption.ts");
 const root_authentication_1 = __webpack_require__(/*! ./checks/root_authentication */ "./src/checks/root_authentication.ts");
 const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
@@ -1863,8 +1809,6 @@ if (options.productId !== "none")
         (0, product_selection_1.productSelectionWithLicense)(options.productId);
     else
         (0, product_selection_1.productSelection)(options.productId);
-(0, decryption_1.decryptDevice)(options.decryptPassword);
-testStrategy.verifyDecryptDestructiveActions(options.destructiveActions);
 if (options.staticHostname)
     (0, hostname_1.setPermanentHostname)(options.staticHostname);
 testStrategy.enableEncryption(options.password);

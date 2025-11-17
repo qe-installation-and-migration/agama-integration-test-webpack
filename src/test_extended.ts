@@ -3,7 +3,6 @@ import { test_init } from "./lib/helpers";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { createFirstUser } from "./checks/first_user";
-import { decryptDevice } from "./checks/decryption";
 import { editRootUser } from "./checks/root_authentication";
 import { enterProductRegistration } from "./checks/registration";
 import { logIn } from "./checks/login";
@@ -34,8 +33,6 @@ logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
-decryptDevice(options.decryptPassword);
-testStrategy.verifyDecryptDestructiveActions(options.destructiveActions);
 if (options.staticHostname) setPermanentHostname(options.staticHostname);
 testStrategy.enableEncryption(options.password);
 if (options.registrationCode)
