@@ -53,7 +53,16 @@ export function parse(callback?: (cmd: commander.Command) => void) {
       "-c, --continue",
       "Continue the test after a failure (the default is abort on error)",
       false
-    );
+    )
+    .addOption(
+      new Option(
+        "--report-interval <milliseconds>",
+        "Interval for taking screenshots for the HTML report (default: 500)"
+      )
+        .argParser(getInt)
+        .default(500)
+    )
+    .option("--no-report", "Disable HTML report generation");
 
   if (callback) callback(prg);
 

@@ -683,7 +683,11 @@ function parse(callback) {
         .addOption(new commander_1.Option("-d, --delay <miliseconds>", "Delay between the browser actions, useful in headed mode")
         .argParser(getInt)
         .default(0))
-        .option("-c, --continue", "Continue the test after a failure (the default is abort on error)", false);
+        .option("-c, --continue", "Continue the test after a failure (the default is abort on error)", false)
+        .addOption(new commander_1.Option("--report-interval <milliseconds>", "Interval for taking screenshots for the HTML report (default: 500)")
+        .argParser(getInt)
+        .default(500))
+        .option("--no-report", "Disable HTML report generation");
     if (callback)
         callback(prg);
     prg.parse(process.argv);
@@ -756,8 +760,10 @@ const wait_on_1 = __importDefault(__webpack_require__(/*! wait-on */ "./node_mod
 const puppeteer = __importStar(__webpack_require__(/*! puppeteer-core */ "./node_modules/puppeteer-core/lib/cjs/puppeteer/puppeteer-core.js"));
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
+const reporter_1 = __webpack_require__(/*! ./reporter */ "./src/lib/reporter.ts");
 let browser;
 let url;
+let reporter;
 // directory for storing the dumped data after a failure
 const dir = "log";
 // helper function for configuring the browser
@@ -782,8 +788,13 @@ function browserSettings(name) {
             throw new Error(`Unsupported browser type: ${name}`);
     }
 }
-async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
+async function startBrowser(headless, slowMo, agamaBrowser, agamaServer, reportEnabled, reportInterval) {
     url = agamaServer;
+    if (reportEnabled) {
+        reporter = new reporter_1.HtmlReportGenerator();
+        const suiteName = path_1.default.basename(process.argv[1], path_1.default.extname(process.argv[1]));
+        reporter.setTestSuiteName(suiteName);
+    }
     browser = await puppeteer.launch({
         // "webDriverBiDi" does not work with old FireFox, comment it out if needed
         protocol: "webDriverBiDi",
@@ -800,6 +811,8 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
         ...browserSettings(agamaBrowser),
     });
     exports.page = await browser.newPage();
+    if (reporter)
+        reporter.startPolling(exports.page, reportInterval);
     exports.page.setDefaultTimeout(20000);
     await exports.page.goto(agamaServer, {
         timeout: 60000,
@@ -808,6 +821,10 @@ async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
     return { page: exports.page, browser };
 }
 async function finishBrowser() {
+    if (reporter) {
+        reporter.stopPolling();
+        reporter.generateReport();
+    }
     if (exports.page)
         await exports.page.close();
     if (browser)
@@ -815,7 +832,7 @@ async function finishBrowser() {
 }
 function test_init(options) {
     (0, node_test_1.before)(async function () {
-        ({ page: exports.page } = await startBrowser(!options.headed, options.delay, options.browser, options.url));
+        ({ page: exports.page } = await startBrowser(!options.headed, options.delay, options.browser, options.url, options.report, options.reportInterval));
     });
     (0, node_test_1.after)(async function () {
         await finishBrowser();
@@ -884,10 +901,18 @@ async function it(label, test, timeout) {
     { timeout: timeout || 60000 }, async (t) => {
         try {
             // do not run any test after first failure
-            if (failed)
+            if (failed) {
                 t.skip();
-            else
+            }
+            else {
+                if (reporter)
+                    reporter.setCurrentTestName(label);
                 await test();
+                if (reporter) {
+                    await reporter.addStep(exports.page, label, "passed");
+                    reporter.addTestResult(label, "passed");
+                }
+            }
         }
         catch (error) {
             // remember the failure for the next tests
@@ -899,6 +924,10 @@ async function it(label, test, timeout) {
                     fs_1.default.mkdirSync(dir);
                 // dump the page and the CSS in parallel
                 await Promise.allSettled([dumpPage(label), dumpCSS()]);
+                if (reporter) {
+                    await reporter.addStep(exports.page, label, "failed", error);
+                    reporter.addTestResult(label, "failed", error);
+                }
             }
             throw new Error("Test failed!", { cause: error });
         }
@@ -950,6 +979,296 @@ class ProductStrategyFactory {
     }
 }
 exports.ProductStrategyFactory = ProductStrategyFactory;
+
+
+/***/ }),
+
+/***/ "./src/lib/reporter.ts":
+/*!*****************************!*\
+  !*** ./src/lib/reporter.ts ***!
+  \*****************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HtmlReportGenerator = void 0;
+const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
+const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
+class HtmlReportGenerator {
+    reportDir;
+    screenshotsDir;
+    steps = [];
+    startTime;
+    intervalId = null;
+    isCapturing = false;
+    currentTestName = "Initialization";
+    currentTestIndex = 0;
+    currentStepIndex = 0;
+    testSuiteName = "Agama Integration Test";
+    testResults = [];
+    constructor(outputDir = "report") {
+        this.reportDir = outputDir;
+        this.screenshotsDir = path_1.default.join(this.reportDir, "screenshots");
+        this.startTime = Date.now();
+        this.init();
+    }
+    init() {
+        if (!fs_1.default.existsSync(this.reportDir)) {
+            fs_1.default.mkdirSync(this.reportDir, { recursive: true });
+        }
+        if (!fs_1.default.existsSync(this.screenshotsDir)) {
+            fs_1.default.mkdirSync(this.screenshotsDir, { recursive: true });
+        }
+    }
+    setCurrentTestName(name) {
+        this.currentTestName = name;
+        this.currentTestIndex++;
+        this.currentStepIndex = 0;
+    }
+    setTestSuiteName(name) {
+        this.testSuiteName = name;
+    }
+    formatError(error) {
+        if (error instanceof Error) {
+            let message = error.stack || error.message;
+            if (error.cause) {
+                message += `\n\nCaused by:\n${this.formatError(error.cause)}`;
+            }
+            return message;
+        }
+        return String(error);
+    }
+    addTestResult(name, status, error) {
+        this.testResults.push({
+            name,
+            status,
+            error: error ? String(error) : undefined,
+        });
+    }
+    startPolling(page, intervalMs = 500) {
+        if (this.intervalId)
+            return;
+        this.intervalId = setInterval(async () => {
+            if (this.isCapturing)
+                return;
+            this.isCapturing = true;
+            try {
+                if (!page.isClosed()) {
+                    await this.addStep(page, this.currentTestName, "passed");
+                }
+            }
+            catch {
+                // Ignore errors during auto-capture (e.g. navigation, browser closing)
+            }
+            finally {
+                this.isCapturing = false;
+            }
+        }, intervalMs);
+    }
+    stopPolling() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+    }
+    async addStep(page, name, status, error) {
+        const timestamp = Date.now();
+        this.currentStepIndex++;
+        const stepNumber = `${this.currentTestIndex}.${this.currentStepIndex}`;
+        // Sanitized filename
+        const safeName = name.replace(/[^a-zA-Z0-9]/g, "_").substring(0, 50);
+        const filename = `${this.steps.length + 1}_${safeName}_${timestamp}.jpg`;
+        const filePath = path_1.default.join(this.screenshotsDir, filename);
+        try {
+            // Use JPEG for smaller file size
+            await page.screenshot({ path: filePath, type: "jpeg", quality: 60 });
+        }
+        catch (e) {
+            console.error(`Failed to take screenshot for step ${name}:`, e);
+            return; // Skip adding step if screenshot fails
+        }
+        this.steps.push({
+            name,
+            number: stepNumber,
+            status,
+            timestamp,
+            screenshotPath: `screenshots/${filename}`,
+            error: error
+                ? `${this.formatError(error)}\n\nLocation: ${page.url()}`
+                : undefined,
+        });
+    }
+    generateReport() {
+        const html = this.buildHtml();
+        fs_1.default.writeFileSync(path_1.default.join(this.reportDir, "index.html"), html);
+        console.log(`HTML Report generated at: ${path_1.default.join(this.reportDir, "index.html")}`);
+    }
+    buildHtml() {
+        const duration = ((Date.now() - this.startTime) / 1000).toFixed(2);
+        const passedCount = this.testResults.filter((s) => s.status === "passed").length;
+        const failedCount = this.testResults.filter((s) => s.status === "failed").length;
+        return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${this.testSuiteName} Report</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 0; background: #f0f0f0; display: flex; flex-direction: column; height: 100vh; }
+        header { background: #333; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .stats { font-size: 0.9em; }
+        .stats span { margin-left: 15px; }
+        .passed { color: #4caf50; }
+        .failed { color: #f44336; }
+        
+        #main-container { flex: 1; display: flex; overflow: hidden; }
+        #viewer { flex: 1; background: #222; display: flex; justify-content: center; align-items: center; position: relative; }
+        #viewer img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        #overlay { 
+            position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.7); 
+            color: white; padding: 10px; border-radius: 5px; pointer-events: none; 
+        }
+        
+        #sidebar { width: 300px; background: white; overflow-y: auto; border-left: 1px solid #ddd; display: flex; flex-direction: column; }
+        .step-item { 
+            padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; gap: 10px; align-items: center; 
+        }
+        .step-item:hover { background: #f9f9f9; }
+        .step-item.active { background: #e3f2fd; border-left: 4px solid #2196f3; }
+        .step-item.failed { background: #ffebee; border-left: 4px solid #f44336; }
+        
+        .thumb { width: 80px; height: 50px; object-fit: cover; background: #ddd; border-radius: 4px; }
+        .step-info { flex: 1; overflow: hidden; }
+        .step-name { font-weight: bold; font-size: 0.9em; word-break: break-word; }
+        .step-time { font-size: 0.75em; color: #666; }
+        
+        #error-detail { 
+            display: none; padding: 10px 15px; background: #ffebee; color: #b71c1c; border-bottom: 1px solid #ef9a9a; font-family: monospace; font-size: 0.9em;
+        }
+        .error-header { display: flex; justify-content: space-between; align-items: center; }
+        .error-toggle { 
+            background: #d32f2f; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.9em;
+        }
+        .error-toggle:hover { background: #b71c1c; }
+        .error-content { display: none; white-space: pre-wrap; margin-top: 10px; overflow-x: auto; }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            #main-container { flex-direction: column; }
+            #sidebar { width: 100%; height: 150px; flex-direction: row; overflow-x: auto; overflow-y: hidden; }
+            .step-item { width: 200px; flex-shrink: 0; border-right: 1px solid #eee; border-bottom: none; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div><strong>Agama Integration Test: ${this.testSuiteName}</strong></div>
+        <div class="stats">
+            <span>Duration: ${duration}s</span>
+            <span class="passed">Passed: ${passedCount}</span>
+            <span class="failed">Failed: ${failedCount}</span>
+        </div>
+    </header>
+
+    <div id="error-detail">
+        <div class="error-header">
+            <strong>Step Failed</strong>
+            <button class="error-toggle" onclick="toggleError()">Show Details</button>
+        </div>
+        <div id="error-text" class="error-content"></div>
+    </div>
+
+    <div id="main-container">
+        <div id="viewer">
+            <img id="main-image" src="" alt="Step Screenshot">
+            <div id="overlay">
+                <div id="overlay-step">Select a step</div>
+                <div id="overlay-time"></div>
+            </div>
+        </div>
+        <div id="sidebar">
+            ${this.steps.map((step, index) => `
+                <div class="step-item ${step.status === 'failed' ? 'failed' : ''}" onclick="selectStep(${index})" id="step-${index}">
+                    <img src="${step.screenshotPath}" class="thumb" loading="lazy">
+                    <div class="step-info">
+                        <div class="step-name">${step.number}. ${step.name}</div>
+                        <div class="step-time">${new Date(step.timestamp).toLocaleTimeString()}</div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    </div>
+
+    <script>
+        const steps = ${JSON.stringify(this.steps)};
+        let currentIndex = 0;
+
+        function toggleError() {
+            const content = document.getElementById('error-text');
+            const btn = document.querySelector('.error-toggle');
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+                btn.textContent = 'Show Details';
+            } else {
+                content.style.display = 'block';
+                btn.textContent = 'Hide Details';
+            }
+        }
+
+        function selectStep(index) {
+            if (index < 0 || index >= steps.length) return;
+            currentIndex = index;
+            
+            const step = steps[index];
+            document.getElementById('main-image').src = step.screenshotPath;
+            document.getElementById('overlay-step').textContent = step.number + ". " + step.name;
+            document.getElementById('overlay-time').textContent = new Date(step.timestamp).toLocaleString();
+            
+            // Highlight sidebar
+            document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-' + index).classList.add('active');
+            
+            // Error handling
+            const errorDiv = document.getElementById('error-detail');
+            const errorText = document.getElementById('error-text');
+            const errorBtn = document.querySelector('.error-toggle');
+            
+            if (step.error) {
+                errorDiv.style.display = 'block';
+                errorText.textContent = step.error;
+                // Reset state to collapsed
+                errorText.style.display = 'none';
+                errorBtn.textContent = 'Show Details';
+            } else {
+                errorDiv.style.display = 'none';
+            }
+            
+            // Scroll sidebar if needed
+            document.getElementById('step-' + index).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+
+        // Initialize with first step or failure
+        const firstFailure = steps.findIndex(s => s.status === 'failed');
+        selectStep(firstFailure >= 0 ? firstFailure : 0);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') selectStep(currentIndex + 1);
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') selectStep(currentIndex - 1);
+        });
+    </script>
+</body>
+</html>
+    `;
+    }
+}
+exports.HtmlReportGenerator = HtmlReportGenerator;
 
 
 /***/ }),
