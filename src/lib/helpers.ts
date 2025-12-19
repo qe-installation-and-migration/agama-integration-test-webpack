@@ -8,10 +8,12 @@ import waitOn from "wait-on";
 import * as puppeteer from "puppeteer-core";
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
 import { it as testIt, before, after } from "node:test";
+import { HtmlReportGenerator } from "./reporter";
 
 export let page: puppeteer.Page;
 let browser: puppeteer.Browser;
 let url: string;
+let reporter: HtmlReportGenerator;
 
 // directory for storing the dumped data after a failure
 const dir = "log";
@@ -48,9 +50,16 @@ async function startBrowser(
   headless: boolean,
   slowMo: number,
   agamaBrowser: string,
-  agamaServer: string
+  agamaServer: string,
+  reportEnabled: boolean,
+  reportInterval: number
 ) {
   url = agamaServer;
+  if (reportEnabled) {
+    reporter = new HtmlReportGenerator();
+    const suiteName = path.basename(process.argv[1], path.extname(process.argv[1]));
+    reporter.setTestSuiteName(suiteName);
+  }
   browser = await puppeteer.launch({
     // "webDriverBiDi" does not work with old FireFox, comment it out if needed
     protocol: "webDriverBiDi",
@@ -68,6 +77,7 @@ async function startBrowser(
   });
 
   page = await browser.newPage();
+  if (reporter) reporter.startPolling(page, reportInterval);
   page.setDefaultTimeout(20000);
   await page.goto(agamaServer, {
     timeout: 60000,
@@ -77,6 +87,10 @@ async function startBrowser(
 }
 
 async function finishBrowser() {
+  if (reporter) {
+    reporter.stopPolling();
+    reporter.generateReport();
+  }
   if (page) await page.close();
   if (browser) await browser.close();
 }
@@ -87,7 +101,9 @@ export function test_init(options) {
       !options.headed,
       options.delay,
       options.browser,
-      options.url
+      options.url,
+      options.report,
+      options.reportInterval
     ));
   });
 
@@ -168,8 +184,16 @@ export async function it(label: string, test: () => Promise<void>, timeout?: num
     async (t) => {
       try {
         // do not run any test after first failure
-        if (failed) t.skip();
-        else await test();
+        if (failed) {
+          t.skip();
+        } else {
+          if (reporter) reporter.setCurrentTestName(label);
+          await test();
+          if (reporter) {
+            await reporter.addStep(page, label, "passed");
+            reporter.addTestResult(label, "passed");
+          }
+        }
       } catch (error) {
         // remember the failure for the next tests
         if (!continueOnError) failed = true;
@@ -178,6 +202,10 @@ export async function it(label: string, test: () => Promise<void>, timeout?: num
           if (!fs.existsSync(dir)) fs.mkdirSync(dir);
           // dump the page and the CSS in parallel
           await Promise.allSettled([dumpPage(label), dumpCSS()]);
+          if (reporter) {
+            await reporter.addStep(page, label, "failed", error);
+            reporter.addTestResult(label, "failed", error);
+          }
         }
         throw new Error("Test failed!", { cause: error });
       }
