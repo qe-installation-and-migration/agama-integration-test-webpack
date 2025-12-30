@@ -508,55 +508,6 @@ function ensureLandingOnOverviewWithSidebar() {
 
 /***/ },
 
-/***/ "./src/checks/product_selection.ts"
-/*!*****************************************!*\
-  !*** ./src/checks/product_selection.ts ***!
-  \*****************************************/
-(__unused_webpack_module, exports, __webpack_require__) {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.productSelection = productSelection;
-exports.productSelectionWithLicenseAndMode = productSelectionWithLicenseAndMode;
-const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-function productSelection(productId) {
-    (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
-        const productSelectionPage = new product_selection_page_1.ProductSelectionPage(helpers_1.page);
-        await productSelectionPage.choose(productId);
-        await productSelectionPage.select();
-    });
-}
-function productSelectionWithLicenseAndMode(productId, productMode) {
-    let productSelection;
-    (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
-        productSelection =
-            productMode !== "none"
-                ? new product_selection_page_1.ProductSelectionWithLicenseAndModePage(helpers_1.page)
-                : new product_selection_page_1.ProductSelectionWithLicensePage(helpers_1.page);
-        await productSelection.choose(productId);
-    });
-    if (productMode !== "none") {
-        (0, helpers_1.it)(`should allow to select mode ${productMode}`, async function () {
-            await productSelection.selectMode(productMode);
-        });
-    }
-    (0, helpers_1.it)(`should allow to review its license`, async function () {
-        await productSelection.openLicense();
-        await productSelection.verifyLicense();
-        await productSelection.closeLicense();
-    });
-    (0, helpers_1.it)(`should allow to accept its license`, async function () {
-        await productSelection.acceptProductLicense();
-    });
-    (0, helpers_1.it)(`should allow to accept selected product`, async function () {
-        await productSelection.select();
-    });
-}
-
-
-/***/ },
-
 /***/ "./src/checks/registration.ts"
 /*!************************************!*\
   !*** ./src/checks/registration.ts ***!
@@ -2811,77 +2762,6 @@ exports.CustomRegistrationLegacyPage = CustomRegistrationLegacyPage;
 
 /***/ },
 
-/***/ "./src/pages/product_selection_page.ts"
-/*!*********************************************!*\
-  !*** ./src/pages/product_selection_page.ts ***!
-  \*********************************************/
-(__unused_webpack_module, exports) {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ProductSelectionWithLicenseAndModePage = exports.ProductSelectionWithLicensePage = exports.ProductSelectionPage = void 0;
-class ProductSelectionPage {
-    page;
-    productText = (name) => this.page.locator(`::-p-text(${name})`);
-    productId = (id) => this.page.locator("input#" + id.replaceAll(".", "\\."));
-    selectButton = () => this.page.locator("button[form='productSelectionForm']");
-    constructor(page) {
-        this.page = page;
-    }
-    async choose(id) {
-        (await this.productId(id).waitHandle()).scrollIntoView();
-        await this.productId(id).click();
-    }
-    async select() {
-        await this.selectButton().click();
-    }
-    async selectByName(name) {
-        await this.choose(name);
-        await this.selectButton().click();
-    }
-}
-exports.ProductSelectionPage = ProductSelectionPage;
-function LicenseAcceptable(Base) {
-    return class extends Base {
-        licenseAcceptanceCheckbox = () => this.page.locator("::-p-text(I have read and)");
-        licenseOpenButton = () => this.page.locator("::-p-text(license)");
-        licenseCloseButton = () => this.page.locator("::-p-text(Close)");
-        licenseText = () => this.page.locator("::-p-text(End User License Agreement)");
-        async acceptLicense() {
-            await this.licenseAcceptanceCheckbox().click();
-        }
-        async openLicense() {
-            await this.licenseOpenButton().click();
-        }
-        async verifyLicense() {
-            await this.licenseText().wait();
-        }
-        async closeLicense() {
-            await this.licenseCloseButton().click();
-        }
-        async acceptProductLicense() {
-            await this.acceptLicense();
-        }
-    };
-}
-function ModeSelectable(Base) {
-    return class extends Base {
-        productModeButton = (productMode) => this.page.locator(`::-p-aria([name="${productMode}"])`);
-        async selectMode(productMode) {
-            await this.productModeButton(productMode).click();
-        }
-    };
-}
-class ProductSelectionWithLicensePage extends LicenseAcceptable(ProductSelectionPage) {
-}
-exports.ProductSelectionWithLicensePage = ProductSelectionWithLicensePage;
-class ProductSelectionWithLicenseAndModePage extends ModeSelectable(LicenseAcceptable(ProductSelectionPage)) {
-}
-exports.ProductSelectionWithLicenseAndModePage = ProductSelectionWithLicenseAndModePage;
-
-
-/***/ },
-
 /***/ "./src/pages/registration_page.ts"
 /*!****************************************!*\
   !*** ./src/pages/registration_page.ts ***!
@@ -3776,56 +3656,26 @@ exports.ZfcpPage = ZfcpPage;
 
 /***/ },
 
-/***/ "./src/test_notifications.ts"
-/*!***********************************!*\
-  !*** ./src/test_notifications.ts ***!
-  \***********************************/
+/***/ "./src/test_whole_disk_home_and_separate_boot.ts"
+/*!*******************************************************!*\
+  !*** ./src/test_whole_disk_home_and_separate_boot.ts ***!
+  \*******************************************************/
 (__unused_webpack_module, exports, __webpack_require__) {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
-const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
 const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strategy_factory */ "./src/lib/product_strategy_factory.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const product_selection_1 = __webpack_require__(/*! ./checks/product_selection */ "./src/checks/product_selection.ts");
-const options = (0, cmdline_1.parse)((cmd) => cmd
-    .option("--product-id <id>", "Product id to select a product to install", "none")
-    .addOption(new commander_1.Option("--product-mode <mode>", "Select product mode")
-    .choices(["Standard", "Immutable"])
-    .default("none", "Default value set to 'none' (No mode selected)"))
-    .option("--accept-license", "Accept license for a product with license (the default is a product without license)")
-    .option("--registration-code <code>", "Registration code")
-    .option("--use-custom-registration-server", "Enable custom registration server")
-    .option("--registration-server-url <url>", "Custom registration url")
-    .option("--provide-registration-code", "Provide registration code for customer registration")
-    .option("--install", "Proceed to install the system (the default is not to install it)"));
+const options = (0, cmdline_1.parse)((cmd) => cmd.option("--install", "Proceed to install the system (the default is not to install it)"));
 (0, helpers_1.test_init)(options);
 const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.productVersion, options.agamaWebUiPackageVersion);
-testStrategy.logInWithIncorrectPassword();
 (0, login_1.logIn)(options.password);
-if (options.productId !== "none")
-    if (options.acceptLicense)
-        (0, product_selection_1.productSelectionWithLicenseAndMode)(options.productId, options.productMode);
-    else
-        (0, product_selection_1.productSelection)(options.productId);
-testStrategy.ensureLandingOnOverview();
-testStrategy.verifyRegistrationWarniningAlerts(options.useCustomRegistrationServer, options.registrationServerUrl);
-if (options.registrationCode)
-    testStrategy.enterProductRegistration({
-        use_custom: options.useCustomRegistrationServer,
-        code: options.registrationCode,
-        provide_code: options.provideRegistrationCode,
-        url: options.registrationServerUrl,
-    });
-testStrategy.changeDeviceToInstallTheSystem();
-testStrategy.createFirstUser(options.password);
-testStrategy.editRootUser(options.rootPassword);
-testStrategy.verifyPasswordStrength();
+testStrategy.setupWholeDiskForHome();
+testStrategy.configureBootDevice();
 if (options.install) {
     testStrategy.performInstallation();
-    testStrategy.checkInstallation();
     testStrategy.finishInstallation();
 }
 
@@ -4475,7 +4325,7 @@ module.exports = require("zlib");
 /******/ 	__webpack_require__.x = () => {
 /******/ 		// Load entry module and return exports
 /******/ 		// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__("./src/test_notifications.ts")))
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__("./src/test_whole_disk_home_and_separate_boot.ts")))
 /******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 		return __webpack_exports__;
 /******/ 	};
@@ -4621,7 +4471,7 @@ module.exports = require("zlib");
 /******/ 		// object to store loaded chunks
 /******/ 		// "1" means "loaded", otherwise not loaded yet
 /******/ 		var installedChunks = {
-/******/ 			"test_notifications": 1
+/******/ 			"test_whole_disk_home_and_separate_boot": 1
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.O.require = (chunkId) => (installedChunks[chunkId]);
@@ -4675,4 +4525,4 @@ module.exports = require("zlib");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=test_notifications.js.map
+//# sourceMappingURL=test_whole_disk_home_and_separate_boot.js.map
