@@ -22,8 +22,10 @@ import {
 } from "../checks/installation";
 import { logInWithIncorrectPasswordWithSidebar } from "../checks/login";
 import { changeDiskToInstallTheSystemWithSidebar } from "../checks/storage_change_disk_to_install";
+import { overviewLandingWithSidebar } from "../checks/product_selection";
 import { prepareZfcpStorageWithSidebar } from "../checks/storage_zfcp";
 import { selectPatternsWithSidebar } from "../checks/software_selection";
+import { verifyDecryptDestructiveActionsWithSidebar } from "../checks/storage_result_destructive_actions_planned";
 
 export class StableReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -52,6 +54,10 @@ export class StableReleaseStrategy implements IProductTestStrategy {
 
   enterExtensionRegistrationHA(code: string) {
     enterExtensionRegistrationHAWithSidebar(code);
+  }
+
+  overviewLanding() {
+    overviewLandingWithSidebar();
   }
 
   createFirstUser(password: string) {
@@ -88,5 +94,9 @@ export class StableReleaseStrategy implements IProductTestStrategy {
 
   selectPatterns(patterns: string[]) {
     selectPatternsWithSidebar(patterns);
+  }
+
+  verifyDecryptDestructiveActions(destructiveActions: string[]) {
+    verifyDecryptDestructiveActionsWithSidebar(destructiveActions);
   }
 }

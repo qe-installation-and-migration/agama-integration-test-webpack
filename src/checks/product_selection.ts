@@ -1,15 +1,22 @@
 import { it, page } from "../lib/helpers";
 import { OverviewPage } from "../pages/overview_page";
+import { OverviewWithSidebarPage } from "../pages/overview_with_sidebar_page";
 import {
   ProductSelectionPage,
   ProductSelectionWithRegistrationPage,
 } from "../pages/product_selection_page";
 
-function ensureProductConfiguration() {
+export function overviewLanding() {
+  it("should display Overview", async function () {
+    await new OverviewPage(page).waitVisible(40000);
+  });
+}
+
+export function overviewLandingWithSidebar() {
   it(
     "should display Overview",
     async function () {
-      await new OverviewPage(page).waitVisible(70000);
+      await new OverviewWithSidebarPage(page).waitVisible(70000);
     },
     71 * 1000,
   );
@@ -21,8 +28,6 @@ export function productSelection(productId: string) {
     await productSelectionPage.choose(productId);
     await productSelectionPage.select();
   });
-
-  ensureProductConfiguration();
 }
 
 export function productSelectionWithLicense(productId: string) {
@@ -41,6 +46,4 @@ export function productSelectionWithLicense(productId: string) {
   it(`should allow to select product`, async function () {
     await new ProductSelectionWithRegistrationPage(page).select();
   });
-
-  ensureProductConfiguration();
 }

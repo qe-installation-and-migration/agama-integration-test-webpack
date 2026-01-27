@@ -34,9 +34,11 @@ test_init(options);
 const testStrategy = ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
 
 logIn(options.password);
-if (options.productId !== "none")
+if (options.productId !== "none") {
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
+  testStrategy.overviewLanding();
+}
 if (options.registrationCode)
   testStrategy.enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,

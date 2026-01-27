@@ -28,9 +28,11 @@ const testStrategy = ProductStrategyFactory.create(options.productVersion, optio
 
 testStrategy.logInWithIncorrectPassword();
 logIn(options.password);
-if (options.productId !== "none")
+if (options.productId !== "none") {
   if (options.acceptLicense) productSelectionWithLicense(options.productId);
   else productSelection(options.productId);
+  testStrategy.overviewLanding();
+}
 if (options.staticHostname) testStrategy.setPermanentHostname(options.staticHostname);
 testStrategy.verifyRegistrationWarniningAlerts(
   options.useCustomRegistrationServer,

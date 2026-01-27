@@ -1,5 +1,5 @@
 import { it, page, getTextContent } from "../lib/helpers";
-import { OverviewPage, OverviewWithRegistrationPage } from "../pages/overview_page";
+import { OverviewWithRegistrationPage } from "../pages/overview_page";
 import {
   ProductRegistrationPage,
   CustomRegistrationPage,
@@ -11,6 +11,7 @@ import assert from "node:assert/strict";
 import { TrustRegistrationCertificatePage } from "../pages/trust_registration_certificate_page";
 import { SidebarWithRegistrationPage } from "../pages/sidebar_page";
 import { HeaderPage } from "../pages/header_page";
+import { OverviewWithSidebarPage } from "../pages/overview_with_sidebar_page";
 
 export interface RegistrationOptions {
   use_custom?: string;
@@ -123,7 +124,7 @@ export function enterProductRegistrationWithSidebar({
   }
 
   it("should display product has been registered", async function () {
-    await new OverviewPage(page).waitVisible(60000);
+    await new OverviewWithSidebarPage(page).waitVisible(60000);
     const sidebar = new SidebarWithRegistrationPage(page);
     const productRegistration = new ProductRegistrationPage(page);
 

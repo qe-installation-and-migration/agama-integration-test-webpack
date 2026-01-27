@@ -350,14 +350,22 @@ function logInWithIncorrectPasswordWithSidebar() {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.overviewLanding = overviewLanding;
+exports.overviewLandingWithSidebar = overviewLandingWithSidebar;
 exports.productSelection = productSelection;
 exports.productSelectionWithLicense = productSelectionWithLicense;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const overview_with_sidebar_page_1 = __webpack_require__(/*! ../pages/overview_with_sidebar_page */ "./src/pages/overview_with_sidebar_page.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-function ensureProductConfiguration() {
+function overviewLanding() {
     (0, helpers_1.it)("should display Overview", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(70000);
+        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(40000);
+    });
+}
+function overviewLandingWithSidebar() {
+    (0, helpers_1.it)("should display Overview", async function () {
+        await new overview_with_sidebar_page_1.OverviewWithSidebarPage(helpers_1.page).waitVisible(70000);
     }, 71 * 1000);
 }
 function productSelection(productId) {
@@ -366,7 +374,6 @@ function productSelection(productId) {
         await productSelectionPage.choose(productId);
         await productSelectionPage.select();
     });
-    ensureProductConfiguration();
 }
 function productSelectionWithLicense(productId) {
     (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
@@ -384,7 +391,6 @@ function productSelectionWithLicense(productId) {
     (0, helpers_1.it)(`should allow to select product`, async function () {
         await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
     });
-    ensureProductConfiguration();
 }
 
 
@@ -418,6 +424,7 @@ const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "
 const trust_registration_certificate_page_1 = __webpack_require__(/*! ../pages/trust_registration_certificate_page */ "./src/pages/trust_registration_certificate_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_with_sidebar_page_1 = __webpack_require__(/*! ../pages/overview_with_sidebar_page */ "./src/pages/overview_with_sidebar_page.ts");
 function enterProductRegistration({ use_custom, code, provide_code, url, }) {
     (0, helpers_1.it)("should allow setting registration", async function () {
         const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
@@ -488,7 +495,7 @@ function enterProductRegistrationWithSidebar({ use_custom, code, provide_code, u
         });
     }
     (0, helpers_1.it)("should display product has been registered", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(60000);
+        await new overview_with_sidebar_page_1.OverviewWithSidebarPage(helpers_1.page).waitVisible(60000);
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new product_registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();
@@ -830,6 +837,47 @@ function prepareDasdStorage() {
         await dasd.back();
         await storage.waitForElement("::-p-text(Installation devices)", 60000);
     }, 6 * 60 * 1000);
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/storage_result_destructive_actions_planned.ts":
+/*!******************************************************************!*\
+  !*** ./src/checks/storage_result_destructive_actions_planned.ts ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.verifyDecryptDestructiveActions = verifyDecryptDestructiveActions;
+exports.verifyDecryptDestructiveActionsWithSidebar = verifyDecryptDestructiveActionsWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_result_page_1 = __webpack_require__(/*! ../pages/storage_result_page */ "./src/pages/storage_result_page.ts");
+const storage_result_page_with_sidebar_page_1 = __webpack_require__(/*! ../pages/storage_result_page_with_sidebar_page */ "./src/pages/storage_result_page_with_sidebar_page.ts");
+function verifyDecryptDestructiveActions(destructiveActions) {
+    (0, helpers_1.it)("should display a list of destructive actions", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        await overview.goToStorage();
+        const storage = new storage_result_page_1.StorageResultPage(helpers_1.page);
+        await storage.scrollToDestructiveActionsList();
+        for (const action of destructiveActions) {
+            await storage.destructiveActionText(action).wait();
+        }
+    });
+}
+function verifyDecryptDestructiveActionsWithSidebar(destructiveActions) {
+    (0, helpers_1.it)("should display a list of destructive actions", async function () {
+        await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
+        const storage = new storage_result_page_with_sidebar_page_1.StorageResultPageWithSidebarPage(helpers_1.page);
+        await storage.scrollToDestructiveActionsList();
+        for (const action of destructiveActions) {
+            await storage.destructiveActionText(action).wait();
+        }
+    });
 }
 
 
@@ -2162,6 +2210,58 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 
 /***/ }),
 
+/***/ "./src/pages/storage_result_page.ts":
+/*!******************************************!*\
+  !*** ./src/pages/storage_result_page.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageResultPage = void 0;
+class StorageResultPage {
+    page;
+    destructiveActionsList = () => this.page.locator("::-p-text(Actions)");
+    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
+    constructor(page) {
+        this.page = page;
+    }
+    async scrollToDestructiveActionsList() {
+        (await this.destructiveActionsList().waitHandle()).scrollIntoView();
+    }
+}
+exports.StorageResultPage = StorageResultPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/storage_result_page_with_sidebar_page.ts":
+/*!************************************************************!*\
+  !*** ./src/pages/storage_result_page_with_sidebar_page.ts ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageResultPageWithSidebarPage = void 0;
+class StorageResultPageWithSidebarPage {
+    page;
+    destructiveActionsList = () => this.page.locator("::-p-text(Check)");
+    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
+    constructor(page) {
+        this.page = page;
+    }
+    async scrollToDestructiveActionsList() {
+        (await this.destructiveActionsList().waitHandle()).scrollIntoView();
+    }
+}
+exports.StorageResultPageWithSidebarPage = StorageResultPageWithSidebarPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/storage_settings_change_disk_page.ts":
 /*!********************************************************!*\
   !*** ./src/pages/storage_settings_change_disk_page.ts ***!
@@ -2394,11 +2494,13 @@ const options = (0, cmdline_1.parse)((cmd) => cmd
 (0, helpers_1.test_init)(options);
 const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
 (0, login_1.logIn)(options.password);
-if (options.productId !== "none")
+if (options.productId !== "none") {
     if (options.acceptLicense)
         (0, product_selection_1.productSelectionWithLicense)(options.productId);
     else
         (0, product_selection_1.productSelection)(options.productId);
+    testStrategy.overviewLanding();
+}
 if (options.registrationCode)
     testStrategy.enterProductRegistration({
         use_custom: options.useCustomRegistrationServer,
@@ -2436,11 +2538,13 @@ const registration_1 = __webpack_require__(/*! ../checks/registration */ "./src/
 const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
 const first_user_1 = __webpack_require__(/*! ../checks/first_user */ "./src/checks/first_user.ts");
 const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
+const product_selection_1 = __webpack_require__(/*! ../checks/product_selection */ "./src/checks/product_selection.ts");
 const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/checks/installation.ts");
 const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
 const storage_change_disk_to_install_1 = __webpack_require__(/*! ../checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
 const storage_dasd_1 = __webpack_require__(/*! ../checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 const software_selection_1 = __webpack_require__(/*! ../checks/software_selection */ "./src/checks/software_selection.ts");
+const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 class ProductReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostname)(hostname);
@@ -2462,6 +2566,9 @@ class ProductReleaseStrategy {
     }
     enterExtensionRegistrationHA(code) {
         (0, registration_1.enterExtensionRegistrationHA)(code);
+    }
+    overviewLanding() {
+        (0, product_selection_1.overviewLanding)();
     }
     createFirstUser(password) {
         (0, first_user_1.createFirstUser)(password);
@@ -2490,6 +2597,9 @@ class ProductReleaseStrategy {
     selectPatterns(patterns) {
         (0, software_selection_1.selectPatterns)(patterns);
     }
+    verifyDecryptDestructiveActions(destructiveActions) {
+        (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(destructiveActions);
+    }
 }
 exports.ProductReleaseStrategy = ProductReleaseStrategy;
 
@@ -2514,8 +2624,10 @@ const root_authentication_1 = __webpack_require__(/*! ../checks/root_authenticat
 const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/checks/installation.ts");
 const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
 const storage_change_disk_to_install_1 = __webpack_require__(/*! ../checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
+const product_selection_1 = __webpack_require__(/*! ../checks/product_selection */ "./src/checks/product_selection.ts");
 const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 const software_selection_1 = __webpack_require__(/*! ../checks/software_selection */ "./src/checks/software_selection.ts");
+const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 class StableReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
@@ -2537,6 +2649,9 @@ class StableReleaseStrategy {
     }
     enterExtensionRegistrationHA(code) {
         (0, registration_1.enterExtensionRegistrationHAWithSidebar)(code);
+    }
+    overviewLanding() {
+        (0, product_selection_1.overviewLandingWithSidebar)();
     }
     createFirstUser(password) {
         (0, first_user_1.createFirstUserWithSidebar)(password);
@@ -2564,6 +2679,9 @@ class StableReleaseStrategy {
     }
     selectPatterns(patterns) {
         (0, software_selection_1.selectPatternsWithSidebar)(patterns);
+    }
+    verifyDecryptDestructiveActions(destructiveActions) {
+        (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActionsWithSidebar)(destructiveActions);
     }
 }
 exports.StableReleaseStrategy = StableReleaseStrategy;

@@ -9,11 +9,13 @@ import {
 import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "../checks/encryption";
 import { createFirstUser } from "../checks/first_user";
 import { editRootUser, verifyPasswordStrength } from "../checks/root_authentication";
+import { overviewLanding } from "../checks/product_selection";
 import { finishInstallation, performInstallation } from "../checks/installation";
 import { logInWithIncorrectPassword } from "../checks/login";
 import { changeDiskToInstallTheSystem } from "../checks/storage_change_disk_to_install";
 import { prepareDasdStorage } from "../checks/storage_dasd";
 import { selectPatterns } from "../checks/software_selection";
+import { verifyDecryptDestructiveActions } from "../checks/storage_result_destructive_actions_planned";
 
 export class ProductReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -42,6 +44,10 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
 
   enterExtensionRegistrationHA(code: string) {
     enterExtensionRegistrationHA(code);
+  }
+
+  overviewLanding() {
+    overviewLanding();
   }
 
   createFirstUser(password: string) {
@@ -78,5 +84,9 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
 
   selectPatterns(patterns: string[]) {
     selectPatterns(patterns);
+  }
+
+  verifyDecryptDestructiveActions(destructiveActions: string[]) {
+    verifyDecryptDestructiveActions(destructiveActions);
   }
 }

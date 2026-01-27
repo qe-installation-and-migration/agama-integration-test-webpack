@@ -159,6 +159,7 @@ const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "
 const trust_registration_certificate_page_1 = __webpack_require__(/*! ../pages/trust_registration_certificate_page */ "./src/pages/trust_registration_certificate_page.ts");
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_with_sidebar_page_1 = __webpack_require__(/*! ../pages/overview_with_sidebar_page */ "./src/pages/overview_with_sidebar_page.ts");
 function enterProductRegistration({ use_custom, code, provide_code, url, }) {
     (0, helpers_1.it)("should allow setting registration", async function () {
         const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
@@ -229,7 +230,7 @@ function enterProductRegistrationWithSidebar({ use_custom, code, provide_code, u
         });
     }
     (0, helpers_1.it)("should display product has been registered", async function () {
-        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(60000);
+        await new overview_with_sidebar_page_1.OverviewWithSidebarPage(helpers_1.page).waitVisible(60000);
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const productRegistration = new product_registration_page_1.ProductRegistrationPage(helpers_1.page);
         await sidebar.goToRegistration();

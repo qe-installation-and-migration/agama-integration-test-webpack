@@ -7,6 +7,7 @@ export interface IProductTestStrategy {
   verifyRegistrationWarniningAlerts(use_custom?: string, url?: string);
   enterProductRegistration({use_custom, code, provide_code, url}: RegistrationOptions): void;
   enableEncryption(password: string);
+  overviewLanding();
   verifyEncryptionEnabled();
   disableEncryption();
   enterExtensionRegistrationHA(code: string);
@@ -19,6 +20,7 @@ export interface IProductTestStrategy {
   verifyPasswordStrength();
   prepareZfcpStorage();
   selectPatterns(patterns: string[]);
+  verifyDecryptDestructiveActions(destructiveActions: string[]);
 }
 
 // ts-prune-ignore-next
