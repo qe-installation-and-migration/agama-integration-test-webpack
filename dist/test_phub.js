@@ -2,6 +2,215 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/checks/encryption.ts":
+/*!**********************************!*\
+  !*** ./src/checks/encryption.ts ***!
+  \**********************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.enableEncryption = enableEncryption;
+exports.enableEncryptionWithSidebar = enableEncryptionWithSidebar;
+exports.verifyEncryptionEnabled = verifyEncryptionEnabled;
+exports.verifyEncryptionEnabledWithSidebar = verifyEncryptionEnabledWithSidebar;
+exports.disableEncryption = disableEncryption;
+exports.disableEncryptionWithSidebar = disableEncryptionWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const encryption_settings_page_1 = __webpack_require__(/*! ../pages/encryption_settings_page */ "./src/pages/encryption_settings_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+function enableEncryption(password) {
+    (0, helpers_1.it)("should enable encryption", async function () {
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToStorage();
+        await storageSettings.selectEncryption();
+        await storageSettings.changeEncryption();
+        await encryptionSettings.markEncryptTheSystem();
+        await encryptionSettings.fillPassword(password);
+        await encryptionSettings.fillPasswordConfirmation(password);
+        await encryptionSettings.accept();
+        await storageSettings.encryptionIsEnabledText().wait();
+        await header.goToOverview();
+    });
+}
+function enableEncryptionWithSidebar(password) {
+    (0, helpers_1.it)("should enable encryption", async function () {
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storageSettings.editEncryption();
+        await encryptionSettings.markEncryptTheSystem();
+        await encryptionSettings.fillPassword(password);
+        await encryptionSettings.fillPasswordConfirmation(password);
+        await encryptionSettings.accept();
+        await storageSettings.encryptionIsEnabledText().wait();
+    });
+}
+function verifyEncryptionEnabled() {
+    (0, helpers_1.it)("should verify that encryption is enabled", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        await overview.goToStorage();
+        await storageSettings.selectEncryption();
+        const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsEnabledText());
+        strict_1.default.deepEqual(elementText, "Encryption is enabled");
+        await header.goToOverview();
+    });
+}
+function verifyEncryptionEnabledWithSidebar() {
+    (0, helpers_1.it)("should verify that encryption is enabled", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storageSettings.selectEncryption();
+        const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsEnabledText());
+        strict_1.default.deepEqual(elementText, "Encryption is enabled");
+    });
+}
+function disableEncryption() {
+    (0, helpers_1.it)("should disable encryption", async function () {
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToStorage();
+        await storageSettings.selectEncryption();
+        await storageSettings.changeEncryption();
+        await encryptionSettings.unmarkEncryptTheSystem();
+        await encryptionSettings.accept();
+        const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsDisabledText());
+        strict_1.default.deepEqual(elementText, "Encryption is disabled");
+        await header.goToOverview();
+    });
+}
+function disableEncryptionWithSidebar() {
+    (0, helpers_1.it)("should disable encryption", async function () {
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const encryptionSettings = new encryption_settings_page_1.EncryptionSettingsPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storageSettings.selectEncryption();
+        await storageSettings.changeEncryption();
+        await encryptionSettings.unmarkEncryptTheSystem();
+        await encryptionSettings.accept();
+        const elementText = await (0, helpers_1.getTextContent)(storageSettings.encryptionIsDisabledText());
+        strict_1.default.deepEqual(elementText, "Encryption is disabled");
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/first_user.ts":
+/*!**********************************!*\
+  !*** ./src/checks/first_user.ts ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createFirstUser = createFirstUser;
+exports.createFirstUserWithSidebar = createFirstUserWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const create_user_page_1 = __webpack_require__(/*! ../pages/create_user_page */ "./src/pages/create_user_page.ts");
+const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+function createFirstUser(password) {
+    (0, helpers_1.it)("should create first user", async function () {
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToUsers();
+        await users.defineAUserNow();
+        await createFirstUser.fillFullName("Bernhard M. Wiedemann");
+        await createFirstUser.fillUserName("bernhard");
+        await createFirstUser.fillPassword(password);
+        await createFirstUser.fillPasswordConfirmation(password);
+        await createFirstUser.accept();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+        await header.goToOverview();
+    });
+}
+function createFirstUserWithSidebar(password) {
+    (0, helpers_1.it)("should create first user", async function () {
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const createFirstUser = new create_user_page_1.CreateFirstUserPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToUsers();
+        await users.defineAUserNow();
+        await createFirstUser.fillFullName("Bernhard M. Wiedemann");
+        await createFirstUser.fillUserName("bernhard");
+        await createFirstUser.fillPassword(password);
+        await createFirstUser.fillPasswordConfirmation(password);
+        await createFirstUser.accept();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/hostname.ts":
+/*!********************************!*\
+  !*** ./src/checks/hostname.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.setPermanentHostname = setPermanentHostname;
+exports.setPermanentHostnameWithSidebar = setPermanentHostnameWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const hostname_page_1 = __webpack_require__(/*! ../pages/hostname_page */ "./src/pages/hostname_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+function setPermanentHostname(hostname) {
+    (0, helpers_1.it)("should allow setting static hostname", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const hostnamePage = new hostname_page_1.HostnamePage(helpers_1.page);
+        await overview.goToHostname();
+        await hostnamePage.useStaticHostname();
+        await hostnamePage.fill(hostname);
+        await hostnamePage.accept();
+        await header.goToOverview();
+    });
+}
+function setPermanentHostnameWithSidebar(hostname) {
+    (0, helpers_1.it)("should allow setting static hostname", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const hostnamePage = new hostname_page_1.HostnamePage(helpers_1.page);
+        await sidebar.goToHostname();
+        await hostnamePage.useStaticHostname();
+        await hostnamePage.fill(hostname);
+        await hostnamePage.accept();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/installation.ts":
 /*!************************************!*\
   !*** ./src/checks/installation.ts ***!
@@ -131,6 +340,141 @@ function logInWithIncorrectPasswordWithSidebar() {
 
 /***/ }),
 
+/***/ "./src/checks/network.ts":
+/*!*******************************!*\
+  !*** ./src/checks/network.ts ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.setOnlyInstallationNetwork = setOnlyInstallationNetwork;
+exports.setOnlyInstallationNetworkWithSidebar = setOnlyInstallationNetworkWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const network_page_1 = __webpack_require__(/*! ../pages/network_page */ "./src/pages/network_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+function setOnlyInstallationNetwork() {
+    (0, helpers_1.it)("should allow setting only installation network", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
+        await overview.goToNetwork();
+        await networkPage.selectWiredConnection();
+        await networkPage.selectInstallationOnly();
+        await header.goToOverview();
+    });
+    (0, helpers_1.it)("should alert no network after installation", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
+        await overview.goToNetwork();
+        await networkPage.verifyWarningAlert();
+        await header.goToOverview();
+    });
+}
+function setOnlyInstallationNetworkWithSidebar() {
+    (0, helpers_1.it)("should allow setting only installation network", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
+        await sidebar.goToNetwork();
+        await networkPage.selectWiredConnection();
+        await networkPage.selectInstallationOnly();
+    });
+    (0, helpers_1.it)("should alert no network after installation", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const networkPage = new network_page_1.NetworkPage(helpers_1.page);
+        await sidebar.goToNetwork();
+        await networkPage.verifyWarningAlert();
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/product_selection.ts":
+/*!*****************************************!*\
+  !*** ./src/checks/product_selection.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ensureLandingOnOverview = ensureLandingOnOverview;
+exports.ensureLandingOnOverviewWithSidebar = ensureLandingOnOverviewWithSidebar;
+exports.productSelection = productSelection;
+exports.productSelectionWithSidebar = productSelectionWithSidebar;
+exports.productSelectionWithLicense = productSelectionWithLicense;
+exports.productSelectionWithLicenseWithSidebar = productSelectionWithLicenseWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const overview_with_sidebar_page_1 = __webpack_require__(/*! ../pages/overview_with_sidebar_page */ "./src/pages/overview_with_sidebar_page.ts");
+const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
+function ensureLandingOnOverview() {
+    (0, helpers_1.it)("should display Overview", async function () {
+        await new overview_page_1.OverviewPage(helpers_1.page).waitVisible(70000);
+    }, 71 * 1000);
+}
+function ensureLandingOnOverviewWithSidebar() {
+    (0, helpers_1.it)("should display Overview", async function () {
+        await new overview_with_sidebar_page_1.OverviewWithSidebarPage(helpers_1.page).waitVisible(70000);
+    }, 71 * 1000);
+}
+function productSelection(productId) {
+    (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
+        const productSelectionPage = new product_selection_page_1.ProductSelectionPage(helpers_1.page);
+        await productSelectionPage.choose(productId);
+        await productSelectionPage.select();
+    });
+}
+function productSelectionWithSidebar(productId) {
+    (0, helpers_1.it)(`should allow to select product ${productId}`, async function () {
+        const productSelectionPage = new product_selection_page_1.ProductSelectionPage(helpers_1.page);
+        await productSelectionPage.choose(productId);
+        await productSelectionPage.select();
+    });
+}
+function productSelectionWithLicense(productId) {
+    (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
+        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).choose(productId);
+    });
+    (0, helpers_1.it)(`should allow to review its license`, async function () {
+        const productSelectionWithRegistrationPage = new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page);
+        await productSelectionWithRegistrationPage.openLicense();
+        await productSelectionWithRegistrationPage.verifyLicense();
+        await productSelectionWithRegistrationPage.closeLicense();
+    });
+    (0, helpers_1.it)(`should allow to accept its license`, async function () {
+        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).acceptProductLicense();
+    });
+    (0, helpers_1.it)(`should allow to select product`, async function () {
+        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
+    });
+}
+function productSelectionWithLicenseWithSidebar(productId) {
+    (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
+        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).choose(productId);
+    });
+    (0, helpers_1.it)(`should allow to review its license`, async function () {
+        const productSelectionWithRegistrationPage = new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page);
+        await productSelectionWithRegistrationPage.openLicense();
+        await productSelectionWithRegistrationPage.verifyLicense();
+        await productSelectionWithRegistrationPage.closeLicense();
+    });
+    (0, helpers_1.it)(`should allow to accept its license`, async function () {
+        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).acceptProductLicense();
+    });
+    (0, helpers_1.it)(`should allow to select product`, async function () {
+        await new product_selection_page_1.ProductSelectionWithRegistrationPage(helpers_1.page).select();
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/registration.ts":
 /*!************************************!*\
   !*** ./src/checks/registration.ts ***!
@@ -148,6 +492,7 @@ exports.enterProductRegistrationWithSidebar = enterProductRegistrationWithSideba
 exports.enterExtensionRegistrationHA = enterExtensionRegistrationHA;
 exports.enterExtensionRegistrationHAWithSidebar = enterExtensionRegistrationHAWithSidebar;
 exports.enterExtensionRegistrationPHub = enterExtensionRegistrationPHub;
+exports.enterExtensionRegistrationPHubWithSidebar = enterExtensionRegistrationPHubWithSidebar;
 exports.verifyRegistrationWarniningAlerts = verifyRegistrationWarniningAlerts;
 exports.verifyRegistrationWarniningAlertsWithSidebar = verifyRegistrationWarniningAlertsWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
@@ -263,6 +608,17 @@ function enterExtensionRegistrationPHub() {
     (0, helpers_1.it)("should allow registering Package Hub extension", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const extensionRegistrationPHub = new extension_registration_phub_page_1.ExtensionRegistrationPHubPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await extensionRegistrationPHub.register();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.registeredText()), "The extension was registered without any registration code.");
+        await header.goToOverview();
+    });
+}
+function enterExtensionRegistrationPHubWithSidebar() {
+    (0, helpers_1.it)("should allow registering Package Hub extension", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const extensionRegistrationPHub = new extension_registration_phub_page_1.ExtensionRegistrationPHubPage(helpers_1.page);
         await sidebar.goToRegistration();
         await extensionRegistrationPHub.register();
         strict_1.default.match(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.trustKeyText()), /is unknown. Do you want to trust this key?/);
@@ -343,6 +699,103 @@ function verifyRegistrationWarniningAlertsWithSidebar(use_custom, url) {
 
 /***/ }),
 
+/***/ "./src/checks/root_authentication.ts":
+/*!*******************************************!*\
+  !*** ./src/checks/root_authentication.ts ***!
+  \*******************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.editRootUser = editRootUser;
+exports.editRootUserWithSidebar = editRootUserWithSidebar;
+exports.verifyPasswordStrength = verifyPasswordStrength;
+exports.verifyPasswordStrengthWithSidebar = verifyPasswordStrengthWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const root_authentication_methods_1 = __webpack_require__(/*! ../pages/root_authentication_methods */ "./src/pages/root_authentication_methods.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const users_page_1 = __webpack_require__(/*! ../pages/users_page */ "./src/pages/users_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+function editRootUser(password) {
+    (0, helpers_1.it)("should edit the root user", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await overview.goToUsers();
+        await users.editRootUser();
+        await setARootPassword.usePassword();
+        await setARootPassword.fillPassword(password);
+        await setARootPassword.fillPasswordConfirmation(password);
+        await setARootPassword.accept();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+        await header.goToOverview();
+    });
+}
+function editRootUserWithSidebar(password) {
+    (0, helpers_1.it)("should edit the root user", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await sidebar.goToUsers();
+        await users.editRootUser();
+        await setARootPassword.usePassword();
+        await setARootPassword.fillPassword(password);
+        await setARootPassword.fillPasswordConfirmation(password);
+        await setARootPassword.accept();
+        // puppeteer goes too fast and screen is unresponsive after submit, a small delay helps
+        await (0, helpers_1.sleep)(2000);
+    });
+}
+function verifyPasswordStrength() {
+    (0, helpers_1.it)("should verify the strength of typed password", async function () {
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await overview.goToUsers();
+        await users.editRootUser();
+        await setARootPassword.fillPassword("a23b56c");
+        const elementTextPasswordLess8Characters = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordLess8Characters());
+        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "The password is shorter than 8 characters");
+        await setARootPassword.fillPassword("a23b56ca");
+        const elementTextPasswordIsWeak = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordIsWeak());
+        strict_1.default.deepEqual(elementTextPasswordIsWeak, "The password is weak");
+        await setARootPassword.fillPassword("a23b5678");
+        const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck());
+        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "The password fails the dictionary check - it is too simplistic/systematic");
+        header.goToOverview();
+    });
+}
+function verifyPasswordStrengthWithSidebar() {
+    (0, helpers_1.it)("should verify the strength of typed password", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const users = new users_page_1.UsersPage(helpers_1.page);
+        const setARootPassword = new root_authentication_methods_1.SetARootPasswordPage(helpers_1.page);
+        await sidebar.goToUsers();
+        await users.editRootUser();
+        await setARootPassword.fillPassword("a23b56c");
+        const elementTextPasswordLess8Characters = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordLess8Characters());
+        strict_1.default.deepEqual(elementTextPasswordLess8Characters, "The password is shorter than 8 characters");
+        await setARootPassword.fillPassword("a23b56ca");
+        const elementTextPasswordIsWeak = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordIsWeak());
+        strict_1.default.deepEqual(elementTextPasswordIsWeak, "The password is weak");
+        await setARootPassword.fillPassword("a23b5678");
+        const elementTextPasswordFailDictionary = await (0, helpers_1.getTextContent)(setARootPassword.alertPasswordFailDictionaryCheck());
+        strict_1.default.deepEqual(elementTextPasswordFailDictionary, "The password fails the dictionary check - it is too simplistic/systematic");
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/software_selection.ts":
 /*!******************************************!*\
   !*** ./src/checks/software_selection.ts ***!
@@ -390,6 +843,168 @@ function selectPatternsWithSidebar(patterns) {
 
 /***/ }),
 
+/***/ "./src/checks/storage_change_disk_to_install.ts":
+/*!******************************************************!*\
+  !*** ./src/checks/storage_change_disk_to_install.ts ***!
+  \******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.changeDiskToInstallTheSystem = changeDiskToInstallTheSystem;
+exports.changeDiskToInstallTheSystemWithSidebar = changeDiskToInstallTheSystemWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const table_1 = __webpack_require__(/*! ../lib/table */ "./src/lib/table.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_settings_change_disk_page_1 = __webpack_require__(/*! ../pages/storage_settings_change_disk_page */ "./src/pages/storage_settings_change_disk_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+function changeDiskToInstallTheSystem() {
+    (0, helpers_1.it)("should change the disk to install the system to one which fails to calculate a storage layout", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const storageSettingsChangeDisk = new storage_settings_change_disk_page_1.StorageSettingsChangeDiskPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToStorage();
+        await storage.selectUsedDisk();
+        await storage.changeTheDiskToInstallTheSystem();
+        (await (0, table_1.getElementInCell)(helpers_1.page, storageSettingsChangeDisk.diskTableSelector, "Size", "5 GiB", "input[type='radio']")).click();
+        await storageSettingsChangeDisk.confirm();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storage.storageAllocationWarningText()), 'It is not possible to allocate space for the boot partition and for "/" (at least 12.5 GiB) and "swap" (1 GiB - 2 GiB).');
+        await storage.moreOptions();
+        await storage.resetToDefault();
+        await header.goToOverview();
+    });
+}
+function changeDiskToInstallTheSystemWithSidebar() {
+    (0, helpers_1.it)("should change the disk to install the system to one which fails to calculate a storage layout", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const storageSettingsChangeDisk = new storage_settings_change_disk_page_1.StorageSettingsChangeDiskPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.selectUsedDisk();
+        await storage.changeTheDiskToInstallTheSystem();
+        (await (0, table_1.getElementInCell)(helpers_1.page, storageSettingsChangeDisk.diskTableSelector, "Size", "5 GiB", "input[type='radio']")).click();
+        await storageSettingsChangeDisk.confirm();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storage.storageAllocationWarningText()), 'It is not possible to allocate space for the boot partition and for "/" (at least 12.5 GiB) and "swap" (1 GiB - 2 GiB).');
+        await storage.moreOptions();
+        await storage.resetToDefault();
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/storage_change_root_partition.ts":
+/*!*****************************************************!*\
+  !*** ./src/checks/storage_change_root_partition.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize = changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize;
+exports.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar = changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const configure_partition_page_1 = __webpack_require__(/*! ../pages/configure_partition_page */ "./src/pages/configure_partition_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
+    (0, helpers_1.it)("should change the file system to btrfs (without snapshots) and adjust it to min size", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const configRootPartition = new configure_partition_page_1.ConfigurePartitionPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        await overview.goToStorage();
+        await storage.editRootPartition();
+        await configRootPartition.changeFilesystemToBtrfs();
+        await configRootPartition.selectSizeMode();
+        await configRootPartition.changeSizeModeToManual();
+        await configRootPartition.inputPartitionSize("5 GiB");
+        await configRootPartition.disableAllowGrowing();
+        await configRootPartition.accept();
+        await header.goToOverview();
+    });
+}
+function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar() {
+    (0, helpers_1.it)("should change the file system to btrfs (without snapshots) and adjust it to min size", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const configRootPartition = new configure_partition_page_1.ConfigurePartitionPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.editRootPartition();
+        await configRootPartition.changeFilesystemToBtrfs();
+        await configRootPartition.selectSizeMode();
+        await configRootPartition.changeSizeModeToManual();
+        await configRootPartition.inputPartitionSize("5 GiB");
+        await configRootPartition.disableAllowGrowing();
+        await configRootPartition.accept();
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/storage_dasd.ts":
+/*!************************************!*\
+  !*** ./src/checks/storage_dasd.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.prepareDasdStorage = prepareDasdStorage;
+exports.prepareDasdStorageWithSidebar = prepareDasdStorageWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const dasd_page_1 = __webpack_require__(/*! ../pages/dasd_page */ "./src/pages/dasd_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+function prepareDasdStorage() {
+    (0, helpers_1.it)("should prepare DASD storage", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const dasd = new dasd_page_1.DasdPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToStorage();
+        await storage.manageDasd();
+        await dasd.activateDevice();
+        await dasd.formatDevice();
+        await dasd.waitFormattingDevice();
+        await dasd.back();
+        await storage.waitForElement("::-p-text(Installation devices)", 60000);
+        await header.goToOverview();
+    }, 6 * 60 * 1000);
+}
+function prepareDasdStorageWithSidebar() {
+    (0, helpers_1.it)("should prepare DASD storage", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const dasd = new dasd_page_1.DasdPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.manageDasd();
+        await dasd.activateDevice();
+        await dasd.formatDevice();
+        await dasd.waitFormattingDevice();
+        await dasd.back();
+        await storage.waitForElement("::-p-text(Installation devices)", 60000);
+    }, 6 * 60 * 1000);
+}
+
+
+/***/ }),
+
 /***/ "./src/checks/storage_out_of_sync.ts":
 /*!*******************************************!*\
   !*** ./src/checks/storage_out_of_sync.ts ***!
@@ -403,12 +1018,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.verifyStorageOutOfSync = verifyStorageOutOfSync;
+exports.verifyStorageOutOfSyncWithSidebar = verifyStorageOutOfSyncWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const util_1 = __importDefault(__webpack_require__(/*! util */ "util"));
 const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const child_process_1 = __webpack_require__(/*! child_process */ "child_process");
 const storage_warning_out_of_sync_page_1 = __webpack_require__(/*! ../pages/storage_warning_out_of_sync_page */ "./src/pages/storage_warning_out_of_sync_page.ts");
 function verifyStorageOutOfSync() {
+    (0, helpers_1.it)("should verify no storage out of sync popup", async function () {
+        const execPromise = util_1.default.promisify(child_process_1.exec);
+        await execPromise("agama probe");
+    });
+}
+function verifyStorageOutOfSyncWithSidebar() {
     (0, helpers_1.it)("should verify storage out of sync popup", async function () {
         const storageWarningOutOfSyncPage = new storage_warning_out_of_sync_page_1.StorageWarningOutOfSyncPage(helpers_1.page);
         const execPromise = util_1.default.promisify(child_process_1.exec);
@@ -416,6 +1038,145 @@ function verifyStorageOutOfSync() {
         strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storageWarningOutOfSyncPage.configurationOutOfSyncWarningAlert()), "Configuration out of sync");
         await storageWarningOutOfSyncPage.reload();
     });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/storage_result_destructive_actions_planned.ts":
+/*!******************************************************************!*\
+  !*** ./src/checks/storage_result_destructive_actions_planned.ts ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.verifyDecryptDestructiveActions = verifyDecryptDestructiveActions;
+exports.verifyDecryptDestructiveActionsWithSidebar = verifyDecryptDestructiveActionsWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_result_page_1 = __webpack_require__(/*! ../pages/storage_result_page */ "./src/pages/storage_result_page.ts");
+function verifyDecryptDestructiveActions(destructiveActions) {
+    (0, helpers_1.it)("should display a list of destructive actions", async function () {
+        await new overview_page_1.OverviewPage(helpers_1.page).goToStorage();
+        const storage = new storage_result_page_1.StorageResultPage(helpers_1.page);
+        await storage.scrollToDestructiveActionsList();
+        for (const action of destructiveActions) {
+            await storage.destructiveActionText(action).wait();
+        }
+        await new header_page_1.HeaderPage(helpers_1.page).goToOverview();
+    });
+}
+function verifyDecryptDestructiveActionsWithSidebar(destructiveActions) {
+    (0, helpers_1.it)("should display a list of destructive actions", async function () {
+        await new sidebar_page_1.SidebarPage(helpers_1.page).goToStorage();
+        const storage = new storage_result_page_1.StorageResultPage(helpers_1.page);
+        await storage.expandDestructiveActionsList();
+        for (const action of destructiveActions) {
+            await storage.destructiveActionText(action).wait();
+        }
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/storage_select_installation_device.ts":
+/*!**********************************************************!*\
+  !*** ./src/checks/storage_select_installation_device.ts ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.selectMoreDevices = selectMoreDevices;
+exports.selectMoreDevicesWithSidebar = selectMoreDevicesWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const configure_lvm_volume_group_page_1 = __webpack_require__(/*! ../pages/configure_lvm_volume_group_page */ "./src/pages/configure_lvm_volume_group_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+function selectMoreDevices() {
+    (0, helpers_1.it)("should add LVM volume group", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const lvm = new configure_lvm_volume_group_page_1.ConfigureLvmVolumeGroupPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToStorage();
+        await storage.selectMoreDevices();
+        await storage.addLvmVolumeGroup();
+        await lvm.accept();
+        await header.goToOverview();
+    });
+}
+function selectMoreDevicesWithSidebar() {
+    (0, helpers_1.it)("should add LVM volume group", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const lvm = new configure_lvm_volume_group_page_1.ConfigureLvmVolumeGroupPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.selectMoreDevices();
+        await storage.addLvmVolumeGroup();
+        await lvm.accept();
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/storage_zfcp.ts":
+/*!************************************!*\
+  !*** ./src/checks/storage_zfcp.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.prepareZfcpStorage = prepareZfcpStorage;
+exports.prepareZfcpStorageWithSidebar = prepareZfcpStorageWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const zfcp_page_1 = __webpack_require__(/*! ../pages/zfcp_page */ "./src/pages/zfcp_page.ts");
+function prepareZfcpStorage() {
+    (0, helpers_1.it)("should prepare zFCP storage", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        await overview.goToStorage();
+        await storage.activateZfcp();
+        await zfcp.activateDevice("0.0.fa00");
+        await zfcp.activateDevice("0.0.fc00");
+        await zfcp.back();
+        await zfcp.activateMultipath();
+        // Workaround to wait for page to load, sometimes workers take more than 60 seconds to load storage
+        await storage.waitForElement("::-p-text(Activate zFCP disks)", 100000);
+        await header.goToOverview();
+    }, 3 * 60 * 1000);
+}
+function prepareZfcpStorageWithSidebar() {
+    (0, helpers_1.it)("should prepare zFCP storage", async function () {
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const zfcp = new zfcp_page_1.ZfcpPage(helpers_1.page);
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.activateZfcp();
+        await zfcp.activateDevice("0.0.fa00");
+        await zfcp.activateDevice("0.0.fc00");
+        await zfcp.back();
+        await zfcp.activateMultipath();
+        // Workaround to wait for page to load, sometimes workers take more than 60 seconds to load storage
+        await storage.waitForElement("::-p-text(Activate zFCP disks)", 100000);
+    }, 3 * 60 * 1000);
 }
 
 
@@ -752,6 +1513,212 @@ async function waitOnFile(filePath) {
 
 /***/ }),
 
+/***/ "./src/lib/product_strategy_factory.ts":
+/*!*********************************************!*\
+  !*** ./src/lib/product_strategy_factory.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProductStrategyFactory = void 0;
+const product_release_strategy_1 = __webpack_require__(/*! ../variants/product_release_strategy */ "./src/variants/product_release_strategy.ts");
+const stable_release_strategy_1 = __webpack_require__(/*! ../variants/stable_release_strategy */ "./src/variants/stable_release_strategy.ts");
+// ts-prune-ignore-next
+class ProductStrategyFactory {
+    static create(productVersion, agamaVersion) {
+        if (productVersion === "16.1" && agamaVersion.includes("19")) {
+            return new product_release_strategy_1.ProductReleaseStrategy();
+        }
+        return new stable_release_strategy_1.StableReleaseStrategy();
+    }
+}
+exports.ProductStrategyFactory = ProductStrategyFactory;
+
+
+/***/ }),
+
+/***/ "./src/lib/table.ts":
+/*!**************************!*\
+  !*** ./src/lib/table.ts ***!
+  \**************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getTextInCells = getTextInCells;
+exports.getElementInCell = getElementInCell;
+async function getHeaders(page, tableSelector) {
+    const headers = await page.$$eval(`${tableSelector} th[scope="col"]`, (ths) => ths.map((th) => th.innerText.trim() || th.getAttribute('aria-label')));
+    return headers.map((h) => (h || "").trim());
+}
+async function getColumnIndex(page, tableSelector, column) {
+    const headers = await getHeaders(page, tableSelector);
+    const index = headers.indexOf(column);
+    if (index === -1) {
+        throw new Error(`Column "${column}" not found in table "${tableSelector}"`);
+    }
+    return index;
+}
+async function selectRow(page, tableSelector, column, value) {
+    const columnIndex = await getColumnIndex(page, tableSelector, column);
+    const rows = await page.$$(`${tableSelector} tbody tr`);
+    for (const row of rows) {
+        const selector = `*:nth-child(${columnIndex + 1})`;
+        const cell = await row.$(selector);
+        if (cell) {
+            const cellText = await cell.evaluate((c) => c.innerText);
+            if (cellText.trim() === value.trim()) {
+                return row;
+            }
+        }
+    }
+    throw new Error(`Row with "${column}: ${value}" not found in table "${tableSelector}"`);
+}
+async function readCells(page, tableSelector, row, columns) {
+    const headers = await getHeaders(page, tableSelector);
+    const columnInfo = columns.map((column) => {
+        const index = headers.indexOf(column);
+        if (index === -1) {
+            throw new Error(`Column "${column}" not found in table "${tableSelector}"`);
+        }
+        return { column, index };
+    });
+    return row.evaluate((r, colInfo) => {
+        const data = [];
+        for (const { index } of colInfo) {
+            const cell = r.querySelector(`*:nth-child(${index + 1})`);
+            if (cell) {
+                data.push(cell.innerText);
+            }
+            else {
+                data.push("");
+            }
+        }
+        return data;
+    }, columnInfo);
+}
+async function readCell(page, tableSelector, row, column) {
+    const columnIndex = await getColumnIndex(page, tableSelector, column);
+    const selector = `*:nth-child(${columnIndex + 1})`;
+    const cell = await row.$(selector);
+    if (!cell) {
+        throw new Error(`Cell in column "${column}" not found for the selected row.`);
+    }
+    return cell.evaluate((c) => c.innerText);
+}
+async function getCell(page, tableSelector, row, column) {
+    const columnIndex = await getColumnIndex(page, tableSelector, column);
+    const selector = `*:nth-child(${columnIndex + 1})`;
+    const cell = await row.$(selector);
+    if (!cell) {
+        throw new Error(`Cell in column "${column}" not found for the selected row.`);
+    }
+    return cell;
+}
+async function getTextInCells(page, tableSelector, rowColumn, rowValue, targetColumns) {
+    const row = await selectRow(page, tableSelector, rowColumn, rowValue);
+    if (Array.isArray(targetColumns)) {
+        return readCells(page, tableSelector, row, targetColumns);
+    }
+    return readCell(page, tableSelector, row, targetColumns);
+}
+// ts-prune-ignore-next
+async function getElementInCell(page, tableSelector, rowColumn, rowValue, elementSelector, targetColumn) {
+    const row = await selectRow(page, tableSelector, rowColumn, rowValue);
+    let searchContext = row;
+    if (targetColumn) {
+        searchContext = await getCell(page, tableSelector, row, targetColumn);
+    }
+    const element = await searchContext.$(elementSelector);
+    if (!element) {
+        let errorMessage = `Element with selector "${elementSelector}" not found`;
+        if (targetColumn) {
+            errorMessage += ` in column "${targetColumn}"`;
+        }
+        errorMessage += ` in the row identified by "${rowColumn}: ${rowValue}".`;
+        throw new Error(errorMessage);
+    }
+    return element;
+}
+
+
+/***/ }),
+
+/***/ "./src/pages/configure_lvm_volume_group_page.ts":
+/*!******************************************************!*\
+  !*** ./src/pages/configure_lvm_volume_group_page.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigureLvmVolumeGroupPage = void 0;
+class ConfigureLvmVolumeGroupPage {
+    page;
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.ConfigureLvmVolumeGroupPage = ConfigureLvmVolumeGroupPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/configure_partition_page.ts":
+/*!***********************************************!*\
+  !*** ./src/pages/configure_partition_page.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigurePartitionPage = void 0;
+class ConfigurePartitionPage {
+    page;
+    fileSystemButton = () => this.page.locator("::-p-aria(File system)");
+    btrfsOption = () => this.page.locator('::-p-aria(Btrfs[role="option"])');
+    sizeModeToggleMenu = () => this.page.locator("::-p-aria(Size mode)");
+    manualMenuItem = () => this.page.locator("::-p-aria(Manual Define a custom size)");
+    sizeGiBTextbox = () => this.page.locator("::-p-aria(Size)[type='text']");
+    allowGrowingCheckBox = () => this.page.locator("::-p-aria(Allow growing)");
+    acceptButton = () => this.page.locator("::-p-aria(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async changeFilesystemToBtrfs() {
+        await this.fileSystemButton().click();
+        await this.btrfsOption().click();
+    }
+    async selectSizeMode() {
+        await this.sizeModeToggleMenu().click();
+    }
+    async changeSizeModeToManual() {
+        await this.manualMenuItem().click();
+    }
+    async inputPartitionSize(size) {
+        await this.sizeGiBTextbox().fill(size);
+    }
+    async disableAllowGrowing() {
+        await this.allowGrowingCheckBox().click();
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.ConfigurePartitionPage = ConfigurePartitionPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/confirm_installation_page.ts":
 /*!************************************************!*\
   !*** ./src/pages/confirm_installation_page.ts ***!
@@ -823,6 +1790,145 @@ class CongratulationPage {
     }
 }
 exports.CongratulationPage = CongratulationPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/create_user_page.ts":
+/*!***************************************!*\
+  !*** ./src/pages/create_user_page.ts ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateFirstUserPage = void 0;
+class CreateFirstUserPage {
+    page;
+    fullNameInput = () => this.page.locator("input#userFullName");
+    usernameInput = () => this.page.locator("input#userName");
+    passwordInput = () => this.page.locator("input#password");
+    passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
+    acceptButton = () => this.page.locator("button[form='firstUserForm']");
+    constructor(page) {
+        this.page = page;
+    }
+    async fillFullName(fullName) {
+        await this.fullNameInput().fill(fullName);
+    }
+    async fillUserName(userName) {
+        await this.usernameInput().fill(userName);
+    }
+    async fillPassword(password) {
+        await this.passwordInput().fill(password);
+    }
+    async fillPasswordConfirmation(password) {
+        await this.passwordConfirmationInput().fill(password);
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.CreateFirstUserPage = CreateFirstUserPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/dasd_page.ts":
+/*!********************************!*\
+  !*** ./src/pages/dasd_page.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DasdPage = void 0;
+class DasdPage {
+    page;
+    selectRow = (index) => this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
+    actionsForDisk = () => this.page.locator("xpath/descendant-or-self::button[starts-with(@aria-label, 'Actions for')]");
+    activateDisk = () => this.page
+        .locator('button[role="menuitem"]')
+        .filter((item) => item.getAttribute("tabindex") === "0");
+    checkActiveDisk = () => this.page.locator("table tbody tr:nth-child(1) td:nth-child(4)");
+    formatDiskButton = () => this.page.locator("button::-p-text(Format)");
+    formatNowDiskButton = () => this.page.locator("::-p-text(Format now)");
+    formattingDasdText = () => this.page.locator("::-p-text(Formatting DASD devices)");
+    backButton = () => this.page.locator("button::-p-text(Back)");
+    constructor(page) {
+        this.page = page;
+    }
+    async activateDevice() {
+        await this.actionsForDisk().click();
+        await this.activateDisk().click();
+        // Update this block of code to use table function, progress#193147
+        await this.page.waitForFunction((selector, text) => {
+            const element = document.querySelector(selector);
+            return element && element.textContent.trim() !== text;
+        }, { timeout: 5000 }, "table tbody tr:nth-child(1) td:nth-child(4)", "offline");
+    }
+    async formatDevice() {
+        await this.selectRow(0).click();
+        await this.formatDiskButton().click();
+        await this.formatNowDiskButton().click();
+    }
+    async waitFormattingDevice() {
+        await this.formattingDasdText().wait();
+        await this.page.waitForSelector('div[role="dialog"][aria-modal="true"]', {
+            hidden: true,
+            timeout: 5 * 60 * 1000,
+        });
+    }
+    async back() {
+        await this.backButton().click();
+    }
+}
+exports.DasdPage = DasdPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/encryption_settings_page.ts":
+/*!***********************************************!*\
+  !*** ./src/pages/encryption_settings_page.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EncryptionSettingsPage = void 0;
+class EncryptionSettingsPage {
+    page;
+    encryptTheSystemCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:checked");
+    encryptTheSystemNotCheckedCheckbox = () => this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:not(:checked)");
+    passwordInput = () => this.page.locator("#password");
+    passwordConfirmationInput = () => this.page.locator("#passwordConfirmation");
+    acceptButton = () => this.page.locator("button::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async markEncryptTheSystem() {
+        await this.encryptTheSystemNotCheckedCheckbox().click();
+        await this.encryptTheSystemCheckedCheckbox().wait();
+    }
+    async unmarkEncryptTheSystem() {
+        await this.encryptTheSystemCheckedCheckbox().click();
+        await this.encryptTheSystemNotCheckedCheckbox().wait();
+    }
+    async fillPassword(password) {
+        await this.passwordInput().fill(password);
+    }
+    async fillPasswordConfirmation(password) {
+        await this.passwordConfirmationInput().fill(password);
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.EncryptionSettingsPage = EncryptionSettingsPage;
 
 
 /***/ }),
@@ -913,6 +2019,39 @@ exports.HeaderPage = HeaderPage;
 
 /***/ }),
 
+/***/ "./src/pages/hostname_page.ts":
+/*!************************************!*\
+  !*** ./src/pages/hostname_page.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HostnamePage = void 0;
+class HostnamePage {
+    page;
+    useStaticHostnameToggle = () => this.page.locator("input#hostname");
+    hostnameInput = () => this.page.locator("::-p-aria(Static hostname)");
+    acceptButton = () => this.page.locator("::-p-text(Accept)");
+    constructor(page) {
+        this.page = page;
+    }
+    async useStaticHostname() {
+        await this.useStaticHostnameToggle().click();
+    }
+    async fill(hostname) {
+        await this.hostnameInput().fill(hostname);
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.HostnamePage = HostnamePage;
+
+
+/***/ }),
+
 /***/ "./src/pages/installation_complete_page.ts":
 /*!*************************************************!*\
   !*** ./src/pages/installation_complete_page.ts ***!
@@ -993,6 +2132,41 @@ class LoginAsRootPage {
     }
 }
 exports.LoginAsRootPage = LoginAsRootPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/network_page.ts":
+/*!***********************************!*\
+  !*** ./src/pages/network_page.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NetworkPage = void 0;
+class NetworkPage {
+    page;
+    wiredConnection = () => this.page.locator(`ul[aria-label="Wired connections"] > li`);
+    installationOnlyCheckboxNotChecked = () => this.page.locator(`input[type="checkbox"]:not(:checked)[role="switch"]`);
+    installationOnlyCheckboxChecked = () => this.page.locator(`input[type="checkbox"]:checked[role="switch"]`);
+    warningAlertHeading = () => this.page.locator(`::-p-text(Installed system may not have network connections)`);
+    constructor(page) {
+        this.page = page;
+    }
+    async selectWiredConnection() {
+        await this.wiredConnection().click();
+    }
+    async selectInstallationOnly() {
+        await this.installationOnlyCheckboxNotChecked().click();
+        await this.installationOnlyCheckboxChecked().wait();
+    }
+    async verifyWarningAlert() {
+        await this.warningAlertHeading().wait();
+    }
+}
+exports.NetworkPage = NetworkPage;
 
 
 /***/ }),
@@ -1166,6 +2340,111 @@ exports.CustomRegistrationPage = CustomRegistrationPage;
 
 /***/ }),
 
+/***/ "./src/pages/product_selection_page.ts":
+/*!*********************************************!*\
+  !*** ./src/pages/product_selection_page.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProductSelectionWithRegistrationPage = exports.ProductSelectionPage = void 0;
+class ProductSelectionPage {
+    page;
+    productText = (name) => this.page.locator(`::-p-text(${name})`);
+    productId = (id) => this.page.locator("input#" + id.replaceAll(".", "\\."));
+    selectButton = () => this.page.locator("button[form='productSelectionForm']");
+    constructor(page) {
+        this.page = page;
+    }
+    async choose(id) {
+        (await this.productId(id).waitHandle()).scrollIntoView();
+        await this.productId(id).click();
+    }
+    async select() {
+        await this.selectButton().click();
+    }
+    async selectByName(name) {
+        await this.choose(name);
+        await this.selectButton().click();
+    }
+}
+exports.ProductSelectionPage = ProductSelectionPage;
+function LicenseAcceptable(Base) {
+    return class extends Base {
+        licenseAcceptanceCheckbox = () => this.page.locator("::-p-text(I have read and)");
+        licenseOpenButton = () => this.page.locator("::-p-text(license)");
+        licenseCloseButton = () => this.page.locator("::-p-text(Close)");
+        licenseText = () => this.page.locator("::-p-text(End User License Agreement)");
+        async acceptLicense() {
+            await this.licenseAcceptanceCheckbox().click();
+        }
+        async openLicense() {
+            await this.licenseOpenButton().click();
+        }
+        async verifyLicense() {
+            await this.licenseText().wait();
+        }
+        async closeLicense() {
+            await this.licenseCloseButton().click();
+        }
+        async acceptProductLicense() {
+            await this.acceptLicense();
+        }
+    };
+}
+class ProductSelectionWithRegistrationPage extends LicenseAcceptable(ProductSelectionPage) {
+}
+exports.ProductSelectionWithRegistrationPage = ProductSelectionWithRegistrationPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/root_authentication_methods.ts":
+/*!**************************************************!*\
+  !*** ./src/pages/root_authentication_methods.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SetARootPasswordPage = void 0;
+class SetARootPasswordPage {
+    page;
+    acceptText = () => this.page.locator("button::-p-text(Accept)");
+    confirmText = () => this.page.locator("button::-p-text(Confirm)");
+    passwordInput = () => this.page.locator("input#password");
+    passwordConfirmationInput = () => this.page.locator("input#passwordConfirmation");
+    alertPasswordLess8Characters = () => this.page.locator("::-p-text(The password is shorter than 8 characters)");
+    alertPasswordIsWeak = () => this.page.locator("::-p-text(The password is weak)");
+    alertPasswordFailDictionaryCheck = () => this.page.locator("::-p-text(it is too simplistic/systematic)");
+    usePasswordToggle = () => this.page.locator("::-p-text(Use password)");
+    constructor(page) {
+        this.page = page;
+    }
+    async accept() {
+        await this.acceptText().click();
+    }
+    async confirm() {
+        await this.confirmText().click();
+    }
+    async fillPassword(password) {
+        await this.passwordInput().fill(password);
+    }
+    async fillPasswordConfirmation(password) {
+        await this.passwordConfirmationInput().fill(password);
+    }
+    async usePassword() {
+        await this.usePasswordToggle().click();
+    }
+}
+exports.SetARootPasswordPage = SetARootPasswordPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/sidebar_page.ts":
 /*!***********************************!*\
   !*** ./src/pages/sidebar_page.ts ***!
@@ -1284,6 +2563,142 @@ exports.SoftwareSelectionPage = SoftwareSelectionPage;
 
 /***/ }),
 
+/***/ "./src/pages/storage_result_page.ts":
+/*!******************************************!*\
+  !*** ./src/pages/storage_result_page.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageResultPage = void 0;
+class StorageResultPage {
+    page;
+    destructiveActionsListWithSidebar = () => this.page.locator("::-p-text(Check)");
+    destructiveActionsList = () => this.page.locator("::-p-text(Actions)");
+    destructiveActionText = (name) => this.page.locator(`::-p-text(Delete ${name})`);
+    constructor(page) {
+        this.page = page;
+    }
+    async scrollToDestructiveActionsList() {
+        (await this.destructiveActionsList().waitHandle()).scrollIntoView();
+    }
+    async expandDestructiveActionsList() {
+        await this.destructiveActionsListWithSidebar().click();
+    }
+}
+exports.StorageResultPage = StorageResultPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/storage_settings_change_disk_page.ts":
+/*!********************************************************!*\
+  !*** ./src/pages/storage_settings_change_disk_page.ts ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageSettingsChangeDiskPage = void 0;
+class StorageSettingsChangeDiskPage {
+    page;
+    confirmButton = () => this.page.locator("button::-p-text(Confirm)");
+    diskTableSelector;
+    constructor(page) {
+        this.page = page;
+        this.diskTableSelector = 'div[aria-modal="true"] table[data-type="agama/expandable-selector"]';
+    }
+    async confirm() {
+        await this.confirmButton().click();
+    }
+}
+exports.StorageSettingsChangeDiskPage = StorageSettingsChangeDiskPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/storage_settings_page.ts":
+/*!********************************************!*\
+  !*** ./src/pages/storage_settings_page.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageSettingsPage = void 0;
+class StorageSettingsPage {
+    page;
+    selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
+    useDiskButton = () => this.page.locator("::-p-text(Use disk)");
+    selectDiskToInstallButton = () => this.page.locator("::-p-text(Change the disk to install the system)");
+    editEncryptionButton = () => this.page.locator("a[href='#/storage/encryption/edit']");
+    encryptionTab = () => this.page.locator("::-p-text(Encryption)");
+    changeEncryptionLink = () => this.page.locator('::-p-aria([name="Change"][role="link"])');
+    encryptionIsEnabledText = () => this.page.locator("::-p-text(Encryption is enabled)");
+    encryptionIsDisabledText = () => this.page.locator("::-p-text(Encryption is disabled)");
+    manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
+    ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
+    addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
+    expandPartitionsButton = () => this.page.locator("::-p-text(New partitions will be created)");
+    optionForRoot = () => this.page.locator("::-p-aria(Options for partition /)");
+    editRootPartitionMenu = () => this.page.locator("::-p-aria(Edit /[role='menuitem'])");
+    threeDotsButton = () => this.page.locator("button:has(svg.agm-three-dots-icon):not([aria-label])");
+    storageAllocationWarningText = () => this.page.locator("::-p-text(It is not possible to allocate space for the boot partition)");
+    resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
+    constructor(page) {
+        this.page = page;
+    }
+    async selectUsedDisk() {
+        await this.useDiskButton().click();
+    }
+    async changeTheDiskToInstallTheSystem() {
+        await this.selectDiskToInstallButton().click();
+    }
+    async selectMoreDevices() {
+        await this.selectMoreDevicesButton().click();
+    }
+    async editEncryption() {
+        await this.editEncryptionButton().click();
+    }
+    async selectEncryption() {
+        await this.encryptionTab().click();
+    }
+    async changeEncryption() {
+        await this.changeEncryptionLink().click();
+    }
+    async manageDasd() {
+        await this.manageDasdLink().click();
+    }
+    async activateZfcp() {
+        await this.ActivateZfcpLink().click();
+    }
+    async addLvmVolumeGroup() {
+        await this.addLvmVolumeLink().click();
+    }
+    async waitForElement(element, timeout) {
+        await this.page.locator(element).setTimeout(timeout).wait();
+    }
+    async editRootPartition() {
+        await this.expandPartitionsButton().click();
+        await this.optionForRoot().click();
+        await this.editRootPartitionMenu().click();
+    }
+    async moreOptions() {
+        await this.threeDotsButton().click();
+    }
+    async resetToDefault() {
+        await this.resetToDefaultsButton().click();
+    }
+}
+exports.StorageSettingsPage = StorageSettingsPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/storage_warning_out_of_sync_page.ts":
 /*!*******************************************************!*\
   !*** ./src/pages/storage_warning_out_of_sync_page.ts ***!
@@ -1339,6 +2754,78 @@ exports.TrustRegistrationCertificatePage = TrustRegistrationCertificatePage;
 
 /***/ }),
 
+/***/ "./src/pages/users_page.ts":
+/*!*********************************!*\
+  !*** ./src/pages/users_page.ts ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UsersPage = void 0;
+class UsersPage {
+    page;
+    firstUserLink = () => this.page.locator("a[href='#/users/first']");
+    editRootUserButton = () => this.page.locator("a[href='#/users/root/edit']");
+    defineTheFirstUserButton = () => this.page.locator("a[href='#/users/first/edit']");
+    constructor(page) {
+        this.page = page;
+    }
+    async defineAUserNow() {
+        await this.firstUserLink().click();
+    }
+    async editRootUser() {
+        await this.editRootUserButton().click();
+    }
+    async defineTheFirstUser() {
+        await this.defineTheFirstUserButton().click();
+    }
+}
+exports.UsersPage = UsersPage;
+
+
+/***/ }),
+
+/***/ "./src/pages/zfcp_page.ts":
+/*!********************************!*\
+  !*** ./src/pages/zfcp_page.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ZfcpPage = void 0;
+class ZfcpPage {
+    page;
+    faDisk = () => this.page.locator("tbody > tr:first-child > td:last-child > button#zfcp_controllers_actions");
+    fcDisk = () => this.page.locator("tbody > tr:last-child > td:last-child > button#zfcp_controllers_actions");
+    zfcpDisk = (channelId) => this.page.locator(`xpath=//tr[contains(., "${channelId}")]`);
+    activateDisk = () => this.page.locator("::-p-aria(Activate[role='menuitem'])");
+    backButton = () => this.page.locator("button::-p-text(Back)");
+    enableMultipath = () => this.page.locator("::-p-text('Yes')");
+    constructor(page) {
+        this.page = page;
+    }
+    async activateDevice(channelId) {
+        const rowActions = channelId === "0.0.fa00" ? this.faDisk() : this.fcDisk();
+        await rowActions.click();
+        await this.activateDisk().click();
+        await this.zfcpDisk(channelId).setTimeout(90000).wait();
+    }
+    async activateMultipath() {
+        await this.enableMultipath().setTimeout(40000).click();
+    }
+    async back() {
+        await this.backButton().click();
+    }
+}
+exports.ZfcpPage = ZfcpPage;
+
+
+/***/ }),
+
 /***/ "./src/test_phub.ts":
 /*!**************************!*\
   !*** ./src/test_phub.ts ***!
@@ -1351,20 +2838,243 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
 const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
 const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
-const storage_out_of_sync_1 = __webpack_require__(/*! ./checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
-const registration_1 = __webpack_require__(/*! ./checks/registration */ "./src/checks/registration.ts");
 const software_selection_1 = __webpack_require__(/*! ./checks/software_selection */ "./src/checks/software_selection.ts");
-const installation_1 = __webpack_require__(/*! ./checks/installation */ "./src/checks/installation.ts");
+const product_strategy_factory_1 = __webpack_require__(/*! ./lib/product_strategy_factory */ "./src/lib/product_strategy_factory.ts");
 const options = (0, cmdline_1.parse)((cmd) => cmd
     .option("--register-package-hub", "Registration for PackageHub")
     .option("--patterns <pattern>...", "comma-separated list of patterns", cmdline_1.commaSeparatedList));
+const testStrategy = product_strategy_factory_1.ProductStrategyFactory.create(options.productVersion, options.agamaVersion);
 (0, helpers_1.test_init)(options);
 (0, login_1.logIn)(options.password);
-(0, registration_1.enterExtensionRegistrationPHub)();
+testStrategy.enterExtensionRegistrationPHub();
 (0, software_selection_1.selectPatterns)(options.patterns);
-(0, storage_out_of_sync_1.verifyStorageOutOfSync)();
-(0, installation_1.performInstallation)();
-(0, installation_1.finishInstallation)();
+testStrategy.verifyStorageOutOfSync();
+testStrategy.performInstallation();
+testStrategy.finishInstallation();
+
+
+/***/ }),
+
+/***/ "./src/variants/product_release_strategy.ts":
+/*!**************************************************!*\
+  !*** ./src/variants/product_release_strategy.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ProductReleaseStrategy = void 0;
+const hostname_1 = __webpack_require__(/*! ../checks/hostname */ "./src/checks/hostname.ts");
+const registration_1 = __webpack_require__(/*! ../checks/registration */ "./src/checks/registration.ts");
+const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
+const first_user_1 = __webpack_require__(/*! ../checks/first_user */ "./src/checks/first_user.ts");
+const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
+const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/checks/installation.ts");
+const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
+const storage_change_disk_to_install_1 = __webpack_require__(/*! ../checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
+const storage_dasd_1 = __webpack_require__(/*! ../checks/storage_dasd */ "./src/checks/storage_dasd.ts");
+const software_selection_1 = __webpack_require__(/*! ../checks/software_selection */ "./src/checks/software_selection.ts");
+const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
+const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
+const product_selection_1 = __webpack_require__(/*! ../checks/product_selection */ "./src/checks/product_selection.ts");
+const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
+const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
+const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
+const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
+class ProductReleaseStrategy {
+    setPermanentHostname(hostname) {
+        (0, hostname_1.setPermanentHostname)(hostname);
+    }
+    verifyRegistrationWarniningAlerts(use_custom, url) {
+        (0, registration_1.verifyRegistrationWarniningAlerts)(use_custom, url);
+    }
+    enterProductRegistration({ use_custom, code, provide_code, url }) {
+        (0, registration_1.enterProductRegistration)({ use_custom, code, provide_code, url });
+    }
+    enableEncryption(password) {
+        (0, encryption_1.enableEncryption)(password);
+    }
+    verifyEncryptionEnabled() {
+        (0, encryption_1.verifyEncryptionEnabled)();
+    }
+    disableEncryption() {
+        (0, encryption_1.disableEncryption)();
+    }
+    enterExtensionRegistrationHA(code) {
+        (0, registration_1.enterExtensionRegistrationHA)(code);
+    }
+    enterExtensionRegistrationPHub() {
+        (0, registration_1.enterExtensionRegistrationPHub)();
+    }
+    createFirstUser(password) {
+        (0, first_user_1.createFirstUser)(password);
+    }
+    editRootUser(password) {
+        (0, root_authentication_1.editRootUser)(password);
+    }
+    performInstallation() {
+        (0, installation_1.performInstallation)();
+    }
+    logInWithIncorrectPassword() {
+        (0, login_1.logInWithIncorrectPassword)();
+    }
+    finishInstallation() {
+        (0, installation_1.finishInstallation)();
+    }
+    changeDiskToInstallTheSystem() {
+        (0, storage_change_disk_to_install_1.changeDiskToInstallTheSystem)();
+    }
+    verifyPasswordStrength() {
+        (0, root_authentication_1.verifyPasswordStrength)();
+    }
+    prepareZfcpStorage() {
+        (0, storage_zfcp_1.prepareZfcpStorage)();
+    }
+    prepareDasdStorage() {
+        (0, storage_dasd_1.prepareDasdStorage)();
+    }
+    selectPatterns(patterns) {
+        (0, software_selection_1.selectPatterns)(patterns);
+    }
+    changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
+        (0, storage_change_root_partition_1.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize)();
+    }
+    productSelection(productId) {
+        (0, product_selection_1.productSelection)(productId);
+    }
+    productSelectionWithLicense(productId) {
+        (0, product_selection_1.productSelectionWithLicense)(productId);
+    }
+    selectMoreDevices() {
+        (0, storage_select_installation_device_1.selectMoreDevices)();
+    }
+    setOnlyInstallationNetwork() {
+        (0, network_1.setOnlyInstallationNetwork)();
+    }
+    verifyDecryptDestructiveActions(destructiveActions) {
+        (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActions)(destructiveActions);
+    }
+    ensureLandingOnOverview() {
+        (0, product_selection_1.ensureLandingOnOverview)();
+    }
+    verifyStorageOutOfSync() {
+        (0, storage_out_of_sync_1.verifyStorageOutOfSync)();
+    }
+}
+exports.ProductReleaseStrategy = ProductReleaseStrategy;
+
+
+/***/ }),
+
+/***/ "./src/variants/stable_release_strategy.ts":
+/*!*************************************************!*\
+  !*** ./src/variants/stable_release_strategy.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StableReleaseStrategy = void 0;
+const hostname_1 = __webpack_require__(/*! ../checks/hostname */ "./src/checks/hostname.ts");
+const registration_1 = __webpack_require__(/*! ../checks/registration */ "./src/checks/registration.ts");
+const encryption_1 = __webpack_require__(/*! ../checks/encryption */ "./src/checks/encryption.ts");
+const first_user_1 = __webpack_require__(/*! ../checks/first_user */ "./src/checks/first_user.ts");
+const root_authentication_1 = __webpack_require__(/*! ../checks/root_authentication */ "./src/checks/root_authentication.ts");
+const installation_1 = __webpack_require__(/*! ../checks/installation */ "./src/checks/installation.ts");
+const login_1 = __webpack_require__(/*! ../checks/login */ "./src/checks/login.ts");
+const storage_change_disk_to_install_1 = __webpack_require__(/*! ../checks/storage_change_disk_to_install */ "./src/checks/storage_change_disk_to_install.ts");
+const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
+const software_selection_1 = __webpack_require__(/*! ../checks/software_selection */ "./src/checks/software_selection.ts");
+const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
+const storage_dasd_1 = __webpack_require__(/*! ../checks/storage_dasd */ "./src/checks/storage_dasd.ts");
+const product_selection_1 = __webpack_require__(/*! ../checks/product_selection */ "./src/checks/product_selection.ts");
+const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
+const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
+const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
+const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
+class StableReleaseStrategy {
+    setPermanentHostname(hostname) {
+        (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
+    }
+    verifyRegistrationWarniningAlerts(use_custom, url) {
+        (0, registration_1.verifyRegistrationWarniningAlertsWithSidebar)(use_custom, url);
+    }
+    enterProductRegistration({ use_custom, code, provide_code, url }) {
+        (0, registration_1.enterProductRegistrationWithSidebar)({ use_custom, code, provide_code, url });
+    }
+    enableEncryption(password) {
+        (0, encryption_1.enableEncryptionWithSidebar)(password);
+    }
+    verifyEncryptionEnabled() {
+        (0, encryption_1.verifyEncryptionEnabledWithSidebar)();
+    }
+    disableEncryption() {
+        (0, encryption_1.disableEncryptionWithSidebar)();
+    }
+    enterExtensionRegistrationHA(code) {
+        (0, registration_1.enterExtensionRegistrationHAWithSidebar)(code);
+    }
+    enterExtensionRegistrationPHub() {
+        (0, registration_1.enterExtensionRegistrationPHubWithSidebar)();
+    }
+    createFirstUser(password) {
+        (0, first_user_1.createFirstUserWithSidebar)(password);
+    }
+    editRootUser(password) {
+        (0, root_authentication_1.editRootUserWithSidebar)(password);
+    }
+    performInstallation() {
+        (0, installation_1.performInstallationWithSidebar)();
+    }
+    logInWithIncorrectPassword() {
+        (0, login_1.logInWithIncorrectPasswordWithSidebar)();
+    }
+    finishInstallation() {
+        (0, installation_1.finishInstallationCongratulation)();
+    }
+    changeDiskToInstallTheSystem() {
+        (0, storage_change_disk_to_install_1.changeDiskToInstallTheSystemWithSidebar)();
+    }
+    verifyPasswordStrength() {
+        (0, root_authentication_1.verifyPasswordStrengthWithSidebar)();
+    }
+    prepareZfcpStorage() {
+        (0, storage_zfcp_1.prepareZfcpStorageWithSidebar)();
+    }
+    prepareDasdStorage() {
+        (0, storage_dasd_1.prepareDasdStorageWithSidebar)();
+    }
+    selectPatterns(patterns) {
+        (0, software_selection_1.selectPatternsWithSidebar)(patterns);
+    }
+    changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
+        (0, storage_change_root_partition_1.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar)();
+    }
+    productSelection(productId) {
+        (0, product_selection_1.productSelectionWithSidebar)(productId);
+    }
+    productSelectionWithLicense(productId) {
+        (0, product_selection_1.productSelectionWithLicenseWithSidebar)(productId);
+    }
+    selectMoreDevices() {
+        (0, storage_select_installation_device_1.selectMoreDevicesWithSidebar)();
+    }
+    setOnlyInstallationNetwork() {
+        (0, network_1.setOnlyInstallationNetworkWithSidebar)();
+    }
+    verifyDecryptDestructiveActions(destructiveActions) {
+        (0, storage_result_destructive_actions_planned_1.verifyDecryptDestructiveActionsWithSidebar)(destructiveActions);
+    }
+    ensureLandingOnOverview() {
+        (0, product_selection_1.ensureLandingOnOverviewWithSidebar)();
+    }
+    verifyStorageOutOfSync() {
+        (0, storage_out_of_sync_1.verifyStorageOutOfSyncWithSidebar)();
+    }
+}
+exports.StableReleaseStrategy = StableReleaseStrategy;
 
 
 /***/ }),

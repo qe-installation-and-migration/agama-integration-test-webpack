@@ -148,6 +148,7 @@ exports.enterProductRegistrationWithSidebar = enterProductRegistrationWithSideba
 exports.enterExtensionRegistrationHA = enterExtensionRegistrationHA;
 exports.enterExtensionRegistrationHAWithSidebar = enterExtensionRegistrationHAWithSidebar;
 exports.enterExtensionRegistrationPHub = enterExtensionRegistrationPHub;
+exports.enterExtensionRegistrationPHubWithSidebar = enterExtensionRegistrationPHubWithSidebar;
 exports.verifyRegistrationWarniningAlerts = verifyRegistrationWarniningAlerts;
 exports.verifyRegistrationWarniningAlertsWithSidebar = verifyRegistrationWarniningAlertsWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
@@ -260,6 +261,17 @@ function enterExtensionRegistrationHAWithSidebar(code) {
     });
 }
 function enterExtensionRegistrationPHub() {
+    (0, helpers_1.it)("should allow registering Package Hub extension", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const extensionRegistrationPHub = new extension_registration_phub_page_1.ExtensionRegistrationPHubPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await extensionRegistrationPHub.register();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.registeredText()), "The extension was registered without any registration code.");
+        await header.goToOverview();
+    });
+}
+function enterExtensionRegistrationPHubWithSidebar() {
     (0, helpers_1.it)("should allow registering Package Hub extension", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const extensionRegistrationPHub = new extension_registration_phub_page_1.ExtensionRegistrationPHubPage(helpers_1.page);

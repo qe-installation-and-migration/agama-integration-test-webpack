@@ -5,6 +5,7 @@ import {
   RegistrationOptions,
   enterProductRegistration,
   enterExtensionRegistrationHA,
+  enterExtensionRegistrationPHub,
 } from "../checks/registration";
 import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "../checks/encryption";
 import { createFirstUser } from "../checks/first_user";
@@ -24,6 +25,7 @@ import {
 import { selectMoreDevices } from "../checks/storage_select_installation_device";
 import { setOnlyInstallationNetwork } from "../checks/network";
 import { verifyDecryptDestructiveActions } from "../checks/storage_result_destructive_actions_planned";
+import { verifyStorageOutOfSync } from "../checks/storage_out_of_sync";
 
 export class ProductReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -52,6 +54,10 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
 
   enterExtensionRegistrationHA(code: string) {
     enterExtensionRegistrationHA(code);
+  }
+
+  enterExtensionRegistrationPHub() {
+    enterExtensionRegistrationPHub();
   }
 
   createFirstUser(password: string) {
@@ -120,5 +126,9 @@ export class ProductReleaseStrategy implements IProductTestStrategy {
 
   ensureLandingOnOverview() {
     ensureLandingOnOverview();
+  }
+
+  verifyStorageOutOfSync() {
+    verifyStorageOutOfSync();
   }
 }

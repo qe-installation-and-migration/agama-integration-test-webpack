@@ -10,6 +10,7 @@ export interface IProductTestStrategy {
   verifyEncryptionEnabled();
   disableEncryption();
   enterExtensionRegistrationHA(code: string);
+  enterExtensionRegistrationPHub();
   createFirstUser(password: string);
   editRootUser(password: string);
   performInstallation();
@@ -27,6 +28,7 @@ export interface IProductTestStrategy {
   setOnlyInstallationNetwork();
   verifyDecryptDestructiveActions(destructiveActions: string[]);
   ensureLandingOnOverview();
+  verifyStorageOutOfSync();
 }
 
 // ts-prune-ignore-next

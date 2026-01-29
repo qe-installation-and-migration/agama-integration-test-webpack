@@ -5,6 +5,7 @@ import {
   RegistrationOptions,
   enterProductRegistrationWithSidebar,
   enterExtensionRegistrationHAWithSidebar,
+  enterExtensionRegistrationPHubWithSidebar,
 } from "../checks/registration";
 import {
   disableEncryptionWithSidebar,
@@ -34,6 +35,7 @@ import {
 import { selectMoreDevicesWithSidebar } from "../checks/storage_select_installation_device";
 import { setOnlyInstallationNetworkWithSidebar } from "../checks/network";
 import { verifyDecryptDestructiveActionsWithSidebar } from "../checks/storage_result_destructive_actions_planned";
+import { verifyStorageOutOfSyncWithSidebar } from "../checks/storage_out_of_sync";
 
 export class StableReleaseStrategy implements IProductTestStrategy {
   setPermanentHostname(hostname: string) {
@@ -62,6 +64,10 @@ export class StableReleaseStrategy implements IProductTestStrategy {
 
   enterExtensionRegistrationHA(code: string) {
     enterExtensionRegistrationHAWithSidebar(code);
+  }
+
+  enterExtensionRegistrationPHub() {
+    enterExtensionRegistrationPHubWithSidebar();
   }
 
   createFirstUser(password: string) {
@@ -130,5 +136,9 @@ export class StableReleaseStrategy implements IProductTestStrategy {
 
   ensureLandingOnOverview() {
     ensureLandingOnOverviewWithSidebar();
+  }
+
+  verifyStorageOutOfSync() {
+    verifyStorageOutOfSyncWithSidebar();
   }
 }

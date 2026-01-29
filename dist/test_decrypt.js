@@ -514,6 +514,7 @@ exports.enterProductRegistrationWithSidebar = enterProductRegistrationWithSideba
 exports.enterExtensionRegistrationHA = enterExtensionRegistrationHA;
 exports.enterExtensionRegistrationHAWithSidebar = enterExtensionRegistrationHAWithSidebar;
 exports.enterExtensionRegistrationPHub = enterExtensionRegistrationPHub;
+exports.enterExtensionRegistrationPHubWithSidebar = enterExtensionRegistrationPHubWithSidebar;
 exports.verifyRegistrationWarniningAlerts = verifyRegistrationWarniningAlerts;
 exports.verifyRegistrationWarniningAlertsWithSidebar = verifyRegistrationWarniningAlertsWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
@@ -626,6 +627,17 @@ function enterExtensionRegistrationHAWithSidebar(code) {
     });
 }
 function enterExtensionRegistrationPHub() {
+    (0, helpers_1.it)("should allow registering Package Hub extension", async function () {
+        const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
+        const extensionRegistrationPHub = new extension_registration_phub_page_1.ExtensionRegistrationPHubPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await sidebar.goToRegistration();
+        await extensionRegistrationPHub.register();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(extensionRegistrationPHub.registeredText()), "The extension was registered without any registration code.");
+        await header.goToOverview();
+    });
+}
+function enterExtensionRegistrationPHubWithSidebar() {
     (0, helpers_1.it)("should allow registering Package Hub extension", async function () {
         const sidebar = new sidebar_page_1.SidebarWithRegistrationPage(helpers_1.page);
         const extensionRegistrationPHub = new extension_registration_phub_page_1.ExtensionRegistrationPHubPage(helpers_1.page);
@@ -1010,6 +1022,44 @@ function prepareDasdStorageWithSidebar() {
         await dasd.back();
         await storage.waitForElement("::-p-text(Installation devices)", 60000);
     }, 6 * 60 * 1000);
+}
+
+
+/***/ }),
+
+/***/ "./src/checks/storage_out_of_sync.ts":
+/*!*******************************************!*\
+  !*** ./src/checks/storage_out_of_sync.ts ***!
+  \*******************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.verifyStorageOutOfSync = verifyStorageOutOfSync;
+exports.verifyStorageOutOfSyncWithSidebar = verifyStorageOutOfSyncWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const util_1 = __importDefault(__webpack_require__(/*! util */ "util"));
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const child_process_1 = __webpack_require__(/*! child_process */ "child_process");
+const storage_warning_out_of_sync_page_1 = __webpack_require__(/*! ../pages/storage_warning_out_of_sync_page */ "./src/pages/storage_warning_out_of_sync_page.ts");
+function verifyStorageOutOfSync() {
+    (0, helpers_1.it)("should verify no storage out of sync popup", async function () {
+        const execPromise = util_1.default.promisify(child_process_1.exec);
+        await execPromise("agama probe");
+    });
+}
+function verifyStorageOutOfSyncWithSidebar() {
+    (0, helpers_1.it)("should verify storage out of sync popup", async function () {
+        const storageWarningOutOfSyncPage = new storage_warning_out_of_sync_page_1.StorageWarningOutOfSyncPage(helpers_1.page);
+        const execPromise = util_1.default.promisify(child_process_1.exec);
+        await execPromise("agama probe");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storageWarningOutOfSyncPage.configurationOutOfSyncWarningAlert()), "Configuration out of sync");
+        await storageWarningOutOfSyncPage.reload();
+    });
 }
 
 
@@ -2698,6 +2748,32 @@ exports.StorageSettingsPage = StorageSettingsPage;
 
 /***/ }),
 
+/***/ "./src/pages/storage_warning_out_of_sync_page.ts":
+/*!*******************************************************!*\
+  !*** ./src/pages/storage_warning_out_of_sync_page.ts ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageWarningOutOfSyncPage = void 0;
+class StorageWarningOutOfSyncPage {
+    page;
+    configurationOutOfSyncWarningAlert = () => this.page.locator("::-p-text(Configuration out of sync)");
+    reloadButton = () => this.page.locator("::-p-text(Reload now)");
+    constructor(page) {
+        this.page = page;
+    }
+    async reload() {
+        await this.reloadButton().setTimeout(60000).click();
+    }
+}
+exports.StorageWarningOutOfSyncPage = StorageWarningOutOfSyncPage;
+
+
+/***/ }),
+
 /***/ "./src/pages/trust_registration_certificate_page.ts":
 /*!**********************************************************!*\
   !*** ./src/pages/trust_registration_certificate_page.ts ***!
@@ -2875,6 +2951,7 @@ const product_selection_1 = __webpack_require__(/*! ../checks/product_selection 
 const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
 const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
+const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
 class ProductReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostname)(hostname);
@@ -2896,6 +2973,9 @@ class ProductReleaseStrategy {
     }
     enterExtensionRegistrationHA(code) {
         (0, registration_1.enterExtensionRegistrationHA)(code);
+    }
+    enterExtensionRegistrationPHub() {
+        (0, registration_1.enterExtensionRegistrationPHub)();
     }
     createFirstUser(password) {
         (0, first_user_1.createFirstUser)(password);
@@ -2948,6 +3028,9 @@ class ProductReleaseStrategy {
     ensureLandingOnOverview() {
         (0, product_selection_1.ensureLandingOnOverview)();
     }
+    verifyStorageOutOfSync() {
+        (0, storage_out_of_sync_1.verifyStorageOutOfSync)();
+    }
 }
 exports.ProductReleaseStrategy = ProductReleaseStrategy;
 
@@ -2980,6 +3063,7 @@ const product_selection_1 = __webpack_require__(/*! ../checks/product_selection 
 const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
 const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
+const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
 class StableReleaseStrategy {
     setPermanentHostname(hostname) {
         (0, hostname_1.setPermanentHostnameWithSidebar)(hostname);
@@ -3001,6 +3085,9 @@ class StableReleaseStrategy {
     }
     enterExtensionRegistrationHA(code) {
         (0, registration_1.enterExtensionRegistrationHAWithSidebar)(code);
+    }
+    enterExtensionRegistrationPHub() {
+        (0, registration_1.enterExtensionRegistrationPHubWithSidebar)();
     }
     createFirstUser(password) {
         (0, first_user_1.createFirstUserWithSidebar)(password);
@@ -3052,6 +3139,9 @@ class StableReleaseStrategy {
     }
     ensureLandingOnOverview() {
         (0, product_selection_1.ensureLandingOnOverviewWithSidebar)();
+    }
+    verifyStorageOutOfSync() {
+        (0, storage_out_of_sync_1.verifyStorageOutOfSyncWithSidebar)();
     }
 }
 exports.StableReleaseStrategy = StableReleaseStrategy;
