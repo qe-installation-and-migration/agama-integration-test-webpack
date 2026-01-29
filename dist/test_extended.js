@@ -943,6 +943,8 @@ function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         await overview.goToStorage();
+        await storage.expandPartitions();
+        await storage.clickOptionForRoot();
         await storage.editRootPartition();
         await configRootPartition.changeFilesystemToBtrfs();
         await configRootPartition.selectSizeMode();
@@ -959,6 +961,7 @@ function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar() 
         const configRootPartition = new configure_partition_page_1.ConfigurePartitionPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
+        await storage.expandPartitions();
         await storage.editRootPartition();
         await configRootPartition.changeFilesystemToBtrfs();
         await configRootPartition.selectSizeMode();
@@ -2652,7 +2655,7 @@ class StorageSettingsPage {
     addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
     expandPartitionsButton = () => this.page.locator("::-p-text(New partitions will be created)");
     optionForRoot = () => this.page.locator("::-p-aria(Options for partition /)");
-    editRootPartitionMenu = () => this.page.locator("::-p-aria(Edit /[role='menuitem'])");
+    editRootPartitionMenu = () => this.page.locator("button[aria-label='Edit /'][role='menuitem']");
     threeDotsButton = () => this.page.locator("button:has(svg.agm-three-dots-icon):not([aria-label])");
     storageAllocationWarningText = () => this.page.locator("::-p-text(It is not possible to allocate space for the boot partition)");
     resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
@@ -2689,9 +2692,13 @@ class StorageSettingsPage {
     async waitForElement(element, timeout) {
         await this.page.locator(element).setTimeout(timeout).wait();
     }
-    async editRootPartition() {
+    async expandPartitions() {
         await this.expandPartitionsButton().click();
+    }
+    async clickOptionForRoot() {
         await this.optionForRoot().click();
+    }
+    async editRootPartition() {
         await this.editRootPartitionMenu().click();
     }
     async moreOptions() {

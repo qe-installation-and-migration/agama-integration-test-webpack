@@ -13,6 +13,8 @@ export function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
     const overview = new OverviewPage(page);
 
     await overview.goToStorage();
+    await storage.expandPartitions();
+    await storage.clickOptionForRoot();
     await storage.editRootPartition();
     await configRootPartition.changeFilesystemToBtrfs();
     await configRootPartition.selectSizeMode();
@@ -31,6 +33,7 @@ export function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSid
     const sidebar = new SidebarPage(page);
 
     await sidebar.goToStorage();
+    await storage.expandPartitions();
     await storage.editRootPartition();
     await configRootPartition.changeFilesystemToBtrfs();
     await configRootPartition.selectSizeMode();

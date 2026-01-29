@@ -30,7 +30,7 @@ export class StorageSettingsPage {
 
   private readonly optionForRoot = () => this.page.locator("::-p-aria(Options for partition /)");
   private readonly editRootPartitionMenu = () =>
-    this.page.locator("::-p-aria(Edit /[role='menuitem'])");
+    this.page.locator("button[aria-label='Edit /'][role='menuitem']");
 
   private readonly threeDotsButton = () =>
     this.page.locator("button:has(svg.agm-three-dots-icon):not([aria-label])");
@@ -84,9 +84,15 @@ export class StorageSettingsPage {
     await this.page.locator(element).setTimeout(timeout).wait();
   }
 
-  async editRootPartition() {
+  async expandPartitions() {
     await this.expandPartitionsButton().click();
+  }
+
+  async clickOptionForRoot() {
     await this.optionForRoot().click();
+  }
+
+  async editRootPartition() {
     await this.editRootPartitionMenu().click();
   }
 
