@@ -238,7 +238,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.page = void 0;
+exports.Lazy = exports.page = void 0;
 exports.test_init = test_init;
 exports.setContinueOnError = setContinueOnError;
 exports.it = it;
@@ -427,6 +427,20 @@ async function waitOnFile(filePath) {
     }
 }
 ;
+class Lazy {
+    instance;
+    Class;
+    constructor(Class) {
+        this.Class = Class;
+    }
+    get() {
+        if (!this.instance) {
+            this.instance = new this.Class(exports.page);
+        }
+        return this.instance;
+    }
+}
+exports.Lazy = Lazy;
 
 
 /***/ }),

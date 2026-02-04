@@ -1,4 +1,4 @@
-import { it, page } from "../lib/helpers";
+import { it, page, Lazy } from "../lib/helpers";
 import { OverviewPage } from "../pages/overview_page";
 import { OverviewWithSidebarPage } from "../pages/overview_with_sidebar_page";
 import {
@@ -7,27 +7,26 @@ import {
   ProductSelectionWithLicensePage,
 } from "../pages/product_selection_page";
 
-function chooseProduct(productId: string) {
-  let productSelection;
+function chooseProduct(pageProvider: Lazy<ProductSelectionPage>, productId: string) {
   it(`should allow to choose product ${productId}`, async function () {
-    productSelection = new ProductSelectionPage(page);
-    await productSelection.choose(productId);
+    await pageProvider.get().choose(productId);
   });
 }
 
-function reviewAndAcceptlicenseAndAcceptProduct() {
-  let productSelectionWithLicensePage;
+function reviewAndAcceptlicenseAndAcceptProduct(
+  pageProvider: Lazy<ProductSelectionWithLicensePage>,
+) {
   it(`should allow to review its license`, async function () {
-    productSelectionWithLicensePage = new ProductSelectionWithLicensePage(page);
-    await productSelectionWithLicensePage.openLicense();
-    await productSelectionWithLicensePage.verifyLicense();
-    await productSelectionWithLicensePage.closeLicense();
+    const po = pageProvider.get();
+    await po.openLicense();
+    await po.verifyLicense();
+    await po.closeLicense();
   });
   it(`should allow to accept its license`, async function () {
-    await productSelectionWithLicensePage.acceptProductLicense();
+    await pageProvider.get().acceptProductLicense();
   });
   it(`should allow to accept selected product`, async function () {
-    await productSelectionWithLicensePage.select();
+    await pageProvider.get().select();
   });
 }
 
@@ -68,19 +67,18 @@ export function productSelectionWithSidebar(productId: string) {
 }
 
 export function productSelectionWithLicense(productId: string) {
-  chooseProduct(productId);
-  reviewAndAcceptlicenseAndAcceptProduct();
+  const pageProvider = new Lazy(ProductSelectionWithLicensePage);
+  chooseProduct(pageProvider, productId);
+  reviewAndAcceptlicenseAndAcceptProduct(pageProvider);
 }
 
 export function productSelectionWithLicenseAndMode(productId: string, productMode: string) {
-  let productSelectionWithLicenseAndModePage: ProductSelectionWithLicenseAndModePage;
-
-  chooseProduct(productId);
+  const pageProvider = new Lazy(ProductSelectionWithLicenseAndModePage);
+  chooseProduct(pageProvider, productId);
   it(`should allow to select mode ${productMode}`, async function () {
-    productSelectionWithLicenseAndModePage = new ProductSelectionWithLicenseAndModePage(page);
-    await productSelectionWithLicenseAndModePage.selectMode(productMode);
+    await pageProvider.get().selectMode(productMode);
   });
-  reviewAndAcceptlicenseAndAcceptProduct();
+  reviewAndAcceptlicenseAndAcceptProduct(pageProvider);
 }
 
 export function productSelectionWithLicenseWithSidebar(productId: string) {

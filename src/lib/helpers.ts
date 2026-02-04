@@ -214,3 +214,19 @@ export async function waitOnFile(filePath: string): Promise<void> {
     throw new Error("waitOnFile failed!", { cause: error });
   }
 };
+
+export class Lazy<T> {
+  private instance: T | undefined;
+  private Class: new (p: typeof page) => T;
+
+  constructor(Class: new (p: typeof page) => T) {
+    this.Class = Class;
+  }
+
+  get(): T {
+    if (!this.instance) {
+      this.instance = new this.Class(page);
+    }
+    return this.instance;
+  }
+}

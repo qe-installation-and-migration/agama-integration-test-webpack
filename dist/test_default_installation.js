@@ -413,26 +413,23 @@ const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.t
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const overview_with_sidebar_page_1 = __webpack_require__(/*! ../pages/overview_with_sidebar_page */ "./src/pages/overview_with_sidebar_page.ts");
 const product_selection_page_1 = __webpack_require__(/*! ../pages/product_selection_page */ "./src/pages/product_selection_page.ts");
-function chooseProduct(productId) {
-    let productSelection;
+function chooseProduct(pageProvider, productId) {
     (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
-        productSelection = new product_selection_page_1.ProductSelectionPage(helpers_1.page);
-        await productSelection.choose(productId);
+        await pageProvider.get().choose(productId);
     });
 }
-function reviewAndAcceptlicenseAndAcceptProduct() {
-    let productSelectionWithLicensePage;
+function reviewAndAcceptlicenseAndAcceptProduct(pageProvider) {
     (0, helpers_1.it)(`should allow to review its license`, async function () {
-        productSelectionWithLicensePage = new product_selection_page_1.ProductSelectionWithLicensePage(helpers_1.page);
-        await productSelectionWithLicensePage.openLicense();
-        await productSelectionWithLicensePage.verifyLicense();
-        await productSelectionWithLicensePage.closeLicense();
+        const po = pageProvider.get();
+        await po.openLicense();
+        await po.verifyLicense();
+        await po.closeLicense();
     });
     (0, helpers_1.it)(`should allow to accept its license`, async function () {
-        await productSelectionWithLicensePage.acceptProductLicense();
+        await pageProvider.get().acceptProductLicense();
     });
     (0, helpers_1.it)(`should allow to accept selected product`, async function () {
-        await productSelectionWithLicensePage.select();
+        await pageProvider.get().select();
     });
 }
 function ensureLandingOnOverview() {
@@ -460,17 +457,17 @@ function productSelectionWithSidebar(productId) {
     });
 }
 function productSelectionWithLicense(productId) {
-    chooseProduct(productId);
-    reviewAndAcceptlicenseAndAcceptProduct();
+    const pageProvider = new helpers_1.Lazy(product_selection_page_1.ProductSelectionWithLicensePage);
+    chooseProduct(pageProvider, productId);
+    reviewAndAcceptlicenseAndAcceptProduct(pageProvider);
 }
 function productSelectionWithLicenseAndMode(productId, productMode) {
-    let productSelectionWithLicenseAndModePage;
-    chooseProduct(productId);
+    const pageProvider = new helpers_1.Lazy(product_selection_page_1.ProductSelectionWithLicenseAndModePage);
+    chooseProduct(pageProvider, productId);
     (0, helpers_1.it)(`should allow to select mode ${productMode}`, async function () {
-        productSelectionWithLicenseAndModePage = new product_selection_page_1.ProductSelectionWithLicenseAndModePage(helpers_1.page);
-        await productSelectionWithLicenseAndModePage.selectMode(productMode);
+        await pageProvider.get().selectMode(productMode);
     });
-    reviewAndAcceptlicenseAndAcceptProduct();
+    reviewAndAcceptlicenseAndAcceptProduct(pageProvider);
 }
 function productSelectionWithLicenseWithSidebar(productId) {
     (0, helpers_1.it)(`should allow to choose product ${productId}`, async function () {
@@ -1309,7 +1306,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.page = void 0;
+exports.Lazy = exports.page = void 0;
 exports.test_init = test_init;
 exports.setContinueOnError = setContinueOnError;
 exports.it = it;
@@ -1498,6 +1495,20 @@ async function waitOnFile(filePath) {
     }
 }
 ;
+class Lazy {
+    instance;
+    Class;
+    constructor(Class) {
+        this.Class = Class;
+    }
+    get() {
+        if (!this.instance) {
+            this.instance = new this.Class(exports.page);
+        }
+        return this.instance;
+    }
+}
+exports.Lazy = Lazy;
 
 
 /***/ }),
