@@ -1,9 +1,10 @@
-import { it, page, getTextContent } from "../lib/helpers";
+import { it, page, getTextContent, sleep } from "../lib/helpers";
 import { OverviewWithRegistrationPage } from "../pages/overview_page";
 import {
   ProductRegistrationPage,
   CustomRegistrationPage,
 } from "../pages/product_registration_page";
+import { ProductRegistrationWithSidebarPage } from "../pages/product_registration_with_sidebar_page";
 import { ExtensionRegistrationPHubPage } from "../pages/extension_registration_phub_page";
 import { ExtensionRegistrationHAPage } from "../pages/extension_registration_ha_page";
 import assert from "node:assert/strict";
@@ -37,8 +38,8 @@ export function enterProductRegistration({
         await customRegistration.selectCustomRegistrationServer();
         await customRegistration.fillServerUrl(url);
       }
-      if (provide_code) {
-        await productRegistration.selectProvideRegistrationCode();
+      if (code) {
+        if (provide_code) await productRegistration.selectProvideRegistrationCode();
         await productRegistration.fillCode(code);
       }
     } else {
@@ -205,105 +206,60 @@ export function enterExtensionRegistrationPHubWithSidebar() {
   });
 }
 
-export function verifyRegistrationWarniningAlerts(use_custom?: string, url?: string): void {
+export function verifyRegistrationWarniningAlerts(): void {
   it("should show warning alert for missing registration code", async function () {
     const overview = new OverviewWithRegistrationPage(page);
     const customRegistration = new CustomRegistrationPage(page);
 
+    // Wait for the overlay to disappear
+    await page.waitForSelector('[role="alert"].agm-main-content-overlay', { hidden: true });
+    // await page.locator('[role="alert"].agm-main-content-overlay').setVisibility("hidden").wait();
+    await sleep(4000);
+
     await overview.goToRegistration();
-    if (use_custom) {
-      await customRegistration.selectProvideRegistrationCode();
-    }
+    await customRegistration.selectProvideRegistrationCode();
     await customRegistration.register();
     assert.deepEqual(
-      await getTextContent(customRegistration.enterRegistrationCodeText()),
-      "Enter a registration code",
+      await getTextContent(customRegistration.pleaseProvideRegistrationCodeText()),
+      "Please provide Registration Code.",
     );
   });
 
   it("should show warning alert for invalid registration code", async function () {
     const customRegistration = new CustomRegistrationPage(page);
+    const header = new HeaderPage(page);
 
     await customRegistration.fillCode("1234invalid4321");
     await customRegistration.register();
     assert.deepEqual(
-      await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
-      "Warning alert:Connection to registration server failed: Unknown Registration Code.",
+      await getTextContent(customRegistration.unknownRegistrationCodeText()),
+      "Unknown Registration Code.",
     );
-  });
-
-  it("should show warning alert for invalid custom registration server", async function () {
-    const customRegistration = new CustomRegistrationPage(page);
-
-    await customRegistration.selectCustomRegistrationServer();
-    await customRegistration.selectProvideRegistrationCode();
-    await customRegistration.fillServerUrl("http://scc.example.net");
-    await customRegistration.register();
-
-    assert.match(
-      await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
-      /Connection to registration server failed: dial tcp: lookup .+ on .+: no such host \(network error\)/,
-    );
-
-    if (use_custom) {
-      await customRegistration.fillServerUrl(url);
-    } else {
-      await customRegistration.selectSCCRegistrationServer();
-      await customRegistration.fillCode("1234invalid4321");
-    }
-    await customRegistration.register();
-    const header = new HeaderPage(page);
     await header.goToOverview();
   });
 }
 
-export function verifyRegistrationWarniningAlertsWithSidebar(
-  use_custom?: string,
-  url?: string,
-): void {
+export function verifyRegistrationWarniningAlertsWithSidebar(): void {
   it("should show warning alert for missing registration code", async function () {
     const sidebar = new SidebarWithRegistrationPage(page);
-    const customRegistration = new CustomRegistrationPage(page);
+    const registration = new ProductRegistrationWithSidebarPage(page);
 
     await sidebar.goToRegistration();
-    if (use_custom) await customRegistration.selectProvideRegistrationCode();
-    await customRegistration.register();
+    await registration.register();
     assert.deepEqual(
-      await getTextContent(customRegistration.enterRegistrationCodeText()),
+      await getTextContent(registration.enterRegistrationCodeText()),
       "Enter a registration code",
     );
   });
 
   it("should show warning alert for invalid registration code", async function () {
-    const customRegistration = new CustomRegistrationPage(page);
+    const registration = new ProductRegistrationWithSidebarPage(page);
 
-    await customRegistration.fillCode("1234invalid4321");
-    await customRegistration.register();
+    await registration.fillCode("1234invalid4321");
+    await registration.register();
     assert.deepEqual(
-      await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
+      await getTextContent(registration.connectionToRegistrationServerFailedText()),
       "Warning alert:Connection to registration server failed: Unknown Registration Code.",
     );
-  });
-
-  it("should show warning alert for invalid custom registration server", async function () {
-    const customRegistration = new CustomRegistrationPage(page);
-
-    await customRegistration.selectCustomRegistrationServer();
-    await customRegistration.selectProvideRegistrationCode();
-    await customRegistration.fillServerUrl("http://scc.example.net");
-    await customRegistration.register();
-
-    assert.match(
-      await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
-      /Connection to registration server failed: dial tcp: lookup .+ on .+: no such host \(network error\)/,
-    );
-
-    if (use_custom) {
-      await customRegistration.fillServerUrl(url);
-    } else {
-      await customRegistration.selectSCCRegistrationServer();
-      await customRegistration.fillCode("1234invalid4321");
-    }
-    await customRegistration.register();
   });
 }

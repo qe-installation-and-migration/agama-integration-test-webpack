@@ -11,14 +11,17 @@ class RegistrationBasePage {
     this.page.locator("::-p-text(has been registered with below information)");
 
   protected readonly registerButton = () => this.page.locator("::-p-aria(Register)");
+
+  readonly pleaseProvideRegistrationCodeText = () =>
+    this.page.locator("::-p-text(Please provide Registration Code)");
+
   protected readonly registrationOptionCheckbox = () =>
     this.page.locator("::-p-aria(Provide registration code)");
 
-  readonly connectionToRegistrationServerFailedText = () =>
-    this.page.locator("::-p-text(Connection to registration server failed:)");
+  readonly unknownRegistrationCodeText = () =>
+    this.page.locator("::-p-text(Unknown Registration Code)");
 
-  readonly enterRegistrationCodeText = () =>
-    this.page.locator("::-p-text(Enter a registration code)");
+  readonly networkErrorNotSuchAHostText = () => this.page.locator("::-p-text(no such host)");
 
   constructor(page: Page) {
     this.page = page;
@@ -40,7 +43,7 @@ class RegistrationBasePage {
     const elementText = await this.infoHasBeenRegisteredText()
       .map((span) => span.textContent)
       .wait();
-    await assert.match(
+    assert.match(
       elementText,
       /SUSE Linux Enterprise Server.*has been registered with below information/,
     );

@@ -40,10 +40,7 @@ if (options.productId !== "none")
   else productSelection(options.productId);
 testStrategy.ensureLandingOnOverview();
 if (options.staticHostname) testStrategy.setPermanentHostname(options.staticHostname);
-testStrategy.verifyRegistrationWarniningAlerts(
-  options.useCustomRegistrationServer,
-  options.registrationServerUrl,
-);
+testStrategy.verifyRegistrationWarniningAlerts();
 if (options.registrationCode)
   testStrategy.enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,

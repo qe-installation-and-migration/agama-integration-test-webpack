@@ -37,8 +37,8 @@ export class StableReleaseStrategy implements IProductTestStrategy {
     setPermanentHostnameWithSidebar(hostname);
   }
 
-  verifyRegistrationWarniningAlerts(use_custom?: string, url?: string) {
-    verifyRegistrationWarniningAlertsWithSidebar(use_custom, url);
+  verifyRegistrationWarniningAlerts() {
+    verifyRegistrationWarniningAlertsWithSidebar();
   }
 
   enterProductRegistration({ use_custom, code, provide_code, url }: RegistrationOptions): void {

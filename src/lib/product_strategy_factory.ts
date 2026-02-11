@@ -4,7 +4,7 @@ import { RegistrationOptions } from "../checks/registration";
 
 export interface IProductTestStrategy {
   setPermanentHostname(hostname: string): void;
-  verifyRegistrationWarniningAlerts(use_custom?: string, url?: string): void;
+  verifyRegistrationWarniningAlerts(): void;
   enterProductRegistration({ use_custom, code, provide_code, url }: RegistrationOptions): void;
   enableEncryption(password: string): void;
   verifyEncryptionEnabled(): void;
