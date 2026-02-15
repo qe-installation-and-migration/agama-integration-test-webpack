@@ -1,4 +1,4 @@
-import { it, page, getTextContent } from "../lib/helpers";
+import { it, page, getTextContent, sleep } from "../lib/helpers";
 import { OverviewWithRegistrationPage } from "../pages/overview_page";
 import {
   ProductRegistrationPage,
@@ -37,8 +37,8 @@ export function enterProductRegistration({
         await customRegistration.selectCustomRegistrationServer();
         await customRegistration.fillServerUrl(url);
       }
-      if (provide_code) {
-        await productRegistration.selectProvideRegistrationCode();
+      if (code) {
+        if (provide_code) await productRegistration.selectProvideRegistrationCode();
         await productRegistration.fillCode(code);
       }
     } else {
@@ -211,12 +211,16 @@ export function verifyRegistrationWarniningAlerts(use_custom?: string, url?: str
     const customRegistration = new CustomRegistrationPage(page);
 
     await overview.goToRegistration();
+    // Added delay, unclear what element to wait for instead poo#196676
+    await sleep(4000);
     if (use_custom) {
       await customRegistration.selectProvideRegistrationCode();
     }
     await customRegistration.register();
     assert.deepEqual(
-      await getTextContent(customRegistration.enterRegistrationCodeText()),
+      await getTextContent(
+        customRegistration.warningAlertEnterARegistrationCodeText().setTimeout(40 * 1000),
+      ),
       "Enter a registration code",
     );
   });
@@ -227,8 +231,8 @@ export function verifyRegistrationWarniningAlerts(use_custom?: string, url?: str
     await customRegistration.fillCode("1234invalid4321");
     await customRegistration.register();
     assert.deepEqual(
-      await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
-      "Warning alert:Connection to registration server failed: Unknown Registration Code.",
+      await getTextContent(customRegistration.warningAlertUnknownRegistrationCodeText()),
+      "Unknown Registration Code.",
     );
   });
 
@@ -241,8 +245,8 @@ export function verifyRegistrationWarniningAlerts(use_custom?: string, url?: str
     await customRegistration.register();
 
     assert.match(
-      await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
-      /Connection to registration server failed: dial tcp: lookup .+ on .+: no such host \(network error\)/,
+      await getTextContent(customRegistration.warningAlertNotSuchHostText()),
+      /Network error: dial tcp: lookup .+ on .+: no such host/,
     );
 
     if (use_custom) {
@@ -269,7 +273,7 @@ export function verifyRegistrationWarniningAlertsWithSidebar(
     if (use_custom) await customRegistration.selectProvideRegistrationCode();
     await customRegistration.register();
     assert.deepEqual(
-      await getTextContent(customRegistration.enterRegistrationCodeText()),
+      await getTextContent(customRegistration.warningAlertEnterARegistrationCodeText()),
       "Enter a registration code",
     );
   });
@@ -280,7 +284,7 @@ export function verifyRegistrationWarniningAlertsWithSidebar(
     await customRegistration.fillCode("1234invalid4321");
     await customRegistration.register();
     assert.deepEqual(
-      await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
+      await getTextContent(customRegistration.warningAlertUnknownRegistrationCodeText()),
       "Warning alert:Connection to registration server failed: Unknown Registration Code.",
     );
   });
@@ -294,7 +298,7 @@ export function verifyRegistrationWarniningAlertsWithSidebar(
     await customRegistration.register();
 
     assert.match(
-      await getTextContent(customRegistration.connectionToRegistrationServerFailedText()),
+      await getTextContent(customRegistration.warningAlertNotSuchHostText()),
       /Connection to registration server failed: dial tcp: lookup .+ on .+: no such host \(network error\)/,
     );
 
