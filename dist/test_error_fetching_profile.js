@@ -227,7 +227,6 @@ exports.setContinueOnError = setContinueOnError;
 exports.it = it;
 exports.sleep = sleep;
 exports.getTextContent = getTextContent;
-exports.waitUntilOverlaySettled = waitUntilOverlaySettled;
 exports.getValue = getValue;
 exports.waitOnFile = waitOnFile;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
@@ -390,18 +389,9 @@ async function it(label, test, timeout) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-function getTextContent(locator) {
-    return locator
-        .map((element) => element.textContent)
-        .wait();
-}
-async function waitUntilOverlaySettled() {
-    const selector = '[role="alert"].agm-main-content-overlay';
-    const appeared = await exports.page.waitForSelector(selector, { visible: true, timeout: 500 })
-        .catch(() => null);
-    if (appeared) {
-        await exports.page.waitForSelector(selector, { hidden: true });
-    }
+async function getTextContent(locator) {
+    const handle = await locator.waitHandle();
+    return await handle.evaluate((el) => el.textContent?.trim() || "");
 }
 function getValue(locator) {
     return locator.map((element) => element.value).wait();

@@ -189,20 +189,11 @@ export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export function getTextContent(locator): Promise<string> {
-  return locator
-    .map((element) => element.textContent)
-    .wait();
-}
-
-export async function waitUntilOverlaySettled() {
-  const selector = '[role="alert"].agm-main-content-overlay';
-  const appeared = await page.waitForSelector(selector, { visible: true, timeout: 500 })
-    .catch(() => null);
-
-  if (appeared) {
-    await page.waitForSelector(selector, { hidden: true });
-  }
+export async function getTextContent(
+  locator: puppeteer.Locator<Element>,
+): Promise<string> {
+  const handle = await locator.waitHandle();
+  return await handle.evaluate((el) => el.textContent?.trim() || "");
 }
 
 export function getValue(locator): Promise<string> {

@@ -652,7 +652,6 @@ function verifyRegistrationWarniningAlerts() {
         const overview = new overview_page_1.OverviewWithRegistrationPage(helpers_1.page);
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         await overview.goToRegistration();
-        await (0, helpers_1.waitUntilOverlaySettled)();
         await customRegistration.selectProvideRegistrationCode();
         await customRegistration.register();
         const warningText = await (0, helpers_1.getTextContent)(customRegistration.alertWarningEnterARegistrationCodeText());
@@ -662,7 +661,6 @@ function verifyRegistrationWarniningAlerts() {
         const customRegistration = new product_registration_page_1.CustomRegistrationPage(helpers_1.page);
         await customRegistration.fillCode("1234invalid4321");
         await customRegistration.register();
-        await (0, helpers_1.waitUntilOverlaySettled)();
         const warningText = await (0, helpers_1.getTextContent)(customRegistration.alertWarningUnknownRegistrationCodeText());
         strict_1.default.deepEqual(warningText, "Unknown Registration Code.");
     });
@@ -673,11 +671,9 @@ function verifyRegistrationWarniningAlerts() {
         await customRegistration.selectProvideRegistrationCode();
         await customRegistration.fillServerUrl("http://scc.example.net");
         await customRegistration.register();
-        await (0, helpers_1.waitUntilOverlaySettled)();
         const warningText = await (0, helpers_1.getTextContent)(customRegistration.alertWarningNetworkErrorText());
         strict_1.default.match(warningText, /Network error: dial tcp: lookup .+ on .+: no such host/);
         await customRegistration.doNotRegister();
-        await (0, helpers_1.waitUntilOverlaySettled)();
         await header.goToOverview();
     });
 }
@@ -1336,7 +1332,6 @@ exports.setContinueOnError = setContinueOnError;
 exports.it = it;
 exports.sleep = sleep;
 exports.getTextContent = getTextContent;
-exports.waitUntilOverlaySettled = waitUntilOverlaySettled;
 exports.getValue = getValue;
 exports.waitOnFile = waitOnFile;
 const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
@@ -1499,18 +1494,9 @@ async function it(label, test, timeout) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-function getTextContent(locator) {
-    return locator
-        .map((element) => element.textContent)
-        .wait();
-}
-async function waitUntilOverlaySettled() {
-    const selector = '[role="alert"].agm-main-content-overlay';
-    const appeared = await exports.page.waitForSelector(selector, { visible: true, timeout: 500 })
-        .catch(() => null);
-    if (appeared) {
-        await exports.page.waitForSelector(selector, { hidden: true });
-    }
+async function getTextContent(locator) {
+    const handle = await locator.waitHandle();
+    return await handle.evaluate((el) => el.textContent?.trim() || "");
 }
 function getValue(locator) {
     return locator.map((element) => element.value).wait();
