@@ -224,6 +224,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.page = void 0;
 exports.test_init = test_init;
 exports.setContinueOnError = setContinueOnError;
+exports.dumpPage = dumpPage;
 exports.it = it;
 exports.sleep = sleep;
 exports.getTextContent = getTextContent;
@@ -352,7 +353,16 @@ async function dumpCSS() {
     });
 }
 // dump the current page displayed in puppeteer
-async function dumpPage(label) {
+//async function dumpPage(label: string) {
+//  // base file name for the dumps
+//  const name = path.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
+//  await page.screenshot({ path: name + ".png" });
+//  const html = await page.content();
+//  fs.writeFileSync(name + ".html", html);
+//}
+async function dumpPage(dir, label) {
+    if (!fs_1.default.existsSync(dir))
+        fs_1.default.mkdirSync(dir);
     // base file name for the dumps
     const name = path_1.default.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
     await exports.page.screenshot({ path: name + ".png" });
@@ -380,7 +390,7 @@ async function it(label, test, timeout) {
                 if (!fs_1.default.existsSync(dir))
                     fs_1.default.mkdirSync(dir);
                 // dump the page and the CSS in parallel
-                await Promise.allSettled([dumpPage(label), dumpCSS()]);
+                await Promise.allSettled([dumpPage(dir, label), dumpCSS()]);
             }
             throw new Error("Test failed!", { cause: error });
         }

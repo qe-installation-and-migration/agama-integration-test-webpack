@@ -1,6 +1,6 @@
 import { type Page } from "puppeteer-core";
 
-export class ConfigureLvmVolumeGroupPage {
+export class StorageLvmConfigureVolumeGroupPage {
   private readonly page: Page;
   private readonly acceptButton = () => this.page.locator("button::-p-text(Accept)");
 
