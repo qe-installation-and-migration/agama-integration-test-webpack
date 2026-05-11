@@ -1,0 +1,40 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit*)",
+            "command": "if npm run build 2>&1 && npm run eslint 2>&1 && npm run prune 2>&1; then echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\"}}'; else echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"Pre-commit verification failed. Run npm run build, npm run eslint, and npm run prune to see errors.\"}}'; fi",
+            "statusMessage": "Running pre-commit verification..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | xargs -r npx prettier --write --ignore-unknown 2>/dev/null || true",
+            "statusMessage": "Formatting with Prettier..."
+          },
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | xargs -r npx eslint --fix 2>/dev/null || true",
+            "statusMessage": "Linting with ESLint..."
+          },
+          {
+            "type": "command",
+            "if": "const path = JSON.parse(stdin).tool_input?.file_path || JSON.parse(stdin).tool_response?.filePath || ''; path.match(/\\.ts$/) || path === 'package.json' || path.includes('webpack.config')",
+            "command": "npm run devel",
+            "statusMessage": "Building with Webpack..."
+          }
+        ]
+      }
+    ]
+  }
+}
