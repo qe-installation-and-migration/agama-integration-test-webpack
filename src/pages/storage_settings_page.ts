@@ -49,10 +49,16 @@ export class StorageSettingsPage {
 
   private readonly resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
 
+  public readonly createLVMVolumeGroupSystemHeading = () =>
+    this.page.locator("::-p-aria(Create LVM volume group system)");
+
   constructor(page: Page) {
     this.page = page;
   }
 
+  async waitcreateLVMVolumeGroupSystemHeading() {
+    await this.createLVMVolumeGroupSystemHeading().wait();
+  }
   async ensureStorageSettingsPresent() {
     await this.settingsText().wait();
   }

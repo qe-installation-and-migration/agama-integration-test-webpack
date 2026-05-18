@@ -1043,10 +1043,14 @@ function verifyDecryptDestructiveActionsWithSidebar(destructiveActions) {
 (__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.selectMoreDevices = selectMoreDevices;
 exports.selectMoreDevicesWithSidebar = selectMoreDevicesWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
 const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const configure_lvm_volume_group_page_1 = __webpack_require__(/*! ../pages/configure_lvm_volume_group_page */ "./src/pages/configure_lvm_volume_group_page.ts");
 const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
@@ -1054,27 +1058,36 @@ const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 function selectMoreDevices() {
     (0, helpers_1.it)("should add LVM volume group", async function () {
-        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
-        const lvm = new configure_lvm_volume_group_page_1.ConfigureLvmVolumeGroupPage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const storageLvmConfigureVolumeGroup = new configure_lvm_volume_group_page_1.StorageLvmConfigureVolumeGroupPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
+        const logDir = "/run/agama/scripts";
         await overview.goToStorage();
-        await storage.selectMoreDevices();
-        await storage.addLvmVolumeGroup();
-        await lvm.accept();
+        console.log("1. in storage");
+        await storageSettings.selectMoreDevices();
+        console.log("2. more device");
+        await storageSettings.addLvmVolumeGroup();
+        console.log("3. Add lvm volume group");
+        await storageLvmConfigureVolumeGroup.accept();
+        console.log("4. accept");
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(storageSettings.createLVMVolumeGroupSystemHeading(), 360000), "Create LVM volume group system");
+        console.log("Create LVM volume group system");
         await header.reviewAndInstall();
+        console.log("reviewAndInstall");
         await overview.ensureSystemInformationPresent();
-    });
+        console.log("ensureSystemInformationPresent");
+    }, 360000);
 }
 function selectMoreDevicesWithSidebar() {
     (0, helpers_1.it)("should add LVM volume group", async function () {
-        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
-        const lvm = new configure_lvm_volume_group_page_1.ConfigureLvmVolumeGroupPage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const storageLvmConfigureVolumeGroup = new configure_lvm_volume_group_page_1.StorageLvmConfigureVolumeGroupPage(helpers_1.page);
         const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
         await sidebar.goToStorage();
-        await storage.selectMoreDevices();
-        await storage.addLvmVolumeGroup();
-        await lvm.accept();
+        await storageSettings.selectMoreDevices();
+        await storageSettings.addLvmVolumeGroup();
+        await storageLvmConfigureVolumeGroup.accept();
     });
 }
 
@@ -1273,6 +1286,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.page = void 0;
 exports.test_init = test_init;
 exports.setContinueOnError = setContinueOnError;
+exports.dumpPage = dumpPage;
 exports.it = it;
 exports.sleep = sleep;
 exports.getTextContent = getTextContent;
@@ -1401,7 +1415,16 @@ async function dumpCSS() {
     });
 }
 // dump the current page displayed in puppeteer
-async function dumpPage(label) {
+//async function dumpPage(label: string) {
+//  // base file name for the dumps
+//  const name = path.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
+//  await page.screenshot({ path: name + ".png" });
+//  const html = await page.content();
+//  fs.writeFileSync(name + ".html", html);
+//}
+async function dumpPage(dir, label) {
+    if (!fs_1.default.existsSync(dir))
+        fs_1.default.mkdirSync(dir);
     // base file name for the dumps
     const name = path_1.default.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
     await exports.page.screenshot({ path: name + ".png" });
@@ -1429,7 +1452,7 @@ async function it(label, test, timeout) {
                 if (!fs_1.default.existsSync(dir))
                     fs_1.default.mkdirSync(dir);
                 // dump the page and the CSS in parallel
-                await Promise.allSettled([dumpPage(label), dumpCSS()]);
+                await Promise.allSettled([dumpPage(dir, label), dumpCSS()]);
             }
             throw new Error("Test failed!", { cause: error });
         }
@@ -1605,8 +1628,8 @@ async function getElementInCell(page, tableSelector, rowColumn, rowValue, elemen
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ConfigureLvmVolumeGroupPage = void 0;
-class ConfigureLvmVolumeGroupPage {
+exports.StorageLvmConfigureVolumeGroupPage = void 0;
+class StorageLvmConfigureVolumeGroupPage {
     page;
     acceptButton = () => this.page.locator("button::-p-text(Accept)");
     constructor(page) {
@@ -1616,7 +1639,7 @@ class ConfigureLvmVolumeGroupPage {
         await this.acceptButton().click();
     }
 }
-exports.ConfigureLvmVolumeGroupPage = ConfigureLvmVolumeGroupPage;
+exports.StorageLvmConfigureVolumeGroupPage = StorageLvmConfigureVolumeGroupPage;
 
 
 /***/ },
@@ -2685,8 +2708,12 @@ class StorageSettingsPage {
     threeDotsButton = () => this.page.locator("button:has(svg.agm-three-dots-icon):not([aria-label])");
     storageAllocationWarningText = () => this.page.locator("::-p-text(It is not possible to allocate space for the boot partition)");
     resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
+    createLVMVolumeGroupSystemHeading = () => this.page.locator("::-p-aria(Create LVM volume group system)");
     constructor(page) {
         this.page = page;
+    }
+    async waitcreateLVMVolumeGroupSystemHeading() {
+        await this.createLVMVolumeGroupSystemHeading().wait();
     }
     async ensureStorageSettingsPresent() {
         await this.settingsText().wait();
