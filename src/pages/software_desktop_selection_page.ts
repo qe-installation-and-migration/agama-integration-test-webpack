@@ -2,9 +2,7 @@ import { type Page } from "puppeteer-core";
 
 export class SoftwareDesktopSelectionPage {
   private readonly page: Page;
-  private readonly desktopCheckbox = (pattern: string) =>
-    this.page.locator(`::-p-aria(${pattern}[role="checkbox"])`);
-
+  private readonly desktopCheckbox = (desktop: string) => this.page.locator(`input#${desktop}`);
   private readonly acceptButton = () => this.page.locator("::-p-aria(Accept)");
 
   constructor(page: Page) {
@@ -12,7 +10,9 @@ export class SoftwareDesktopSelectionPage {
   }
 
   async select(desktop: string) {
-    await this.desktopCheckbox(desktop).click();
+    const shortName = desktop.toLowerCase().includes("gnome") ? "gnome" : "kde";
+    await this.desktopCheckbox(shortName).click();
+    console.log(`[Agama POM] Successfully toggled target selector: input#${shortName}`);
   }
 
   async accept() {

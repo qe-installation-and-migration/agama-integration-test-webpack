@@ -49,6 +49,9 @@ export class StorageSettingsPage {
 
   private readonly resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
 
+  private readonly finalLayoutButton = () =>
+    this.page.locator('::-p-aria(Final layout[role="tab"])');
+
   constructor(page: Page) {
     this.page = page;
   }
@@ -123,5 +126,9 @@ export class StorageSettingsPage {
 
   async resetToDefault(timeout: number = 30 * 1000) {
     await this.resetToDefaultsButton().setTimeout(timeout).click();
+  }
+
+  async clickFinalLayout() {
+    await this.finalLayoutButton().click();
   }
 }
