@@ -4,6 +4,7 @@ import { Option } from "commander";
 
 import { logIn } from "./checks/login";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
+import { takeStorageScreenshot } from "./checks/storage_change_root_partition";
 
 const options = parse((cmd) =>
   cmd
@@ -32,6 +33,7 @@ if (options.btrfsWithoutSnapshots)
 if (options.desktop) testStrategy.selectDesktop(options.desktop);
 if (options.patterns) testStrategy.changePatterns(options.patterns);
 if (options.prepareAdvancedStorage === "dasd") testStrategy.prepareDasdStorage();
+takeStorageScreenshot();
 if (options.install) {
   testStrategy.performInstallation();
   testStrategy.finishInstallation();

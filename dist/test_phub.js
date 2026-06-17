@@ -912,6 +912,7 @@ function changeDeviceToInstallTheSystemWithSidebar() {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.takeStorageScreenshot = takeStorageScreenshot;
 exports.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize = changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize;
 exports.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar = changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
@@ -921,12 +922,28 @@ const configure_partition_page_1 = __webpack_require__(/*! ../pages/configure_pa
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+function takeStorageScreenshot() {
+    (0, helpers_1.it)("should move to Storage and take a screenshot for sporadic failure", async function () {
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const logDir = "/run/agama/scripts";
+        await overview.goToStorage();
+        await (0, helpers_1.dumpPage)(logDir, "storage_screen_before_install");
+        console.log("Successfully dumped a screenshot for the Storage page before install.");
+        await storage.clickFinalLayout();
+        await (0, helpers_1.dumpPage)(logDir, "storage_final_layout");
+        console.log("Successfully dumped a screenshot for the Storage final layout before install.");
+        await header.goToInstallation();
+    });
+}
 function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
     (0, helpers_1.it)("should change the file system to btrfs (without snapshots) and adjust it to min size", async function () {
         const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
         const configRootPartition = new configure_partition_page_1.ConfigurePartitionPage(helpers_1.page);
         const header = new header_page_1.HeaderPage(helpers_1.page);
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const logDir = "/run/agama/scripts";
         await overview.goToStorage();
         await storage.expandPartitions();
         await storage.clickOptionForRoot();
@@ -934,9 +951,10 @@ function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize() {
         await configRootPartition.changeFilesystemToBtrfs();
         await configRootPartition.selectSizeMode();
         await configRootPartition.changeSizeModeToManual();
-        await configRootPartition.inputPartitionSize("5 GiB");
+        await configRootPartition.inputPartitionSize("5.3 GiB");
         await configRootPartition.disableAllowGrowing();
         await (0, helpers_1.waitUntilOverlaySettled)(() => configRootPartition.accept());
+        await (0, helpers_1.dumpPage)(logDir, "after_accept");
         await header.goToInstallation();
     });
 }
@@ -1471,7 +1489,9 @@ async function dumpCSS() {
 }
 // dump the current page displayed in puppeteer
 // ts-prune-ignore-next
-async function dumpPage(label) {
+async function dumpPage(dir, label) {
+    if (!fs_1.default.existsSync(dir))
+        fs_1.default.mkdirSync(dir);
     // base file name for the dumps
     const name = path_1.default.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
     await exports.page.screenshot({ path: name + ".png" });
@@ -1496,7 +1516,7 @@ async function it(label, test, timeout) {
                 failed = true;
             if (exports.page) {
                 // dump the page and the CSS in parallel
-                await Promise.allSettled([dumpPage(label), dumpCSS()]);
+                await Promise.allSettled([dumpPage(dir, label), dumpCSS()]);
             }
             throw new Error("Test failed!", { cause: error });
         }
@@ -2810,13 +2830,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SoftwareDesktopSelectionPage = void 0;
 class SoftwareDesktopSelectionPage {
     page;
-    desktopCheckbox = (pattern) => this.page.locator(`::-p-aria(${pattern}[role="checkbox"])`);
+    desktopCheckbox = (desktop) => this.page.locator(`input#${desktop}`);
     acceptButton = () => this.page.locator("::-p-aria(Accept)");
     constructor(page) {
         this.page = page;
     }
     async select(desktop) {
-        await this.desktopCheckbox(desktop).click();
+        const shortName = desktop.toLowerCase().includes("gnome") ? "gnome" : "kde";
+        await this.desktopCheckbox(shortName).click();
+        console.log(`[Agama POM] Successfully toggled target selector: input#${shortName}`);
     }
     async accept() {
         await this.acceptButton().click();
@@ -3096,6 +3118,7 @@ class StorageSettingsPage {
     threeDotsButton = () => this.page.locator("button:has(svg.agm-three-dots-icon):not([aria-label])");
     storageAllocationWarningText = () => this.page.locator("::-p-text(It is not possible to allocate space for the boot partition)");
     resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
+    finalLayoutButton = () => this.page.locator('::-p-aria(Final layout[role="tab"])');
     constructor(page) {
         this.page = page;
     }
@@ -3153,6 +3176,9 @@ class StorageSettingsPage {
     }
     async resetToDefault(timeout = 30 * 1000) {
         await this.resetToDefaultsButton().setTimeout(timeout).click();
+    }
+    async clickFinalLayout() {
+        await this.finalLayoutButton().click();
     }
 }
 exports.StorageSettingsPage = StorageSettingsPage;
