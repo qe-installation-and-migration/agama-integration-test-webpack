@@ -889,7 +889,7 @@ function changePatterns(patterns) {
         await software.changePatterns();
         for (const pattern of patterns)
             await softwarePatternsSelection.select(pattern);
-        await softwarePatternsSelection.accept();
+        await (0, helpers_1.waitUntilOverlaySettled)(() => softwarePatternsSelection.accept());
         header.goToInstallation();
     });
 }

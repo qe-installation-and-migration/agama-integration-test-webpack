@@ -33,7 +33,7 @@ export function changePatterns(patterns: string[]) {
     await overview.goToSoftware();
     await software.changePatterns();
     for (const pattern of patterns) await softwarePatternsSelection.select(pattern);
-    await softwarePatternsSelection.accept();
+    await waitUntilOverlaySettled(() => softwarePatternsSelection.accept());
     header.goToInstallation();
   });
 }
