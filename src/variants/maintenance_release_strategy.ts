@@ -27,7 +27,6 @@ import { changeDeviceToInstallTheSystemWithSidebar } from "../checks/storage_cha
 import { prepareZfcpStorageWithSidebar } from "../checks/storage_zfcp";
 import { selectPatternsWithSidebar } from "../checks/software";
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar } from "../checks/storage_change_root_partition";
-import { prepareDasdStorageWithSidebar } from "../checks/storage_dasd";
 import { ensureLandingOnOverviewWithSidebar } from "../checks/overview";
 import { selectMoreDevicesWithSidebar } from "../checks/storage_select_installation_device";
 import { setOnlyInstallationNetworkWithSidebar } from "../checks/network";
@@ -104,9 +103,7 @@ export class MaintenanceReleaseStrategy implements IProductTestStrategy {
     prepareZfcpStorageWithSidebar();
   }
 
-  prepareDasdStorage() {
-    prepareDasdStorageWithSidebar();
-  }
+  prepareDasdStorage() {}
 
   changePatterns(patterns: string[]) {
     selectPatternsWithSidebar(patterns);

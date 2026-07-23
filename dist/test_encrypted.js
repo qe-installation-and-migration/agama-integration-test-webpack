@@ -916,9 +916,7 @@ function changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar() 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareDasdStorage = prepareDasdStorage;
-exports.prepareDasdStorageWithSidebar = prepareDasdStorageWithSidebar;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
-const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
 const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
 const dasd_page_1 = __webpack_require__(/*! ../pages/dasd_page */ "./src/pages/dasd_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
@@ -931,27 +929,15 @@ function prepareDasdStorage() {
         const header = new header_page_1.HeaderPage(helpers_1.page);
         await overview.goToStorage();
         await storage.manageDasd();
-        await dasd.activateDevice();
-        await dasd.formatDevice();
-        await dasd.waitFormattingDevice();
-        await dasd.back();
+        await dasd.selectDevice();
+        await (0, helpers_1.waitUntilOverlaySettled)(() => dasd.activateDevice());
+        await dasd.selectDeviceToFormat();
+        helpers_1.page.setDefaultTimeout(6 * 60 * 1000);
+        await (0, helpers_1.waitUntilOverlaySettled)(() => dasd.formatNowDevice());
+        await header.goToStorage();
         await storage.waitForElement("::-p-text(Installation devices)", 60000);
         await header.goToInstallation();
-    }, 6 * 60 * 1000);
-}
-function prepareDasdStorageWithSidebar() {
-    (0, helpers_1.it)("should prepare DASD storage", async function () {
-        const storage = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
-        const dasd = new dasd_page_1.DasdPage(helpers_1.page);
-        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
-        await sidebar.goToStorage();
-        await storage.manageDasd();
-        await dasd.activateDevice();
-        await dasd.formatDevice();
-        await dasd.waitFormattingDevice();
-        await dasd.back();
-        await storage.waitForElement("::-p-text(Installation devices)", 60000);
-    }, 6 * 60 * 1000);
+    }, 7 * 60 * 1000);
 }
 
 
@@ -2032,37 +2018,23 @@ class DasdPage {
     activateDisk = () => this.page
         .locator('button[role="menuitem"]')
         .filter((item) => item.getAttribute("tabindex") === "0");
-    checkActiveDisk = () => this.page.locator("table tbody tr:nth-child(1) td:nth-child(4)");
-    formatDiskButton = () => this.page.locator("button::-p-text(Format)");
+    formatDiskButton = () => this.page.locator("::-p-aria(Format[role='button'])");
     formatNowDiskButton = () => this.page.locator("::-p-text(Format now)");
-    formattingDasdText = () => this.page.locator("::-p-text(Formatting DASD devices)");
-    backButton = () => this.page.locator("button::-p-text(Back)");
     constructor(page) {
         this.page = page;
     }
-    async activateDevice() {
+    async selectDevice() {
         await this.actionsForDisk().click();
-        await this.activateDisk().click();
-        // Update this block of code to use table function, progress#193147
-        await this.page.waitForFunction((selector, text) => {
-            const element = document.querySelector(selector);
-            return element && element.textContent.trim() !== text;
-        }, { timeout: 5000 }, "table tbody tr:nth-child(1) td:nth-child(4)", "offline");
     }
-    async formatDevice() {
+    async activateDevice() {
+        await this.activateDisk().click();
+    }
+    async selectDeviceToFormat() {
         await this.selectRow(0).click();
         await this.formatDiskButton().click();
+    }
+    async formatNowDevice() {
         await this.formatNowDiskButton().click();
-    }
-    async waitFormattingDevice() {
-        await this.formattingDasdText().wait();
-        await this.page.waitForSelector('div[role="dialog"][aria-modal="true"]', {
-            hidden: true,
-            timeout: 5 * 60 * 1000,
-        });
-    }
-    async back() {
-        await this.backButton().click();
     }
 }
 exports.DasdPage = DasdPage;
@@ -2183,11 +2155,15 @@ exports.HeaderPage = void 0;
 class HeaderPage {
     page;
     installationLink = () => this.page.locator("a[href='#/overview']");
+    storageLink = () => this.page.locator("a[href='#/storage']");
     constructor(page) {
         this.page = page;
     }
     async goToInstallation() {
         await this.installationLink().click();
+    }
+    async goToStorage() {
+        await this.storageLink().click();
     }
 }
 exports.HeaderPage = HeaderPage;
@@ -3444,7 +3420,6 @@ const storage_change_device_to_install_1 = __webpack_require__(/*! ../checks/sto
 const storage_zfcp_1 = __webpack_require__(/*! ../checks/storage_zfcp */ "./src/checks/storage_zfcp.ts");
 const software_1 = __webpack_require__(/*! ../checks/software */ "./src/checks/software.ts");
 const storage_change_root_partition_1 = __webpack_require__(/*! ../checks/storage_change_root_partition */ "./src/checks/storage_change_root_partition.ts");
-const storage_dasd_1 = __webpack_require__(/*! ../checks/storage_dasd */ "./src/checks/storage_dasd.ts");
 const overview_1 = __webpack_require__(/*! ../checks/overview */ "./src/checks/overview.ts");
 const storage_select_installation_device_1 = __webpack_require__(/*! ../checks/storage_select_installation_device */ "./src/checks/storage_select_installation_device.ts");
 const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/network.ts");
@@ -3503,9 +3478,7 @@ class MaintenanceReleaseStrategy {
     prepareZfcpStorage() {
         (0, storage_zfcp_1.prepareZfcpStorageWithSidebar)();
     }
-    prepareDasdStorage() {
-        (0, storage_dasd_1.prepareDasdStorageWithSidebar)();
-    }
+    prepareDasdStorage() { }
     changePatterns(patterns) {
         (0, software_1.selectPatternsWithSidebar)(patterns);
     }
