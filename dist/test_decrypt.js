@@ -2250,7 +2250,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HeaderPage = void 0;
 class HeaderPage {
     page;
-    installationLink = () => this.page.locator("a[href='#/overview']");
+    installationLink = () => this.page.locator("a[href='#/']");
     storageLink = () => this.page.locator("a[href='#/storage']");
     constructor(page) {
         this.page = page;
