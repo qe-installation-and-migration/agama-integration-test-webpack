@@ -2,7 +2,7 @@ import { type Page } from "puppeteer-core";
 
 export class HeaderPage {
   protected readonly page: Page;
-  private readonly installationLink = () => this.page.locator("a[href='#/overview']");
+  private readonly installationLink = () => this.page.locator("a[href='#/']");
   private readonly storageLink = () => this.page.locator("a[href='#/storage']");
 
   constructor(page: Page) {
