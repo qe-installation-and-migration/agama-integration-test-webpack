@@ -781,10 +781,14 @@ function verifyRegistrationWarniningAlertsWithSidebar(use_custom, url) {
 (__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.selectADesktop = selectADesktop;
 exports.changePatterns = changePatterns;
 exports.selectPatternsWithSidebar = selectPatternsWithSidebar;
+exports.verifySoftwareSelectionNotAvailable = verifySoftwareSelectionNotAvailable;
 const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
 const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
 const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
@@ -794,6 +798,8 @@ const software_legacy_page_1 = __webpack_require__(/*! ../pages/software_legacy_
 const software_patterns_selection_page_1 = __webpack_require__(/*! ../pages/software_patterns_selection_page */ "./src/pages/software_patterns_selection_page.ts");
 const software_patterns_selection_legacy_page_1 = __webpack_require__(/*! ../pages/software_patterns_selection_legacy_page */ "./src/pages/software_patterns_selection_legacy_page.ts");
 const software_desktop_selection_page_1 = __webpack_require__(/*! ../pages/software_desktop_selection_page */ "./src/pages/software_desktop_selection_page.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const software_selection_is_not_available_page_1 = __webpack_require__(/*! ../pages/software_selection_is_not_available_page */ "./src/pages/software_selection_is_not_available_page.ts");
 function selectADesktop(desktop) {
     (0, helpers_1.it)(`should select a desktop ${desktop}`, async function () {
         const overview = new overview_page_1.OverviewPage(helpers_1.page);
@@ -831,6 +837,17 @@ function selectPatternsWithSidebar(patterns) {
         for (const pattern of patterns)
             await softwarePatternsSelection.selectPattern(pattern);
         await softwarePatternsSelection.close();
+    });
+}
+function verifySoftwareSelectionNotAvailable() {
+    (0, helpers_1.it)("should show software selection is not available before registering the system", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const software = new software_selection_is_not_available_page_1.SoftwareSelectionIsNotAvailablePage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToSoftware();
+        const softwareSelectionNotAvailableText = await (0, helpers_1.getTextContent)(software.softwareSelectionNotAvailableText());
+        strict_1.default.deepEqual(softwareSelectionNotAvailableText, "Software selection is not available");
+        await header.goToInstallation();
     });
 }
 
@@ -3031,6 +3048,27 @@ exports.SoftwarePatternsSelectionPage = SoftwarePatternsSelectionPage;
 
 /***/ },
 
+/***/ "./src/pages/software_selection_is_not_available_page.ts"
+/*!***************************************************************!*\
+  !*** ./src/pages/software_selection_is_not_available_page.ts ***!
+  \***************************************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SoftwareSelectionIsNotAvailablePage = void 0;
+class SoftwareSelectionIsNotAvailablePage {
+    page;
+    softwareSelectionNotAvailableText = () => this.page.locator("::-p-aria(Software selection is not available[role='heading'])");
+    constructor(page) {
+        this.page = page;
+    }
+}
+exports.SoftwareSelectionIsNotAvailablePage = SoftwareSelectionIsNotAvailablePage;
+
+
+/***/ },
+
 /***/ "./src/pages/storage_activate_multipath_page.ts"
 /*!******************************************************!*\
   !*** ./src/pages/storage_activate_multipath_page.ts ***!
@@ -3772,6 +3810,9 @@ class ProductionReleaseStrategy {
     }
     configureTimeSynchronizationServers(ntpServerAddresses) {
         (0, system_1.configureTimeSynchronizationServers)(ntpServerAddresses);
+    }
+    verifySoftwareSelectionNotAvailable() {
+        (0, software_1.verifySoftwareSelectionNotAvailable)();
     }
 }
 exports.ProductionReleaseStrategy = ProductionReleaseStrategy;
