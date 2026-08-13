@@ -25,7 +25,7 @@ import {
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize } from "../checks/storage_change_root_partition";
 import { prepareZfcpStorage } from "../checks/storage_zfcp";
 import { ensureLandingOnOverview } from "../checks/overview";
-import { selectMoreDevices } from "../checks/storage_select_installation_device";
+import { addLVMVolumeGroup } from "../checks/storage_select_installation_device";
 import { setOnlyInstallationNetwork } from "../checks/network";
 import { verifyDecryptDestructiveActions } from "../checks/storage_result_destructive_actions_planned";
 import { verifyStorageOutOfSync } from "../checks/storage_out_of_sync";
@@ -119,8 +119,8 @@ export class ProductionReleaseStrategy implements IProductTestStrategy {
     changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize();
   }
 
-  selectMoreDevices() {
-    selectMoreDevices();
+  configureVolumeGroup(disks?: string[]) {
+    addLVMVolumeGroup(disks);
   }
 
   setOnlyInstallationNetwork() {

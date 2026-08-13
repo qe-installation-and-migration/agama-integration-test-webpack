@@ -28,7 +28,7 @@ import { prepareZfcpStorageWithSidebar } from "../checks/storage_zfcp";
 import { selectPatternsWithSidebar } from "../checks/software";
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar } from "../checks/storage_change_root_partition";
 import { ensureLandingOnOverviewWithSidebar } from "../checks/overview";
-import { selectMoreDevicesWithSidebar } from "../checks/storage_select_installation_device";
+import { addLVMVolumeGroupWithSidebar } from "../checks/storage_select_installation_device";
 import { setOnlyInstallationNetworkWithSidebar } from "../checks/network";
 import { verifyDecryptDestructiveActionsWithSidebar } from "../checks/storage_result_destructive_actions_planned";
 import { verifyStorageOutOfSyncWithSidebar } from "../checks/storage_out_of_sync";
@@ -115,8 +115,8 @@ export class MaintenanceReleaseStrategy implements IProductTestStrategy {
     changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSizeWithSidebar();
   }
 
-  selectMoreDevices() {
-    selectMoreDevicesWithSidebar();
+  configureVolumeGroup() {
+    addLVMVolumeGroupWithSidebar();
   }
 
   setOnlyInstallationNetwork() {

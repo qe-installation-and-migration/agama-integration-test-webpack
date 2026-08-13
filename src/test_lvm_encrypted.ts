@@ -16,7 +16,7 @@ const testStrategy = ProductStrategyFactory.create(
 );
 
 logIn(options.password);
-testStrategy.selectMoreDevices();
+testStrategy.configureVolumeGroup();
 testStrategy.enableEncryption(options.password);
 if (options.install) {
   testStrategy.performInstallation();

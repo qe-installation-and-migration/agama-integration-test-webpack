@@ -1,11 +1,12 @@
-import { it, page } from "../lib/helpers";
+import { it, page, waitUntilOverlaySettled } from "../lib/helpers";
+import { getElementByLabel } from "../lib/form";
 import { SidebarPage } from "../pages/sidebar_page";
 import { ConfigureLvmVolumeGroupPage } from "../pages/configure_lvm_volume_group_page";
 import { StorageSettingsPage } from "../pages/storage_settings_page";
 import { OverviewPage } from "../pages/overview_page";
 import { HeaderPage } from "../pages/header_page";
 
-export function selectMoreDevices() {
+export function addLVMVolumeGroup(disks?: string[]) {
   it("should add LVM volume group", async function () {
     const storage = new StorageSettingsPage(page);
     const lvm = new ConfigureLvmVolumeGroupPage(page);
@@ -15,13 +16,15 @@ export function selectMoreDevices() {
     await overview.goToStorage();
     await storage.selectMoreDevices();
     await storage.addLvmVolumeGroup();
-    await lvm.accept();
+    if (disks)
+      for (const disk of disks)
+        await (await getElementByLabel(page, lvm.diskCheckboxSelector, disk)).click();
+    await waitUntilOverlaySettled(() => lvm.accept());
     await header.goToInstallation();
-    await overview.ensureSystemInformationPresent();
   });
 }
 
-export function selectMoreDevicesWithSidebar() {
+export function addLVMVolumeGroupWithSidebar() {
   it("should add LVM volume group", async function () {
     const storage = new StorageSettingsPage(page);
     const lvm = new ConfigureLvmVolumeGroupPage(page);
