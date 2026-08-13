@@ -15,12 +15,6 @@ export class AppearancePage {
   private readonly contrastOption = (contrast: Contrast) =>
     this.page.locator(`::-p-aria(${contrast} contrast[role='button'])`);
 
-  private readonly selectedColorSchemeOption = (scheme: ColorScheme) =>
-    this.page.locator(`::-p-aria(${scheme} color scheme[role='button'][pressed=true])`);
-
-  private readonly selectedContrastOption = (contrast: Contrast) =>
-    this.page.locator(`::-p-aria(${contrast} contrast[role='button'][pressed=true])`);
-
   private readonly htmlElement = () => this.page.locator("html");
 
   constructor(page: Page) {
@@ -44,11 +38,15 @@ export class AppearancePage {
   }
 
   async waitColorSchemeSelected(scheme: ColorScheme) {
-    await this.selectedColorSchemeOption(scheme).wait();
+    await this.colorSchemeOption(scheme)
+      .filter((element) => element.getAttribute("aria-pressed") === "true")
+      .wait();
   }
 
   async waitContrastSelected(contrast: Contrast) {
-    await this.selectedContrastOption(contrast).wait();
+    await this.contrastOption(contrast)
+      .filter((element) => element.getAttribute("aria-pressed") === "true")
+      .wait();
   }
 
   getHtmlClasses(): Promise<string> {
