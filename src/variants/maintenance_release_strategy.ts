@@ -33,7 +33,6 @@ import { setOnlyInstallationNetworkWithSidebar } from "../checks/network";
 import { verifyDecryptDestructiveActionsWithSidebar } from "../checks/storage_result_destructive_actions_planned";
 import { verifyStorageOutOfSyncWithSidebar } from "../checks/storage_out_of_sync";
 import { downloadLogsWithSidebar } from "../checks/download_logs";
-import { verifyAppearanceChanges } from "../checks/appearance";
 
 export class MaintenanceReleaseStrategy implements IProductTestStrategy {
   setStaticHostname(hostname: string) {
@@ -136,9 +135,5 @@ export class MaintenanceReleaseStrategy implements IProductTestStrategy {
 
   downloadLogs() {
     downloadLogsWithSidebar();
-  }
-
-  verifyAppearanceChanges() {
-    verifyAppearanceChanges();
   }
 }

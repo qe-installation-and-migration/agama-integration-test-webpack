@@ -32,7 +32,7 @@ export interface IProductTestStrategy {
   verifyStorageOutOfSync?(): void;
   ensureLandingOnOverview(): void;
   downloadLogs(): void;
-  verifyAppearanceChanges(): void;
+  verifyAppearanceChanges?(): void;
 }
 
 export class ProductStrategyFactory {
