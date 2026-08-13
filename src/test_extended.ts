@@ -5,7 +5,6 @@ import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { logIn } from "./checks/login";
 import { productSelection, productSelectionWithLicenseAndMode } from "./checks/product_selection";
-import { verifyAppearanceChanges } from "./checks/appearance";
 
 const options = parse((cmd) =>
   cmd
@@ -45,7 +44,7 @@ if (options.productId !== "none")
     productSelectionWithLicenseAndMode(options.productId, options.productMode);
   else productSelection(options.productId);
 testStrategy.ensureLandingOnOverview();
-verifyAppearanceChanges();
+testStrategy.verifyAppearanceChanges();
 if (options.staticHostname) testStrategy.setStaticHostname(options.staticHostname);
 if (options.ntpServerAddresses)
   testStrategy.configureTimeSynchronizationServers(options.ntpServerAddresses);

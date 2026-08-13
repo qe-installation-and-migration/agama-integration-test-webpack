@@ -1,7 +1,7 @@
 import { type Page } from "puppeteer-core";
 
-export type ColorScheme = "Automatic" | "Light" | "Dark";
-export type Contrast = "Automatic" | "Standard" | "High";
+type ColorScheme = "Automatic" | "Light" | "Dark";
+type Contrast = "Automatic" | "Standard" | "High";
 
 export class AppearancePage {
   private readonly page: Page;
