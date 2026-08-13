@@ -19,19 +19,33 @@ export function verifyAppearanceChanges() {
     await appearance.waitContrastSelected("High");
     assert.match(await appearance.getHtmlClasses(), /pf-v6-theme-high-contrast/);
 
-    // (3) Dark color scheme + Automatic contrast
+    // (3) Light color scheme + Automatic contrast
+    await appearance.selectColorScheme("Light");
+    await appearance.selectContrast("Automatic");
+    await appearance.waitColorSchemeSelected("Light");
+    await appearance.waitContrastSelected("Automatic");
+    assert.doesNotMatch(await appearance.getHtmlClasses(), /pf-v6-theme-dark/);
+
+    // (4) Light color scheme + High contrast
+    await appearance.selectContrast("High");
+    await appearance.waitContrastSelected("High");
+    const classesAtCombo4 = await appearance.getHtmlClasses();
+    assert.doesNotMatch(classesAtCombo4, /pf-v6-theme-dark/);
+    assert.match(classesAtCombo4, /pf-v6-theme-high-contrast/);
+
+    // (5) Dark color scheme + Automatic contrast
     await appearance.selectColorScheme("Dark");
     await appearance.selectContrast("Automatic");
     await appearance.waitColorSchemeSelected("Dark");
     await appearance.waitContrastSelected("Automatic");
     assert.match(await appearance.getHtmlClasses(), /pf-v6-theme-dark/);
 
-    // (4) Dark color scheme + High contrast
+    // (6) Dark color scheme + High contrast
     await appearance.selectContrast("High");
     await appearance.waitContrastSelected("High");
-    const classesAtCombo4 = await appearance.getHtmlClasses();
-    assert.match(classesAtCombo4, /pf-v6-theme-dark/);
-    assert.match(classesAtCombo4, /pf-v6-theme-high-contrast/);
+    const classesAtCombo6 = await appearance.getHtmlClasses();
+    assert.match(classesAtCombo6, /pf-v6-theme-dark/);
+    assert.match(classesAtCombo6, /pf-v6-theme-high-contrast/);
 
     // Back to (1): Automatic color scheme + Automatic contrast
     await appearance.selectColorScheme("Automatic");
