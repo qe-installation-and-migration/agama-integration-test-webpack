@@ -44,6 +44,7 @@ if (options.productId !== "none")
     productSelectionWithLicenseAndMode(options.productId, options.productMode);
   else productSelection(options.productId);
 testStrategy.ensureLandingOnOverview();
+testStrategy.changeAppearance?.();
 if (options.staticHostname) testStrategy.setStaticHostname(options.staticHostname);
 if (options.ntpServerAddresses)
   testStrategy.configureTimeSynchronizationServers(options.ntpServerAddresses);

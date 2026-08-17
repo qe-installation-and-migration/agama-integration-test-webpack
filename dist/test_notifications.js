@@ -3,6 +3,40 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/checks/appearance.ts"
+/*!**********************************!*\
+  !*** ./src/checks/appearance.ts ***!
+  \**********************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.changeAppearance = changeAppearance;
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const appearance_page_1 = __webpack_require__(/*! ../pages/appearance_page */ "./src/pages/appearance_page.ts");
+function changeAppearance() {
+    (0, helpers_1.it)("should allow changing the color scheme to Dark and the contrast to High", async function () {
+        const appearance = new appearance_page_1.AppearancePage(helpers_1.page);
+        await appearance.open();
+        await appearance.selectDarkColorScheme();
+        await appearance.selectHighContrast();
+        strict_1.default.ok(await appearance.isDarkColorSchemeSelected(), "Dark color scheme is not selected");
+        strict_1.default.ok(await appearance.isHighContrastSelected(), "High contrast is not selected");
+        strict_1.default.deepEqual(await appearance.themeClasses(), [
+            "pf-v6-theme-dark",
+            "pf-v6-theme-high-contrast",
+        ]);
+        await appearance.close();
+    });
+}
+
+
+/***/ },
+
 /***/ "./src/checks/authentication.ts"
 /*!**************************************!*\
   !*** ./src/checks/authentication.ts ***!
@@ -1756,6 +1790,57 @@ class ActivateControllersPage {
     }
 }
 exports.ActivateControllersPage = ActivateControllersPage;
+
+
+/***/ },
+
+/***/ "./src/pages/appearance_page.ts"
+/*!**************************************!*\
+  !*** ./src/pages/appearance_page.ts ***!
+  \**************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AppearancePage = void 0;
+class AppearancePage {
+    page;
+    appearanceButton = () => this.page.locator('::-p-aria([name="Appearance"][role="button"])');
+    popover = () => this.page.locator('::-p-aria([role="dialog"])');
+    closeButton = () => this.page.locator('::-p-aria([name="Close"][role="button"])');
+    darkColorSchemeButton = () => this.page.locator('::-p-aria([name="Dark color scheme"][role="button"])');
+    highContrastButton = () => this.page.locator('::-p-aria([name="High contrast"][role="button"])');
+    constructor(page) {
+        this.page = page;
+    }
+    async open() {
+        await this.appearanceButton().click();
+        await this.popover().wait();
+    }
+    async close() {
+        await this.closeButton().click();
+    }
+    async selectDarkColorScheme() {
+        await this.darkColorSchemeButton().click();
+    }
+    async selectHighContrast() {
+        await this.highContrastButton().click();
+    }
+    isDarkColorSchemeSelected() {
+        return this.darkColorSchemeButton()
+            .map((element) => element.getAttribute("aria-pressed") === "true")
+            .wait();
+    }
+    isHighContrastSelected() {
+        return this.highContrastButton()
+            .map((element) => element.getAttribute("aria-pressed") === "true")
+            .wait();
+    }
+    themeClasses() {
+        return this.page.evaluate(() => [...document.documentElement.classList]);
+    }
+}
+exports.AppearancePage = AppearancePage;
 
 
 /***/ },
@@ -3686,6 +3771,7 @@ const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/net
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
 const download_logs_1 = __webpack_require__(/*! ../checks/download_logs */ "./src/checks/download_logs.ts");
+const appearance_1 = __webpack_require__(/*! ../checks/appearance */ "./src/checks/appearance.ts");
 class ProductionReleaseStrategy {
     setStaticHostname(hostname) {
         (0, system_1.setStaticHostname)(hostname);
@@ -3764,6 +3850,9 @@ class ProductionReleaseStrategy {
     }
     ensureLandingOnOverview() {
         (0, overview_1.ensureLandingOnOverview)();
+    }
+    changeAppearance() {
+        (0, appearance_1.changeAppearance)();
     }
     downloadLogs() {
         (0, download_logs_1.downloadLogs)();

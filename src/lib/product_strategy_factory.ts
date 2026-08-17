@@ -31,6 +31,7 @@ export interface IProductTestStrategy {
   verifyDecryptDestructiveActions(destructiveActions: string[]): void;
   verifyStorageOutOfSync?(): void;
   ensureLandingOnOverview(): void;
+  changeAppearance?(): void;
   downloadLogs(): void;
 }
 
