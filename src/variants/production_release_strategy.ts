@@ -17,7 +17,11 @@ import { checkInstallation, finishInstallation, performInstallation } from "../c
 import { logInWithIncorrectPassword } from "../checks/login";
 import { changeDeviceToInstallTheSystem } from "../checks/storage_change_device_to_install";
 import { prepareDasdStorage } from "../checks/storage_dasd";
-import { changePatterns, selectADesktop } from "../checks/software";
+import {
+  changePatterns,
+  selectADesktop,
+  verifySoftwareSelectionNotAvailable,
+} from "../checks/software";
 import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize } from "../checks/storage_change_root_partition";
 import { prepareZfcpStorage } from "../checks/storage_zfcp";
 import { ensureLandingOnOverview } from "../checks/overview";
@@ -138,5 +142,9 @@ export class ProductionReleaseStrategy implements IProductTestStrategy {
 
   configureTimeSynchronizationServers(ntpServerAddresses: string[]): void {
     configureTimeSynchronizationServers(ntpServerAddresses);
+  }
+
+  verifySoftwareSelectionNotAvailable(): void {
+    verifySoftwareSelectionNotAvailable();
   }
 }

@@ -1,4 +1,4 @@
-import { it, page, waitUntilOverlaySettled } from "../lib/helpers";
+import { getTextContent, it, page, waitUntilOverlaySettled } from "../lib/helpers";
 import { HeaderPage } from "../pages/header_page";
 import { OverviewPage } from "../pages/overview_page";
 import { SidebarPage } from "../pages/sidebar_page";
@@ -7,6 +7,8 @@ import { SoftwareLegacyPage } from "../pages/software_legacy_page";
 import { SoftwarePatternsSelectionPage } from "../pages/software_patterns_selection_page";
 import { SoftwarePatternsSelectionLegacyPage } from "../pages/software_patterns_selection_legacy_page";
 import { SoftwareDesktopSelectionPage } from "../pages/software_desktop_selection_page";
+import assert from "node:assert/strict";
+import { SoftwareSelectionIsNotAvailablePage } from "../pages/software_selection_is_not_available_page";
 
 export function selectADesktop(desktop: string) {
   it(`should select a desktop ${desktop}`, async function () {
@@ -49,5 +51,21 @@ export function selectPatternsWithSidebar(patterns: string[]) {
 
     for (const pattern of patterns) await softwarePatternsSelection.selectPattern(pattern);
     await softwarePatternsSelection.close();
+  });
+}
+
+export function verifySoftwareSelectionNotAvailable(): void {
+  it("should show software selection is not available before registering the system", async function () {
+    const overview = new OverviewPage(page);
+    const software = new SoftwareSelectionIsNotAvailablePage(page);
+    const header = new HeaderPage(page);
+
+    await overview.goToSoftware();
+    const softwareSelectionNotAvailableText = await getTextContent(
+      software.softwareSelectionNotAvailableText(),
+    );
+    assert.deepEqual(softwareSelectionNotAvailableText, "Software selection is not available");
+
+    await header.goToInstallation();
   });
 }
