@@ -32,6 +32,7 @@ import { verifyStorageOutOfSync } from "../checks/storage_out_of_sync";
 import { downloadLogs } from "../checks/download_logs";
 import { setupWholeDiskForHome } from "../checks/storage_disk_without_partitions";
 import { configureBootDevice } from "../checks/storage_boot_options";
+import { verifyAppearanceChanges } from "../checks/appearance";
 
 export class ProductionReleaseStrategy implements IProductTestStrategy {
   setStaticHostname(hostname: string) {
@@ -156,5 +157,9 @@ export class ProductionReleaseStrategy implements IProductTestStrategy {
 
   configureBootDevice() {
     configureBootDevice();
+  }
+
+  verifyAppearanceChanges() {
+    verifyAppearanceChanges();
   }
 }

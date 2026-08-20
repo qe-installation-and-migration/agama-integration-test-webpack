@@ -35,6 +35,7 @@ export interface IProductTestStrategy {
   verifySoftwareSelectionNotAvailable?(): void;
   setupWholeDiskForHome(): void;
   configureBootDevice(): void;
+  verifyAppearanceChanges?(): void;
 }
 
 export class ProductStrategyFactory {
