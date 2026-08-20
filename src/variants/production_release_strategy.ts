@@ -30,6 +30,8 @@ import { setOnlyInstallationNetwork } from "../checks/network";
 import { verifyDecryptDestructiveActions } from "../checks/storage_result_destructive_actions_planned";
 import { verifyStorageOutOfSync } from "../checks/storage_out_of_sync";
 import { downloadLogs } from "../checks/download_logs";
+import { setupWholeDiskForHome } from "../checks/storage_disk_without_partitions";
+import { configureBootDevice } from "../checks/storage_boot_options";
 
 export class ProductionReleaseStrategy implements IProductTestStrategy {
   setStaticHostname(hostname: string) {
@@ -146,5 +148,13 @@ export class ProductionReleaseStrategy implements IProductTestStrategy {
 
   verifySoftwareSelectionNotAvailable(): void {
     verifySoftwareSelectionNotAvailable();
+  }
+
+  setupWholeDiskForHome() {
+    setupWholeDiskForHome();
+  }
+
+  configureBootDevice() {
+    configureBootDevice();
   }
 }

@@ -805,6 +805,57 @@ function verifySoftwareSelectionNotAvailable() {
 
 /***/ },
 
+/***/ "./src/checks/storage_boot_options.ts"
+/*!********************************************!*\
+  !*** ./src/checks/storage_boot_options.ts ***!
+  \********************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.configureBootDevice = configureBootDevice;
+exports.configureBootDeviceWithSidebar = configureBootDeviceWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+const storage_boot_options_1 = __webpack_require__(/*! ../pages/storage_boot_options */ "./src/pages/storage_boot_options.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+function configureBootDevice() {
+    (0, helpers_1.it)("should configure boot partition in a separated disk", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const storageBootOptions = new storage_boot_options_1.StorageBootOptionsPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToStorage();
+        await storageSettings.selectBootOptions();
+        await storageSettings.changeBootOptions();
+        // Pass option 'value' (here 42 for vdd) instead of 'name (size)' in the select element
+        // https://progress.opensuse.org/issues/205914
+        await storageBootOptions.selectADisk("42");
+        await (0, helpers_1.waitUntilOverlaySettled)(() => storageBootOptions.accept());
+        await header.goToInstallation();
+    });
+}
+function configureBootDeviceWithSidebar() {
+    (0, helpers_1.it)("should configure boot partition in a separated disk", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const storageBootOptions = new storage_boot_options_1.StorageBootOptionsPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.otherOptions();
+        await storage.changeBootOptions();
+        // Pass option 'value' (here 46 for vdd) instead of 'name (size)' in the select element
+        // https://progress.opensuse.org/issues/205914
+        await storageBootOptions.selectADisk("46");
+        await storageBootOptions.accept();
+    });
+}
+
+
+/***/ },
+
 /***/ "./src/checks/storage_change_device_to_install.ts"
 /*!********************************************************!*\
   !*** ./src/checks/storage_change_device_to_install.ts ***!
@@ -955,6 +1006,63 @@ function prepareDasdStorage() {
         await storage.waitForElement("::-p-text(Installation devices)", 60000);
         await header.goToInstallation();
     }, 7 * 60 * 1000);
+}
+
+
+/***/ },
+
+/***/ "./src/checks/storage_disk_without_partitions.ts"
+/*!*******************************************************!*\
+  !*** ./src/checks/storage_disk_without_partitions.ts ***!
+  \*******************************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.setupWholeDiskForHome = setupWholeDiskForHome;
+exports.setupWholeDiskForHomeWithSidebar = setupWholeDiskForHomeWithSidebar;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const overview_page_1 = __webpack_require__(/*! ../pages/overview_page */ "./src/pages/overview_page.ts");
+const sidebar_page_1 = __webpack_require__(/*! ../pages/sidebar_page */ "./src/pages/sidebar_page.ts");
+const storage_settings_page_1 = __webpack_require__(/*! ../pages/storage_settings_page */ "./src/pages/storage_settings_page.ts");
+const storage_page_1 = __webpack_require__(/*! ../pages/storage_page */ "./src/pages/storage_page.ts");
+const select_another_disk_page_1 = __webpack_require__(/*! ../pages/select_another_disk_page */ "./src/pages/select_another_disk_page.ts");
+const select_another_disk_with_sidebar_page_1 = __webpack_require__(/*! ../pages/select_another_disk_with_sidebar_page */ "./src/pages/select_another_disk_with_sidebar_page.ts");
+const configure_disk_page_1 = __webpack_require__(/*! ../pages/configure_disk_page */ "./src/pages/configure_disk_page.ts");
+const header_page_1 = __webpack_require__(/*! ../pages/header_page */ "./src/pages/header_page.ts");
+function setupWholeDiskForHome() {
+    (0, helpers_1.it)("should use without partitions another disk to mount home", async function () {
+        const overview = new overview_page_1.OverviewPage(helpers_1.page);
+        const storageSettings = new storage_settings_page_1.StorageSettingsPage(helpers_1.page);
+        const selectAnotherDisk = new select_another_disk_page_1.SelectAnotherDiskPage(helpers_1.page);
+        const configureDisk = new configure_disk_page_1.ConfigureDiskPage(helpers_1.page);
+        const header = new header_page_1.HeaderPage(helpers_1.page);
+        await overview.goToStorage();
+        await storageSettings.selectMoreDevices();
+        await storageSettings.selectAnotherDisk();
+        await (0, helpers_1.waitUntilOverlaySettled)(() => selectAnotherDisk.addDisk("Add vdb (30 GiB)"));
+        await storageSettings.selectDiskNotConfiguredYet();
+        await storageSettings.useTheDiskWithoutPartitions();
+        await configureDisk.fillMountPoint("/home");
+        await (0, helpers_1.waitUntilOverlaySettled)(() => configureDisk.accept());
+        await header.goToInstallation();
+    });
+}
+function setupWholeDiskForHomeWithSidebar() {
+    (0, helpers_1.it)("should use without partitions another disk to mount home", async function () {
+        const sidebar = new sidebar_page_1.SidebarPage(helpers_1.page);
+        const storage = new storage_page_1.StoragePage(helpers_1.page);
+        const selectAnotherDisk = new select_another_disk_with_sidebar_page_1.SelectAnotherDiskWithSidebarPage(helpers_1.page);
+        const configureDisk = new configure_disk_page_1.ConfigureDiskPage(helpers_1.page);
+        await sidebar.goToStorage();
+        await storage.selectMoreDevices();
+        await storage.selectAnotherDisk();
+        await selectAnotherDisk.confirm();
+        await storage.selectDiskNotConfiguredYet();
+        await storage.useTheDiskWithoutPartitions();
+        await configureDisk.selectHomeMountPoint();
+        await configureDisk.accept();
+    });
 }
 
 
@@ -1793,6 +1901,39 @@ function RootLoginMethodPasswordDefinable(Base) {
 class AuthenticationWithRootLoginPassword extends RootLoginMethodPasswordDefinable(AuthenticationAdministratorAccountPage) {
 }
 exports.AuthenticationWithRootLoginPassword = AuthenticationWithRootLoginPassword;
+
+
+/***/ },
+
+/***/ "./src/pages/configure_disk_page.ts"
+/*!******************************************!*\
+  !*** ./src/pages/configure_disk_page.ts ***!
+  \******************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ConfigureDiskPage = void 0;
+class ConfigureDiskPage {
+    page;
+    mountPointCombobox = () => this.page.locator("::-p-aria(Mount point[role='combobox'])");
+    homeMountPointOption = () => this.page.locator("::-p-aria(/home[role='option'])");
+    acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
+    constructor(page) {
+        this.page = page;
+    }
+    async fillMountPoint(mountpoint) {
+        await this.mountPointCombobox().fill(mountpoint);
+    }
+    async selectHomeMountPoint() {
+        await this.mountPointCombobox().click();
+        await this.homeMountPointOption().click();
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.ConfigureDiskPage = ConfigureDiskPage;
 
 
 /***/ },
@@ -2729,6 +2870,54 @@ exports.SetARootPasswordPage = SetARootPasswordPage;
 
 /***/ },
 
+/***/ "./src/pages/select_another_disk_page.ts"
+/*!***********************************************!*\
+  !*** ./src/pages/select_another_disk_page.ts ***!
+  \***********************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SelectAnotherDiskPage = void 0;
+class SelectAnotherDiskPage {
+    page;
+    addDiskButton = (diskNameAndSize) => this.page.locator(`::-p-aria([name='${diskNameAndSize}'][role='button'])`);
+    constructor(page) {
+        this.page = page;
+    }
+    async addDisk(diskNameAndSize) {
+        await this.addDiskButton(diskNameAndSize).click();
+    }
+}
+exports.SelectAnotherDiskPage = SelectAnotherDiskPage;
+
+
+/***/ },
+
+/***/ "./src/pages/select_another_disk_with_sidebar_page.ts"
+/*!************************************************************!*\
+  !*** ./src/pages/select_another_disk_with_sidebar_page.ts ***!
+  \************************************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SelectAnotherDiskWithSidebarPage = void 0;
+class SelectAnotherDiskWithSidebarPage {
+    page;
+    confirmButton = () => this.page.locator("::-p-aria(Confirm[role='button'])");
+    constructor(page) {
+        this.page = page;
+    }
+    async confirm() {
+        await this.confirmButton().click();
+    }
+}
+exports.SelectAnotherDiskWithSidebarPage = SelectAnotherDiskWithSidebarPage;
+
+
+/***/ },
+
 /***/ "./src/pages/sidebar_page.ts"
 /*!***********************************!*\
   !*** ./src/pages/sidebar_page.ts ***!
@@ -2974,6 +3163,36 @@ exports.StorageActivateMultipathPage = StorageActivateMultipathPage;
 
 /***/ },
 
+/***/ "./src/pages/storage_boot_options.ts"
+/*!*******************************************!*\
+  !*** ./src/pages/storage_boot_options.ts ***!
+  \*******************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StorageBootOptionsPage = void 0;
+class StorageBootOptionsPage {
+    page;
+    selectADiskRadio = () => this.page.locator("::-p-aria(Select a disk[role='radio'])");
+    bootDeviceSelect = () => this.page.locator("select[name='bootDevice']");
+    acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
+    constructor(page) {
+        this.page = page;
+    }
+    async selectADisk(diskNameAndSize) {
+        await this.selectADiskRadio().click();
+        await (await this.bootDeviceSelect().waitHandle()).select(diskNameAndSize);
+    }
+    async accept() {
+        await this.acceptButton().click();
+    }
+}
+exports.StorageBootOptionsPage = StorageBootOptionsPage;
+
+
+/***/ },
+
 /***/ "./src/pages/storage_change_disk_page.ts"
 /*!***********************************************!*\
   !*** ./src/pages/storage_change_disk_page.ts ***!
@@ -3018,6 +3237,11 @@ class StoragePage {
     resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
     expandPartitionsButton = () => this.page.locator("::-p-text(New partitions will be created)");
     editRootPartitionMenu = () => this.page.locator("button[aria-label='Edit /'][role='menuitem']");
+    selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
+    addDeviceMenuitem = () => this.page.locator("::-p-aria(Add device menu[role='menuitem'])");
+    notConfiguredYetButton = () => this.page.locator("button::-p-text(Not configured yet)");
+    useTheDiskWithoutPartitionsMenuitem = () => this.page.locator("::-p-aria(Use the disk without partitions Format the whole device or mount an existing file system[role='menuitem'])");
+    changeBootOptionsButton = () => this.page.locator("::-p-aria(Change boot options Select the disk to configure partitions for booting[role='menuitem'])");
     constructor(page) {
         this.page = page;
     }
@@ -3038,6 +3262,21 @@ class StoragePage {
     }
     async editRootPartition() {
         await this.editRootPartitionMenu().click();
+    }
+    async changeBootOptions() {
+        await this.changeBootOptionsButton().click();
+    }
+    async selectMoreDevices() {
+        await this.selectMoreDevicesButton().click();
+    }
+    async selectAnotherDisk() {
+        await this.addDeviceMenuitem().click();
+    }
+    async selectDiskNotConfiguredYet() {
+        await this.notConfiguredYetButton().click();
+    }
+    async useTheDiskWithoutPartitions() {
+        await this.useTheDiskWithoutPartitionsMenuitem().click();
     }
 }
 exports.StoragePage = StoragePage;
@@ -3131,6 +3370,11 @@ class StorageSettingsPage {
     threeDotsButton = () => this.page.locator("button:has(svg.agm-three-dots-icon):not([aria-label])");
     storageAllocationWarningText = () => this.page.locator("::-p-text(It is not possible to allocate space for the boot partition)");
     resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
+    notConfiguredYetButton = () => this.page.locator("::-p-aria(Not configured yet[role='button'])");
+    useTheDiskWithoutPartitionsMenuitem = () => this.page.locator("::-p-aria(Use the disk without partitions Format the whole device or mount an existing file system[role='menuitem'])");
+    bootOptionsTab = () => this.page.locator("::-p-aria(Boot options[role='tab'])");
+    changeBootOptionsButton = () => this.page.locator("a[href='#/storage/boot-device/edit']");
+    addDeviceMenuitem = () => this.page.locator("::-p-aria(Add device menu[role='menuitem'])");
     constructor(page) {
         this.page = page;
     }
@@ -3188,6 +3432,21 @@ class StorageSettingsPage {
     }
     async resetToDefault(timeout = 30 * 1000) {
         await this.resetToDefaultsButton().setTimeout(timeout).click();
+    }
+    async selectAnotherDisk() {
+        await this.addDeviceMenuitem().click();
+    }
+    async selectDiskNotConfiguredYet() {
+        await this.notConfiguredYetButton().click();
+    }
+    async useTheDiskWithoutPartitions() {
+        await this.useTheDiskWithoutPartitionsMenuitem().click();
+    }
+    async selectBootOptions() {
+        await this.bootOptionsTab().click();
+    }
+    async changeBootOptions() {
+        await this.changeBootOptionsButton().click();
     }
 }
 exports.StorageSettingsPage = StorageSettingsPage;
@@ -3466,6 +3725,8 @@ const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/net
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
 const download_logs_1 = __webpack_require__(/*! ../checks/download_logs */ "./src/checks/download_logs.ts");
+const storage_disk_without_partitions_1 = __webpack_require__(/*! ../checks/storage_disk_without_partitions */ "./src/checks/storage_disk_without_partitions.ts");
+const storage_boot_options_1 = __webpack_require__(/*! ../checks/storage_boot_options */ "./src/checks/storage_boot_options.ts");
 class MaintenanceReleaseStrategy {
     setStaticHostname(hostname) {
         (0, system_1.setPermanentHostnameWithSidebar)(hostname);
@@ -3543,6 +3804,12 @@ class MaintenanceReleaseStrategy {
     downloadLogs() {
         (0, download_logs_1.downloadLogsWithSidebar)();
     }
+    setupWholeDiskForHome() {
+        (0, storage_disk_without_partitions_1.setupWholeDiskForHomeWithSidebar)();
+    }
+    configureBootDevice() {
+        (0, storage_boot_options_1.configureBootDeviceWithSidebar)();
+    }
 }
 exports.MaintenanceReleaseStrategy = MaintenanceReleaseStrategy;
 
@@ -3575,6 +3842,8 @@ const network_1 = __webpack_require__(/*! ../checks/network */ "./src/checks/net
 const storage_result_destructive_actions_planned_1 = __webpack_require__(/*! ../checks/storage_result_destructive_actions_planned */ "./src/checks/storage_result_destructive_actions_planned.ts");
 const storage_out_of_sync_1 = __webpack_require__(/*! ../checks/storage_out_of_sync */ "./src/checks/storage_out_of_sync.ts");
 const download_logs_1 = __webpack_require__(/*! ../checks/download_logs */ "./src/checks/download_logs.ts");
+const storage_disk_without_partitions_1 = __webpack_require__(/*! ../checks/storage_disk_without_partitions */ "./src/checks/storage_disk_without_partitions.ts");
+const storage_boot_options_1 = __webpack_require__(/*! ../checks/storage_boot_options */ "./src/checks/storage_boot_options.ts");
 class ProductionReleaseStrategy {
     setStaticHostname(hostname) {
         (0, system_1.setStaticHostname)(hostname);
@@ -3662,6 +3931,12 @@ class ProductionReleaseStrategy {
     }
     verifySoftwareSelectionNotAvailable() {
         (0, software_1.verifySoftwareSelectionNotAvailable)();
+    }
+    setupWholeDiskForHome() {
+        (0, storage_disk_without_partitions_1.setupWholeDiskForHome)();
+    }
+    configureBootDevice() {
+        (0, storage_boot_options_1.configureBootDevice)();
     }
 }
 exports.ProductionReleaseStrategy = ProductionReleaseStrategy;

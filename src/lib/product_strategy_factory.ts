@@ -33,6 +33,8 @@ export interface IProductTestStrategy {
   ensureLandingOnOverview(): void;
   downloadLogs(): void;
   verifySoftwareSelectionNotAvailable?(): void;
+  setupWholeDiskForHome(): void;
+  configureBootDevice(): void;
 }
 
 export class ProductStrategyFactory {
