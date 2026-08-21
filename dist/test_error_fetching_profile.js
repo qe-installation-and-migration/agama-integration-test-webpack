@@ -1,3 +1,1113 @@
 #! /usr/bin/env node
-(()=>{"use strict";var e,t,r,o,n,i={67459(e,t,r){var o=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(t,"__esModule",{value:!0}),t.verifyErrorFetchingProfile=function(){(0,n.it)("should show error fetching profile",async function(){const e=new a.ErrorFetchingProfilePage(n.page),t=await(0,n.getTextContent)(e.alertWarningMsg());await i.default.match(t,/It was unreachable or invalid\. Do you want to try again\?|Configuration cannot be applied because it is invalid or could not be reached/)})};const n=r(12229),i=o(r(97703)),a=r(14294)},281(e,t,r){var o=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(t,"__esModule",{value:!0}),t.logIn=function(e){s(),(0,i.it)("should allow logging in",async function(){const t=new a.LoginAsRootPage(i.page);await t.fillPassword(e),await t.logIn()})},t.logInWithIncorrectPassword=function(){s(),(0,i.it)("should show warning alert for logging with wrong password",async function(){const e=new a.LoginAsRootPage(i.page),t="invalid password";await e.fillPassword(t),await e.logIn(),n.default.deepEqual(await(0,i.getTextContent)(e.couldNotLoginText()),"Danger alert:Could not log in"),await e.togglePasswordVisibility(),n.default.deepEqual(await(0,i.getValue)(e.passwordInput()),t)})},t.logInWithIncorrectPasswordWithSidebar=function(){s(),(0,i.it)("should show warning alert for logging with wrong password",async function(){const e=new a.LoginAsRootPage(i.page),t="invalid password";await e.fillPassword(t),await e.logIn();const r=await(0,i.getTextContent)(e.couldNotLoginText());n.default.deepEqual(r,"Danger alert:Could not log in. Please, make sure that the password is correct."),await e.togglePasswordVisibility();const o=await(0,i.getValue)(e.passwordInput());n.default.deepEqual(o,t)})};const n=o(r(97703)),i=r(12229),a=r(32056);function s(){(0,i.it)("should have Agama page title",async function(){n.default.deepEqual(await i.page.title(),"Agama")})}},13378(e,t,r){var o,n=this&&this.__createBinding||(Object.create?function(e,t,r,o){void 0===o&&(o=r);var n=Object.getOwnPropertyDescriptor(t,r);n&&!("get"in n?!t.__esModule:n.writable||n.configurable)||(n={enumerable:!0,get:function(){return t[r]}}),Object.defineProperty(e,o,n)}:function(e,t,r,o){void 0===o&&(o=r),e[o]=t[r]}),i=this&&this.__setModuleDefault||(Object.create?function(e,t){Object.defineProperty(e,"default",{enumerable:!0,value:t})}:function(e,t){e.default=t}),a=this&&this.__importStar||(o=function(e){return o=Object.getOwnPropertyNames||function(e){var t=[];for(var r in e)Object.prototype.hasOwnProperty.call(e,r)&&(t[t.length]=r);return t},o(e)},function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var r=o(e),a=0;a<r.length;a++)"default"!==r[a]&&n(t,e,r[a]);return i(t,e),t});Object.defineProperty(t,"__esModule",{value:!0}),t.commaSeparatedList=function(e){return e.includes(";")?e.split(";"):e.split(",")},t.parse=function(e){const t=s.program.description("Run Agama integration test").option("-u, --url <url>","Agama server URL","http://localhost").option("-p, --password <password>","Agama login password","linux").option("-a, --agama-image-version <version>","Agama image version").option("-w, --agama-web-ui-package-version <version>","Agama Web UI package version").option("-v, --product-version <version>","Product version").addOption(new s.Option("-b, --browser <browser>","Browser used for running the test").choices(["firefox","chrome","chromium"]).default("firefox")).option("-r, --root-password <password>","Target root login password","linux").option("-h, --headed","Run the browser in headed mode with UI (the default is headless mode)").addOption(new s.Option("-d, --delay <miliseconds>","Delay between the browser actions, useful in headed mode").argParser(c).default(0)).option("-c, --continue","Continue the test after a failure (the default is abort on error)",!1);return e&&e(t),t.parse(process.argv),(0,l.setContinueOnError)(s.program.opts().continue),s.program.opts()};const s=r(62116),u=a(r(62116)),l=r(12229);function c(e){const t=parseInt(e,10);if(isNaN(t))throw new u.InvalidArgumentError("Enter a valid number.");return t}},12229(e,t,r){var o,n=this&&this.__createBinding||(Object.create?function(e,t,r,o){void 0===o&&(o=r);var n=Object.getOwnPropertyDescriptor(t,r);n&&!("get"in n?!t.__esModule:n.writable||n.configurable)||(n={enumerable:!0,get:function(){return t[r]}}),Object.defineProperty(e,o,n)}:function(e,t,r,o){void 0===o&&(o=r),e[o]=t[r]}),i=this&&this.__setModuleDefault||(Object.create?function(e,t){Object.defineProperty(e,"default",{enumerable:!0,value:t})}:function(e,t){e.default=t}),a=this&&this.__importStar||(o=function(e){return o=Object.getOwnPropertyNames||function(e){var t=[];for(var r in e)Object.prototype.hasOwnProperty.call(e,r)&&(t[t.length]=r);return t},o(e)},function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var r=o(e),a=0;a<r.length;a++)"default"!==r[a]&&n(t,e,r[a]);return i(t,e),t}),s=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(t,"__esModule",{value:!0}),t.page=void 0,t.test_init=function(e){u.default.existsSync(v)||u.default.mkdirSync(v),(0,w.before)(async function(){({page:t.page}=await async function(e,r,o,n){return b=n,h=await g.launch({protocol:"webDriverBiDi",headless:e,acceptInsecureCerts:!0,timeout:3e4,protocolTimeout:36e4,slowMo:r,defaultViewport:{width:1280,height:800},...m(o)}),t.page=await h.newPage(),t.page.setDefaultTimeout(3e4),await t.page.goto(n,{timeout:6e4,waitUntil:"domcontentloaded"}),{page:t.page,browser:h}}(!e.headed,e.delay,e.browser,e.url))}),(0,w.after)(async function(){await async function(){t.page&&await t.page.close(),h&&await h.close()}()})},t.setContinueOnError=function(e){O=e},t.dumpPage=_,t.it=async function(e,r,o){(0,w.it)(e,{timeout:o||6e4},async o=>{try{x?o.skip():await r()}catch(r){throw O||(x=!0),t.page&&await Promise.allSettled([_(e),P()]),new Error("Test failed!",{cause:r})}})},t.sleep=function(e){return new Promise(t=>setTimeout(t,e))},t.getTextContent=function(e,t=3e4){return e.map(e=>e.textContent).setTimeout(t).wait()},t.getValue=function(e){return e.map(e=>e.value).wait()},t.waitUntilOverlaySettled=async function(e,r=!1){const o='[role="alert"].agm-main-content-overlay',n=Date.now(),i=t.page.waitForSelector(o,{visible:!0,timeout:1e4}).catch(()=>(y("Overlay did not appear within 10000ms after action. Moving on..."),null));await e();const a=await i;a&&!r?(y("Overlay detected. Waiting for it to disappear..."),await t.page.waitForSelector(o,{hidden:!0}),y(`Overlay cleared after ${Date.now()-n}ms`)):a&&r&&y("Overlay expected and not waiting for it to disappear.")},t.waitOnFile=async function(e){const t={resources:[e],delay:3e3,timeout:3e4,window:4e3};try{await(0,f.default)(t)}catch(e){throw new Error("waitOnFile failed!",{cause:e})}};const u=s(r(79896)),l=s(r(16928)),c=s(r(58611)),d=s(r(65692)),p=s(r(43106)),f=s(r(36370)),g=a(r(79796)),w=r(22579);let h,b;const v="log";function y(e){"1"!==process.env.DEBUG_AGAMA&&"true"!==process.env.DEBUG_AGAMA||console.log(`[Debug]: ${e}`)}function m(e){switch(e.toLowerCase()){case"firefox":return{browser:"firefox",executablePath:"/usr/bin/firefox"};case"chrome":return{browser:"chrome",executablePath:"/usr/bin/google-chrome-stable"};case"chromium":return{browser:"chrome",executablePath:"/usr/bin/chromium"};default:throw new Error(`Unsupported browser type: ${e}`)}}let x=!1,O=!1;async function P(){const e=[],t=b.startsWith("https://")?d.default:c.default;return new Promise((r,o)=>{t.get(b+"/index.css",{rejectUnauthorized:!1,headers:{"Accept-Encoding":"gzip"}},t=>{t.on("data",t=>{e.push(Buffer.from(t,"binary"))}),t.on("end",()=>{const n=Buffer.concat(e),i=v+"/index.css";"gzip"===t.headers["content-encoding"]?p.default.gunzip(n,(e,t)=>{e?(console.error("Cannot decompress index.css: ",e.cause),o(e.cause)):(u.default.writeFileSync(i,t),r(i))}):(u.default.writeFileSync(i,n),r(i))})}).on("error",e=>{console.error("Cannot download index.css: ",e),o(e)})})}async function _(e){const r=l.default.join(v,e.replace(/[^a-zA-Z0-9]/g,"_"));await t.page.screenshot({path:r+".png"});const o=await t.page.content();u.default.writeFileSync(r+".html",o)}},14294(e,t){Object.defineProperty(t,"__esModule",{value:!0}),t.ErrorFetchingProfilePage=void 0,t.ErrorFetchingProfilePage=class{page;alertWarningMsg=()=>this.page.locator("::-p-text(Configuration cannot be applied because it is invalid or could not be reached), ::-p-text(It was unreachable or invalid)");constructor(e){this.page=e}}},32056(e,t){Object.defineProperty(t,"__esModule",{value:!0}),t.LoginAsRootPage=void 0,t.LoginAsRootPage=class{page;passwordInput=()=>this.page.locator("input#password");logInButton=()=>this.page.locator("button[type='submit']");couldNotLoginText=()=>this.page.locator("::-p-text(Could not log in)");passwordVisibilityButton=()=>this.page.locator("[aria-label='Password visibility button']");constructor(e){this.page=e}async fillPassword(e){await this.passwordInput().fill(e)}async logIn(){await this.logInButton().click()}async togglePasswordVisibility(){await this.passwordVisibilityButton().click()}}},75364(e,t,r){const o=r(13378),n=r(12229),i=r(281),a=r(67459),s=(0,o.parse)(e=>e.option("--install","Proceed to install the system (the default is not to install it)"));(0,n.test_init)(s),(0,i.logIn)(s.password),(0,a.verifyErrorFetchingProfile)()},42613(e){e.exports=require("assert")},20181(e){e.exports=require("buffer")},76982(e){e.exports=require("crypto")},72250(e){e.exports=require("dns")},24434(e){e.exports=require("events")},79896(e){e.exports=require("fs")},58611(e){e.exports=require("http")},85675(e){e.exports=require("http2")},65692(e){e.exports=require("https")},69278(e){e.exports=require("net")},34589(e){e.exports=require("node:assert")},97703(e){e.exports=require("node:assert/strict")},31421(e){e.exports=require("node:child_process")},78474(e){e.exports=require("node:events")},73024(e){e.exports=require("node:fs")},51455(e){e.exports=require("node:fs/promises")},37067(e){e.exports=require("node:http")},44708(e){e.exports=require("node:https")},48161(e){e.exports=require("node:os")},76760(e){e.exports=require("node:path")},1708(e){e.exports=require("node:process")},80481(e){e.exports=require("node:readline")},57075(e){e.exports=require("node:stream")},22579(e){e.exports=require("node:test")},73136(e){e.exports=require("node:url")},70857(e){e.exports=require("os")},16928(e){e.exports=require("path")},2203(e){e.exports=require("stream")},64756(e){e.exports=require("tls")},52018(e){e.exports=require("tty")},87016(e){e.exports=require("url")},39023(e){e.exports=require("util")},43106(e){e.exports=require("zlib")}},a={};function s(e){var t=a[e];if(void 0!==t)return t.exports;var r=a[e]={id:e,loaded:!1,exports:{}};return i[e].call(r.exports,r,r.exports,s),r.loaded=!0,r.exports}s.m=i,s.x=()=>{var e=s.O(void 0,[121],()=>s(75364));return s.O(e)},e=[],s.O=(t,r,o,n)=>{if(!r){var i=1/0;for(c=0;c<e.length;c++){for(var[r,o,n]=e[c],a=!0,u=0;u<r.length;u++)(!1&n||i>=n)&&Object.keys(s.O).every(e=>s.O[e](r[u]))?r.splice(u--,1):(a=!1,n<i&&(i=n));if(a){e.splice(c--,1);var l=o();void 0!==l&&(t=l)}}return t}n=n||0;for(var c=e.length;c>0&&e[c-1][2]>n;c--)e[c]=e[c-1];e[c]=[r,o,n]},r=Object.getPrototypeOf?e=>Object.getPrototypeOf(e):e=>e.__proto__,s.t=function(e,o){if(1&o&&(e=this(e)),8&o)return e;if("object"==typeof e&&e){if(4&o&&e.__esModule)return e;if(16&o&&"function"==typeof e.then)return e}var n=Object.create(null);s.r(n);var i={};t=t||[null,r({}),r([]),r(r)];for(var a=2&o&&e;("object"==typeof a||"function"==typeof a)&&!~t.indexOf(a);a=r(a))Object.getOwnPropertyNames(a).forEach(t=>i[t]=()=>e[t]);return i.default=()=>e,s.d(n,i),n},s.d=(e,t)=>{for(var r in t)s.o(t,r)&&!s.o(e,r)&&Object.defineProperty(e,r,{enumerable:!0,get:t[r]})},s.f={},s.e=e=>Promise.all(Object.keys(s.f).reduce((t,r)=>(s.f[r](e,t),t),[])),s.u=e=>"vendor.js",s.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t),s.r=e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},s.nmd=e=>(e.paths=[],e.children||(e.children=[]),e),n={737:1},s.O.require=e=>n[e],s.f.require=(e,t)=>{if(!n[e]){var r=require("./"+s.u(e));n[e]||(e=>{var t=e.modules,r=e.ids,o=e.runtime;for(var i in t)s.o(t,i)&&(s.m[i]=t[i]);o&&o(s);for(var a=0;a<r.length;a++)n[r[a]]=1;s.O()})(r)}},o=s.x,s.x=()=>(s.e(121),o()),s.x()})();
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/checks/error_fetching_profile.ts"
+/*!**********************************************!*\
+  !*** ./src/checks/error_fetching_profile.ts ***!
+  \**********************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.verifyErrorFetchingProfile = verifyErrorFetchingProfile;
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const error_fetching_profile_page_1 = __webpack_require__(/*! ../pages/error_fetching_profile_page */ "./src/pages/error_fetching_profile_page.ts");
+function verifyErrorFetchingProfile() {
+    (0, helpers_1.it)(`should show error fetching profile`, async function () {
+        const errorFetchingProfilePage = new error_fetching_profile_page_1.ErrorFetchingProfilePage(helpers_1.page);
+        const elementText = await (0, helpers_1.getTextContent)(errorFetchingProfilePage.alertWarningMsg());
+        const expectedTextRegex = /It was unreachable or invalid\. Do you want to try again\?|Configuration cannot be applied because it is invalid or could not be reached/;
+        await strict_1.default.match(elementText, expectedTextRegex);
+    });
+}
+
+
+/***/ },
+
+/***/ "./src/checks/login.ts"
+/*!*****************************!*\
+  !*** ./src/checks/login.ts ***!
+  \*****************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.logIn = logIn;
+exports.logInWithIncorrectPassword = logInWithIncorrectPassword;
+exports.logInWithIncorrectPasswordWithSidebar = logInWithIncorrectPasswordWithSidebar;
+const strict_1 = __importDefault(__webpack_require__(/*! node:assert/strict */ "node:assert/strict"));
+const helpers_1 = __webpack_require__(/*! ../lib/helpers */ "./src/lib/helpers.ts");
+const login_as_root_page_1 = __webpack_require__(/*! ../pages/login_as_root_page */ "./src/pages/login_as_root_page.ts");
+function verifyAgamaTitle() {
+    (0, helpers_1.it)("should have Agama page title", async function () {
+        strict_1.default.deepEqual(await helpers_1.page.title(), "Agama");
+    });
+}
+function logIn(password) {
+    verifyAgamaTitle();
+    (0, helpers_1.it)("should allow logging in", async function () {
+        const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
+        await loginAsRoot.fillPassword(password);
+        await loginAsRoot.logIn();
+    });
+}
+function logInWithIncorrectPassword() {
+    verifyAgamaTitle();
+    (0, helpers_1.it)("should show warning alert for logging with wrong password", async function () {
+        const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
+        const invalidpassword = "invalid password";
+        await loginAsRoot.fillPassword(invalidpassword);
+        await loginAsRoot.logIn();
+        strict_1.default.deepEqual(await (0, helpers_1.getTextContent)(loginAsRoot.couldNotLoginText()), "Danger alert:Could not log in");
+        await loginAsRoot.togglePasswordVisibility();
+        strict_1.default.deepEqual(await (0, helpers_1.getValue)(loginAsRoot.passwordInput()), invalidpassword);
+    });
+}
+function logInWithIncorrectPasswordWithSidebar() {
+    verifyAgamaTitle();
+    (0, helpers_1.it)("should show warning alert for logging with wrong password", async function () {
+        const loginAsRoot = new login_as_root_page_1.LoginAsRootPage(helpers_1.page);
+        const invalidpassword = "invalid password";
+        await loginAsRoot.fillPassword(invalidpassword);
+        await loginAsRoot.logIn();
+        const alertText = await (0, helpers_1.getTextContent)(loginAsRoot.couldNotLoginText());
+        strict_1.default.deepEqual(alertText, "Danger alert:Could not log in. Please, make sure that the password is correct.");
+        await loginAsRoot.togglePasswordVisibility();
+        const passwordInputValue = await (0, helpers_1.getValue)(loginAsRoot.passwordInput());
+        strict_1.default.deepEqual(passwordInputValue, invalidpassword);
+    });
+}
+
+
+/***/ },
+
+/***/ "./src/lib/cmdline.ts"
+/*!****************************!*\
+  !*** ./src/lib/cmdline.ts ***!
+  \****************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.commaSeparatedList = commaSeparatedList;
+exports.parse = parse;
+const commander_1 = __webpack_require__(/*! commander */ "./node_modules/commander/index.js");
+const commander = __importStar(__webpack_require__(/*! commander */ "./node_modules/commander/index.js"));
+const helpers_1 = __webpack_require__(/*! ./helpers */ "./src/lib/helpers.ts");
+// parse command line argument as an integer
+function getInt(value) {
+    // parse the value as a decimal number (base 10)
+    const parsed = parseInt(value, 10);
+    if (isNaN(parsed)) {
+        throw new commander.InvalidArgumentError("Enter a valid number.");
+    }
+    return parsed;
+}
+function commaSeparatedList(value) {
+    return value.includes(";") ? value.split(";") : value.split(",");
+}
+/**
+ * Parse command line options. When an invalid command line option is used the script aborts.
+ * @param callback callback for adding custom command line options
+ * @returns [commander.OptionValues] parsed command line
+ * @see https://github.com/tj/commander.js
+ */
+function parse(callback) {
+    // define the command line arguments and parse them
+    const prg = commander_1.program
+        .description("Run Agama integration test")
+        .option("-u, --url <url>", "Agama server URL", "http://localhost")
+        .option("-p, --password <password>", "Agama login password", "linux")
+        .option("-a, --agama-image-version <version>", "Agama image version")
+        .option("-w, --agama-web-ui-package-version <version>", "Agama Web UI package version")
+        .option("-v, --product-version <version>", "Product version")
+        .addOption(new commander_1.Option("-b, --browser <browser>", "Browser used for running the test")
+        .choices(["firefox", "chrome", "chromium"])
+        .default("firefox"))
+        .option("-r, --root-password <password>", "Target root login password", "linux")
+        .option("-h, --headed", "Run the browser in headed mode with UI (the default is headless mode)")
+        .addOption(new commander_1.Option("-d, --delay <miliseconds>", "Delay between the browser actions, useful in headed mode")
+        .argParser(getInt)
+        .default(0))
+        .option("-c, --continue", "Continue the test after a failure (the default is abort on error)", false);
+    if (callback)
+        callback(prg);
+    prg.parse(process.argv);
+    (0, helpers_1.setContinueOnError)(commander_1.program.opts().continue);
+    // parse options from the command line
+    return commander_1.program.opts();
+}
+
+
+/***/ },
+
+/***/ "./src/lib/helpers.ts"
+/*!****************************!*\
+  !*** ./src/lib/helpers.ts ***!
+  \****************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.page = void 0;
+exports.test_init = test_init;
+exports.setContinueOnError = setContinueOnError;
+exports.dumpPage = dumpPage;
+exports.it = it;
+exports.sleep = sleep;
+exports.getTextContent = getTextContent;
+exports.getValue = getValue;
+exports.waitUntilOverlaySettled = waitUntilOverlaySettled;
+exports.waitOnFile = waitOnFile;
+const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
+const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
+const http_1 = __importDefault(__webpack_require__(/*! http */ "http"));
+const https_1 = __importDefault(__webpack_require__(/*! https */ "https"));
+const zlib_1 = __importDefault(__webpack_require__(/*! zlib */ "zlib"));
+const wait_on_1 = __importDefault(__webpack_require__(/*! wait-on */ "./node_modules/wait-on/lib/wait-on.js"));
+const puppeteer = __importStar(__webpack_require__(/*! puppeteer-core */ "./node_modules/puppeteer-core/lib/cjs/puppeteer/puppeteer-core.js"));
+// see https://nodejs.org/docs/latest-v20.x/api/test.html
+const node_test_1 = __webpack_require__(/*! node:test */ "node:test");
+let browser;
+let url;
+// directory for storing the dumped data after a failure
+const dir = "log";
+/**
+ * Debug logging utility for development and troubleshooting.
+ *
+ * Set DEBUG_AGAMA=1 or DEBUG_AGAMA=true to enable debug output.
+ *
+ * Example:
+ *   DEBUG_AGAMA=1 ./dist/test_default_installation.js
+ *
+ * @param message - The debug message to log
+ */
+function debugLog(message) {
+    if (process.env.DEBUG_AGAMA === "1" || process.env.DEBUG_AGAMA === "true") {
+        console.log(`[Debug]: ${message}`);
+    }
+}
+// helper function for configuring the browser
+function browserSettings(name) {
+    switch (name.toLowerCase()) {
+        case "firefox":
+            return {
+                browser: "firefox",
+                executablePath: "/usr/bin/firefox",
+            };
+        case "chrome":
+            return {
+                browser: "chrome",
+                executablePath: "/usr/bin/google-chrome-stable",
+            };
+        case "chromium":
+            return {
+                browser: "chrome",
+                executablePath: "/usr/bin/chromium",
+            };
+        default:
+            throw new Error(`Unsupported browser type: ${name}`);
+    }
+}
+async function startBrowser(headless, slowMo, agamaBrowser, agamaServer) {
+    url = agamaServer;
+    browser = await puppeteer.launch({
+        // "webDriverBiDi" does not work with old FireFox, comment it out if needed
+        protocol: "webDriverBiDi",
+        headless,
+        acceptInsecureCerts: true,
+        timeout: 30000,
+        // This timeout is increased due to DASD format step review in future changes
+        protocolTimeout: 360000,
+        slowMo,
+        defaultViewport: {
+            width: 1280,
+            height: 800,
+        },
+        ...browserSettings(agamaBrowser),
+    });
+    exports.page = await browser.newPage();
+    exports.page.setDefaultTimeout(30000);
+    await exports.page.goto(agamaServer, {
+        timeout: 60000,
+        waitUntil: "domcontentloaded",
+    });
+    return { page: exports.page, browser };
+}
+async function finishBrowser() {
+    if (exports.page)
+        await exports.page.close();
+    if (browser)
+        await browser.close();
+}
+function test_init(options) {
+    // Create log directory at the start of test suite
+    if (!fs_1.default.existsSync(dir))
+        fs_1.default.mkdirSync(dir);
+    (0, node_test_1.before)(async function () {
+        ({ page: exports.page } = await startBrowser(!options.headed, options.delay, options.browser, options.url));
+    });
+    (0, node_test_1.after)(async function () {
+        await finishBrowser();
+    });
+}
+let failed = false;
+let continueOnError = false;
+function setContinueOnError(enabled) {
+    continueOnError = enabled;
+}
+// helper function, dump the index.css file so the HTML dump can properly displayed
+async function dumpCSS() {
+    const cssData = [];
+    const downloader = url.startsWith("https://") ? https_1.default : http_1.default;
+    return new Promise((resolve, reject) => {
+        downloader
+            .get(url + "/index.css", {
+            // ignore HTTPS errors (self-signed certificate)
+            rejectUnauthorized: false,
+            // use gzip compression
+            headers: { "Accept-Encoding": "gzip" },
+        }, (res) => {
+            res.on("data", (chunk) => {
+                cssData.push(Buffer.from(chunk, "binary"));
+            });
+            res.on("end", () => {
+                // merge all chunks
+                const data = Buffer.concat(cssData);
+                const cssFile = dir + "/index.css";
+                if (res.headers["content-encoding"] === "gzip") {
+                    zlib_1.default.gunzip(data, (err, unpacked) => {
+                        if (err) {
+                            console.error("Cannot decompress index.css: ", err.cause);
+                            reject(err.cause);
+                        }
+                        else {
+                            fs_1.default.writeFileSync(cssFile, unpacked);
+                            resolve(cssFile);
+                        }
+                    });
+                }
+                else {
+                    fs_1.default.writeFileSync(cssFile, data);
+                    resolve(cssFile);
+                }
+            });
+        })
+            .on("error", (e) => {
+            console.error("Cannot download index.css: ", e);
+            reject(e);
+        });
+    });
+}
+// dump the current page displayed in puppeteer
+// ts-prune-ignore-next
+async function dumpPage(label) {
+    // base file name for the dumps
+    const name = path_1.default.join(dir, label.replace(/[^a-zA-Z0-9]/g, "_"));
+    await exports.page.screenshot({ path: name + ".png" });
+    const html = await exports.page.content();
+    fs_1.default.writeFileSync(name + ".html", html);
+}
+// define it() as a wrapper which dumps the page on a failure
+async function it(label, test, timeout) {
+    (0, node_test_1.it)(label, 
+    // abort when the test takes more than one minute
+    { timeout: timeout || 60000 }, async (t) => {
+        try {
+            // do not run any test after first failure
+            if (failed)
+                t.skip();
+            else
+                await test();
+        }
+        catch (error) {
+            // remember the failure for the next tests
+            if (!continueOnError)
+                failed = true;
+            if (exports.page) {
+                // dump the page and the CSS in parallel
+                await Promise.allSettled([dumpPage(label), dumpCSS()]);
+            }
+            throw new Error("Test failed!", { cause: error });
+        }
+    });
+}
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+function getTextContent(locator, timeout = 30000) {
+    return locator
+        .map((element) => element.textContent)
+        .setTimeout(timeout)
+        .wait();
+}
+function getValue(locator) {
+    return locator.map((element) => element.value).wait();
+}
+async function waitUntilOverlaySettled(action, expectQuestionInterruption = false) {
+    const selector = '[role="alert"].agm-main-content-overlay';
+    const start = Date.now();
+    // Start watching for overlay BEFORE executing the action
+    const appearancePromise = exports.page.waitForSelector(selector, { visible: true, timeout: 10000 })
+        .catch(() => {
+        debugLog("Overlay did not appear within 10000ms after action. Moving on...");
+        return null;
+    });
+    // Execute the action (e.g., clicking accept button)
+    await action();
+    // Wait for the overlay we started watching for
+    const appeared = await appearancePromise;
+    if (appeared && !expectQuestionInterruption) {
+        debugLog("Overlay detected. Waiting for it to disappear...");
+        await exports.page.waitForSelector(selector, { hidden: true });
+        const duration = Date.now() - start;
+        debugLog(`Overlay cleared after ${duration}ms`);
+    }
+    else if (appeared && expectQuestionInterruption) {
+        debugLog("Overlay expected and not waiting for it to disappear.");
+    }
+}
+async function waitOnFile(filePath) {
+    const opts = {
+        resources: [filePath],
+        delay: 3000,
+        timeout: 30000,
+        window: 4000,
+    };
+    try {
+        await (0, wait_on_1.default)(opts);
+    }
+    catch (error) {
+        throw new Error("waitOnFile failed!", { cause: error });
+    }
+}
+;
+
+
+/***/ },
+
+/***/ "./src/pages/error_fetching_profile_page.ts"
+/*!**************************************************!*\
+  !*** ./src/pages/error_fetching_profile_page.ts ***!
+  \**************************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ErrorFetchingProfilePage = void 0;
+class ErrorFetchingProfilePage {
+    page;
+    alertWarningMsg = () => this.page.locator("::-p-text(Configuration cannot be applied because it is invalid or could not be reached), ::-p-text(It was unreachable or invalid)");
+    constructor(page) {
+        this.page = page;
+    }
+}
+exports.ErrorFetchingProfilePage = ErrorFetchingProfilePage;
+
+
+/***/ },
+
+/***/ "./src/pages/login_as_root_page.ts"
+/*!*****************************************!*\
+  !*** ./src/pages/login_as_root_page.ts ***!
+  \*****************************************/
+(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LoginAsRootPage = void 0;
+class LoginAsRootPage {
+    page;
+    passwordInput = () => this.page.locator("input#password");
+    logInButton = () => this.page.locator("button[type='submit']");
+    couldNotLoginText = () => this.page.locator(`::-p-text(Could not log in)`);
+    passwordVisibilityButton = () => this.page.locator("[aria-label='Password visibility button']");
+    constructor(page) {
+        this.page = page;
+    }
+    async fillPassword(password) {
+        await this.passwordInput().fill(password);
+    }
+    async logIn() {
+        await this.logInButton().click();
+    }
+    async togglePasswordVisibility() {
+        await this.passwordVisibilityButton().click();
+    }
+}
+exports.LoginAsRootPage = LoginAsRootPage;
+
+
+/***/ },
+
+/***/ "./src/test_error_fetching_profile.ts"
+/*!********************************************!*\
+  !*** ./src/test_error_fetching_profile.ts ***!
+  \********************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const cmdline_1 = __webpack_require__(/*! ./lib/cmdline */ "./src/lib/cmdline.ts");
+const helpers_1 = __webpack_require__(/*! ./lib/helpers */ "./src/lib/helpers.ts");
+const login_1 = __webpack_require__(/*! ./checks/login */ "./src/checks/login.ts");
+const error_fetching_profile_1 = __webpack_require__(/*! ./checks/error_fetching_profile */ "./src/checks/error_fetching_profile.ts");
+const options = (0, cmdline_1.parse)((cmd) => cmd.option("--install", "Proceed to install the system (the default is not to install it)"));
+(0, helpers_1.test_init)(options);
+(0, login_1.logIn)(options.password);
+(0, error_fetching_profile_1.verifyErrorFetchingProfile)();
+
+
+/***/ },
+
+/***/ "assert"
+/*!*************************!*\
+  !*** external "assert" ***!
+  \*************************/
+(module) {
+
+module.exports = require("assert");
+
+/***/ },
+
+/***/ "buffer"
+/*!*************************!*\
+  !*** external "buffer" ***!
+  \*************************/
+(module) {
+
+module.exports = require("buffer");
+
+/***/ },
+
+/***/ "crypto"
+/*!*************************!*\
+  !*** external "crypto" ***!
+  \*************************/
+(module) {
+
+module.exports = require("crypto");
+
+/***/ },
+
+/***/ "dns"
+/*!**********************!*\
+  !*** external "dns" ***!
+  \**********************/
+(module) {
+
+module.exports = require("dns");
+
+/***/ },
+
+/***/ "events"
+/*!*************************!*\
+  !*** external "events" ***!
+  \*************************/
+(module) {
+
+module.exports = require("events");
+
+/***/ },
+
+/***/ "fs"
+/*!*********************!*\
+  !*** external "fs" ***!
+  \*********************/
+(module) {
+
+module.exports = require("fs");
+
+/***/ },
+
+/***/ "http"
+/*!***********************!*\
+  !*** external "http" ***!
+  \***********************/
+(module) {
+
+module.exports = require("http");
+
+/***/ },
+
+/***/ "http2"
+/*!************************!*\
+  !*** external "http2" ***!
+  \************************/
+(module) {
+
+module.exports = require("http2");
+
+/***/ },
+
+/***/ "https"
+/*!************************!*\
+  !*** external "https" ***!
+  \************************/
+(module) {
+
+module.exports = require("https");
+
+/***/ },
+
+/***/ "net"
+/*!**********************!*\
+  !*** external "net" ***!
+  \**********************/
+(module) {
+
+module.exports = require("net");
+
+/***/ },
+
+/***/ "node:assert"
+/*!******************************!*\
+  !*** external "node:assert" ***!
+  \******************************/
+(module) {
+
+module.exports = require("node:assert");
+
+/***/ },
+
+/***/ "node:assert/strict"
+/*!*************************************!*\
+  !*** external "node:assert/strict" ***!
+  \*************************************/
+(module) {
+
+module.exports = require("node:assert/strict");
+
+/***/ },
+
+/***/ "node:child_process"
+/*!*************************************!*\
+  !*** external "node:child_process" ***!
+  \*************************************/
+(module) {
+
+module.exports = require("node:child_process");
+
+/***/ },
+
+/***/ "node:events"
+/*!******************************!*\
+  !*** external "node:events" ***!
+  \******************************/
+(module) {
+
+module.exports = require("node:events");
+
+/***/ },
+
+/***/ "node:fs"
+/*!**************************!*\
+  !*** external "node:fs" ***!
+  \**************************/
+(module) {
+
+module.exports = require("node:fs");
+
+/***/ },
+
+/***/ "node:fs/promises"
+/*!***********************************!*\
+  !*** external "node:fs/promises" ***!
+  \***********************************/
+(module) {
+
+module.exports = require("node:fs/promises");
+
+/***/ },
+
+/***/ "node:http"
+/*!****************************!*\
+  !*** external "node:http" ***!
+  \****************************/
+(module) {
+
+module.exports = require("node:http");
+
+/***/ },
+
+/***/ "node:https"
+/*!*****************************!*\
+  !*** external "node:https" ***!
+  \*****************************/
+(module) {
+
+module.exports = require("node:https");
+
+/***/ },
+
+/***/ "node:os"
+/*!**************************!*\
+  !*** external "node:os" ***!
+  \**************************/
+(module) {
+
+module.exports = require("node:os");
+
+/***/ },
+
+/***/ "node:path"
+/*!****************************!*\
+  !*** external "node:path" ***!
+  \****************************/
+(module) {
+
+module.exports = require("node:path");
+
+/***/ },
+
+/***/ "node:process"
+/*!*******************************!*\
+  !*** external "node:process" ***!
+  \*******************************/
+(module) {
+
+module.exports = require("node:process");
+
+/***/ },
+
+/***/ "node:readline"
+/*!********************************!*\
+  !*** external "node:readline" ***!
+  \********************************/
+(module) {
+
+module.exports = require("node:readline");
+
+/***/ },
+
+/***/ "node:stream"
+/*!******************************!*\
+  !*** external "node:stream" ***!
+  \******************************/
+(module) {
+
+module.exports = require("node:stream");
+
+/***/ },
+
+/***/ "node:test"
+/*!****************************!*\
+  !*** external "node:test" ***!
+  \****************************/
+(module) {
+
+module.exports = require("node:test");
+
+/***/ },
+
+/***/ "node:url"
+/*!***************************!*\
+  !*** external "node:url" ***!
+  \***************************/
+(module) {
+
+module.exports = require("node:url");
+
+/***/ },
+
+/***/ "os"
+/*!*********************!*\
+  !*** external "os" ***!
+  \*********************/
+(module) {
+
+module.exports = require("os");
+
+/***/ },
+
+/***/ "path"
+/*!***********************!*\
+  !*** external "path" ***!
+  \***********************/
+(module) {
+
+module.exports = require("path");
+
+/***/ },
+
+/***/ "stream"
+/*!*************************!*\
+  !*** external "stream" ***!
+  \*************************/
+(module) {
+
+module.exports = require("stream");
+
+/***/ },
+
+/***/ "tls"
+/*!**********************!*\
+  !*** external "tls" ***!
+  \**********************/
+(module) {
+
+module.exports = require("tls");
+
+/***/ },
+
+/***/ "tty"
+/*!**********************!*\
+  !*** external "tty" ***!
+  \**********************/
+(module) {
+
+module.exports = require("tty");
+
+/***/ },
+
+/***/ "url"
+/*!**********************!*\
+  !*** external "url" ***!
+  \**********************/
+(module) {
+
+module.exports = require("url");
+
+/***/ },
+
+/***/ "util"
+/*!***********************!*\
+  !*** external "util" ***!
+  \***********************/
+(module) {
+
+module.exports = require("util");
+
+/***/ },
+
+/***/ "zlib"
+/*!***********************!*\
+  !*** external "zlib" ***!
+  \***********************/
+(module) {
+
+module.exports = require("zlib");
+
+/***/ }
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		if (!(moduleId in __webpack_modules__)) {
+/******/ 			delete __webpack_module_cache__[moduleId];
+/******/ 			var e = new Error("Cannot find module '" + moduleId + "'");
+/******/ 			e.code = 'MODULE_NOT_FOUND';
+/******/ 			throw e;
+/******/ 		}
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
+/******/ 	// the startup function
+/******/ 	__webpack_require__.x = () => {
+/******/ 		// Load entry module and return exports
+/******/ 		// This entry module depends on other loaded chunks and execution need to be delayed
+/******/ 		var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__("./src/test_error_fetching_profile.ts")))
+/******/ 		__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
+/******/ 		return __webpack_exports__;
+/******/ 	};
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/chunk loaded */
+/******/ 	(() => {
+/******/ 		var deferred = [];
+/******/ 		__webpack_require__.O = (result, chunkIds, fn, priority) => {
+/******/ 			if(chunkIds) {
+/******/ 				priority = priority || 0;
+/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
+/******/ 				deferred[i] = [chunkIds, fn, priority];
+/******/ 				return;
+/******/ 			}
+/******/ 			var notFulfilled = Infinity;
+/******/ 			for (var i = 0; i < deferred.length; i++) {
+/******/ 				var [chunkIds, fn, priority] = deferred[i];
+/******/ 				var fulfilled = true;
+/******/ 				for (var j = 0; j < chunkIds.length; j++) {
+/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every((key) => (__webpack_require__.O[key](chunkIds[j])))) {
+/******/ 						chunkIds.splice(j--, 1);
+/******/ 					} else {
+/******/ 						fulfilled = false;
+/******/ 						if(priority < notFulfilled) notFulfilled = priority;
+/******/ 					}
+/******/ 				}
+/******/ 				if(fulfilled) {
+/******/ 					deferred.splice(i--, 1)
+/******/ 					var r = fn();
+/******/ 					if (r !== undefined) result = r;
+/******/ 				}
+/******/ 			}
+/******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/create fake namespace object */
+/******/ 	(() => {
+/******/ 		var getProto = Object.getPrototypeOf ? (obj) => (Object.getPrototypeOf(obj)) : (obj) => (obj.__proto__);
+/******/ 		var leafPrototypes;
+/******/ 		// create a fake namespace object
+/******/ 		// mode & 1: value is a module id, require it
+/******/ 		// mode & 2: merge all properties of value into the ns
+/******/ 		// mode & 4: return value when already ns object
+/******/ 		// mode & 16: return value when it's Promise-like
+/******/ 		// mode & 8|1: behave like require
+/******/ 		__webpack_require__.t = function(value, mode) {
+/******/ 			if(mode & 1) value = this(value);
+/******/ 			if(mode & 8) return value;
+/******/ 			if(typeof value === 'object' && value) {
+/******/ 				if((mode & 4) && value.__esModule) return value;
+/******/ 				if((mode & 16) && typeof value.then === 'function') return value;
+/******/ 			}
+/******/ 			var ns = Object.create(null);
+/******/ 			__webpack_require__.r(ns);
+/******/ 			var def = {};
+/******/ 			leafPrototypes = leafPrototypes || [null, getProto({}), getProto([]), getProto(getProto)];
+/******/ 			for(var current = mode & 2 && value; (typeof current == 'object' || typeof current == 'function') && !~leafPrototypes.indexOf(current); current = getProto(current)) {
+/******/ 				Object.getOwnPropertyNames(current).forEach((key) => (def[key] = () => (value[key])));
+/******/ 			}
+/******/ 			def['default'] = () => (value);
+/******/ 			__webpack_require__.d(ns, def);
+/******/ 			return ns;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/ensure chunk */
+/******/ 	(() => {
+/******/ 		__webpack_require__.f = {};
+/******/ 		// This file contains only the entry chunk.
+/******/ 		// The chunk loading function for additional chunks
+/******/ 		__webpack_require__.e = (chunkId) => {
+/******/ 			return Promise.all(Object.keys(__webpack_require__.f).reduce((promises, key) => {
+/******/ 				__webpack_require__.f[key](chunkId, promises);
+/******/ 				return promises;
+/******/ 			}, []));
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/get javascript chunk filename */
+/******/ 	(() => {
+/******/ 		// This function allow to reference async chunks and chunks that the entrypoint depends on
+/******/ 		__webpack_require__.u = (chunkId) => {
+/******/ 			// return url for filenames based on template
+/******/ 			return "" + chunkId + ".js";
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/node module decorator */
+/******/ 	(() => {
+/******/ 		__webpack_require__.nmd = (module) => {
+/******/ 			module.paths = [];
+/******/ 			if (!module.children) module.children = [];
+/******/ 			return module;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/require chunk loading */
+/******/ 	(() => {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded chunks
+/******/ 		// "1" means "loaded", otherwise not loaded yet
+/******/ 		var installedChunks = {
+/******/ 			"test_error_fetching_profile": 1
+/******/ 		};
+/******/ 		
+/******/ 		__webpack_require__.O.require = (chunkId) => (installedChunks[chunkId]);
+/******/ 		
+/******/ 		var installChunk = (chunk) => {
+/******/ 			var moreModules = chunk.modules, chunkIds = chunk.ids, runtime = chunk.runtime;
+/******/ 			for(var moduleId in moreModules) {
+/******/ 				if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 					__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 				}
+/******/ 			}
+/******/ 			if(runtime) runtime(__webpack_require__);
+/******/ 			for(var i = 0; i < chunkIds.length; i++)
+/******/ 				installedChunks[chunkIds[i]] = 1;
+/******/ 			__webpack_require__.O();
+/******/ 		};
+/******/ 		
+/******/ 		// require() chunk loading for javascript
+/******/ 		__webpack_require__.f.require = (chunkId, promises) => {
+/******/ 			// "1" is the signal for "already loaded"
+/******/ 			if(!installedChunks[chunkId]) {
+/******/ 				if(true) { // all chunks have JS
+/******/ 					var installedChunk = require("./" + __webpack_require__.u(chunkId));
+/******/ 					if (!installedChunks[chunkId]) {
+/******/ 						installChunk(installedChunk);
+/******/ 					}
+/******/ 				} else installedChunks[chunkId] = 1;
+/******/ 			}
+/******/ 		};
+/******/ 		
+/******/ 		// no external install chunk
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/startup chunk dependencies */
+/******/ 	(() => {
+/******/ 		var next = __webpack_require__.x;
+/******/ 		__webpack_require__.x = () => {
+/******/ 			__webpack_require__.e("vendor");
+/******/ 			return next();
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// run startup
+/******/ 	var __webpack_exports__ = __webpack_require__.x();
+/******/ 	
+/******/ })()
+;
 //# sourceMappingURL=test_error_fetching_profile.js.map

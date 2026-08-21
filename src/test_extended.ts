@@ -2,6 +2,8 @@ import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { Option } from "commander";
 import { ProductStrategyFactory } from "./lib/product_strategy_factory";
+import { showAgamaConfiguration } from "./checks/show_configuration";
+import { downloadJsonConfiguration } from "./checks/show_configuration";
 
 import { logIn } from "./checks/login";
 import { productSelection, productSelectionWithLicenseAndMode } from "./checks/product_selection";
@@ -46,6 +48,8 @@ if (options.productId !== "none")
 testStrategy.ensureLandingOnOverview();
 testStrategy.verifySoftwareSelectionNotAvailable();
 testStrategy.verifyAppearanceChanges?.();
+showAgamaConfiguration();
+downloadJsonConfiguration();
 if (options.staticHostname) testStrategy.setStaticHostname(options.staticHostname);
 if (options.ntpServerAddresses)
   testStrategy.configureTimeSynchronizationServers(options.ntpServerAddresses);
