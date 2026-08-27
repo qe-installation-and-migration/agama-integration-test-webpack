@@ -16,16 +16,23 @@ Dump the candidates with `scripts/inspect.mjs`, run from the repo root:
 node .claude/skills/discovering-selectors/scripts/inspect.mjs
 ```
 
-Add the steps that reach the screen under test at the marked line before running it, and adjust
-the URL and password there if they are not `https://agama.local` / `nots3cr3t`.
+Adjust the constants at the top, then add the steps reaching the screen under test at the marked
+line. The script logs in and selects a product first: screens hold no meaningful state before that.
 
 It reads the DOM because `page.accessibility.snapshot()`, `createCDPSession()` and `client()` are
 unavailable under WebDriver BiDi.
 
-Capture name *and* role, then prove each candidate resolves before using it:
+Keep the added steps re-runnable — the instance keeps its state, so a second run starts where the
+first stopped. Failing on a step the previous run performed is stale state, not a wrong selector.
+
+Capture name *and* role with `dump()`, then prove each candidate with `prove()` before using it:
 
 ```js
-await page.locator('::-p-aria([name="Install"][role="button"])').wait();
+await prove("install", '::-p-aria([name="Install"][role="button"])');
 ```
+
+When two elements share name *and* role — a modal's `X` and footer both named `Close` — ARIA takes
+whichever comes first. Fall back to class plus text (`button.pf-m-primary::-p-text(Close)`), prove
+it, and say which one it targets.
 
 Report the proven locators back to the caller.
