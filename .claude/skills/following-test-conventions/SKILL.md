@@ -25,9 +25,18 @@ Selectors follow CLAUDE.md's ARIA name-and-role convention and its fallback orde
 engine-neutral: `::-webkit-*` and other vendor-prefixed pseudo-elements silently fail in Firefox,
 while Puppeteer's `::-p-text()` / `::-p-aria()` are fine.
 
-Page objects, checks, helpers, `*WithSidebar` naming and ts-prune follow CLAUDE.md. Two additions:
+Page objects, checks, helpers, `*WithSidebar` naming and ts-prune follow CLAUDE.md, plus:
 
 - Copy the shape of `src/pages/system_page.ts` with `setStaticHostname` in `src/checks/system.ts`:
   one named ARIA locator per element, one action method per interaction, a check that reads top to
   bottom.
+- **Name a page object after the main heading it drives**, not the action opening it:
+  `InstallationSettingsInJsonFormatPage`. The check keeps the step name (`showConfiguration`).
+- **Declare the page objects first** in the `it()` body, named after the class without the `Page`
+  suffix: `new InstallationSettingsInJsonFormatPage(page)` → `installationSettingsInJsonFormat`.
+- **Keep the default `it()` timeout** unless the step really runs long, like an installation.
+- **No redundant waits** — every locator already waits.
+- **Page objects import nothing from `src/lib/`.** Read through a getter built on the locator's own
+  `.map().wait()`, as `AppearancePage` does; expose a `public readonly` locator only when the check
+  must wait on the element itself. Selector-less reads such as the clipboard are helpers.
 - **Reuse before adding** — read `src/lib/helpers.ts` and `src/lib/table.ts` first.
