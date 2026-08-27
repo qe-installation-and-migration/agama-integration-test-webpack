@@ -2,31 +2,33 @@ import { type Page } from "puppeteer-core";
 
 export class SetARootPasswordPage {
   private readonly page: Page;
-  private readonly acceptText = () => this.page.locator("button::-p-text(Accept)");
-  private readonly confirmText = () => this.page.locator("button::-p-text(Confirm)");
-  private readonly passwordInput = () => this.page.locator("input#password");
+  private readonly acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
+  private readonly passwordInput = () => this.page.locator("input::-p-aria(Password)");
   private readonly passwordConfirmationInput = () =>
-    this.page.locator("input#passwordConfirmation");
+    this.page.locator("input::-p-aria(Password confirmation)");
 
-  public readonly alertPasswordLess8Characters = () =>
-    this.page.locator("::-p-text(The password is shorter than 8 characters)");
+  public readonly alertPasswordLess8CharactersHeading = () =>
+    this.page.locator(
+      "::-p-aria(Warning alert: The password is shorter than 8 characters[role='heading'])",
+    );
 
-  public readonly alertPasswordIsWeak = () => this.page.locator("::-p-text(The password is weak)");
-  public readonly alertPasswordFailDictionaryCheck = () =>
-    this.page.locator("::-p-text(it is too simplistic/systematic)");
+  public readonly alertPasswordIsWeakHeading = () =>
+    this.page.locator("::-p-aria(Warning alert: The password is weak[role='heading'])");
 
-  private readonly usePasswordToggle = () => this.page.locator("::-p-text(Use password)");
+  public readonly alertPasswordFailDictionaryCheckHeading = () =>
+    this.page.locator(
+      "::-p-aria(Warning alert: The password fails the dictionary check - it is too simplistic/systematic[role='heading'])",
+    );
+
+  private readonly usePasswordCheckbox = () =>
+    this.page.locator("::-p-aria(Use password[role='checkbox'])");
 
   constructor(page: Page) {
     this.page = page;
   }
 
   async accept() {
-    await this.acceptText().click();
-  }
-
-  async confirm() {
-    await this.confirmText().click();
+    await this.acceptButton().click();
   }
 
   async fillPassword(password: string) {
@@ -38,6 +40,6 @@ export class SetARootPasswordPage {
   }
 
   async usePassword() {
-    await this.usePasswordToggle().click();
+    await this.usePasswordCheckbox().click();
   }
 }

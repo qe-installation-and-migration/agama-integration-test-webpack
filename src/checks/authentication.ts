@@ -89,7 +89,7 @@ export function verifyPasswordStrength() {
     await setARootPassword.selectPasswordAsRootLoginMethod();
     await setARootPassword.fillRootPassword("a23b56c");
     const elementTextPasswordLess8Characters = await getTextContent(
-      setARootPassword.alertPasswordLess8Characters(),
+      setARootPassword.alertPasswordLess8CharactersHeading(),
     );
     assert.deepEqual(
       elementTextPasswordLess8Characters,
@@ -97,12 +97,14 @@ export function verifyPasswordStrength() {
     );
 
     await setARootPassword.fillPassword("a23b56ca");
-    const elementTextPasswordIsWeak = await getTextContent(setARootPassword.alertPasswordIsWeak());
+    const elementTextPasswordIsWeak = await getTextContent(
+      setARootPassword.alertPasswordIsWeakHeading(),
+    );
     assert.deepEqual(elementTextPasswordIsWeak, "The password is weak");
 
     await setARootPassword.fillPassword("a23b5678");
     const elementTextPasswordFailDictionary = await getTextContent(
-      setARootPassword.alertPasswordFailDictionaryCheck(),
+      setARootPassword.alertPasswordFailDictionaryCheckHeading(),
     );
     assert.deepEqual(
       elementTextPasswordFailDictionary,
@@ -123,7 +125,7 @@ export function verifyPasswordStrengthWithSidebar() {
 
     await setARootPassword.fillPassword("a23b56c");
     const elementTextPasswordLess8Characters = await getTextContent(
-      setARootPassword.alertPasswordLess8Characters(),
+      setARootPassword.alertPasswordLess8CharactersHeading(),
     );
     assert.deepEqual(
       elementTextPasswordLess8Characters,
@@ -131,12 +133,14 @@ export function verifyPasswordStrengthWithSidebar() {
     );
 
     await setARootPassword.fillPassword("a23b56ca");
-    const elementTextPasswordIsWeak = await getTextContent(setARootPassword.alertPasswordIsWeak());
+    const elementTextPasswordIsWeak = await getTextContent(
+      setARootPassword.alertPasswordIsWeakHeading(),
+    );
     assert.deepEqual(elementTextPasswordIsWeak, "Warning alert:The password is weak");
 
     await setARootPassword.fillPassword("a23b5678");
     const elementTextPasswordFailDictionary = await getTextContent(
-      setARootPassword.alertPasswordFailDictionaryCheck(),
+      setARootPassword.alertPasswordFailDictionaryCheckHeading(),
       50000,
     );
     assert.deepEqual(
