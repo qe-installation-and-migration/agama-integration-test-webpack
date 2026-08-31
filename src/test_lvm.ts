@@ -1,4 +1,4 @@
-import { parse } from "./lib/cmdline";
+import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { Option } from "commander";
 
@@ -11,6 +11,11 @@ const options = parse((cmd) =>
     .option(
       "--connections-only-for-installation",
       "The connections will be used only during installation",
+    )
+    .option(
+      "--lvm-additional-disks <disk-name>",
+      "Specify a list of additional disks to configure the volume group, without /dev/ prefix (e.g., vdb)",
+      commaSeparatedList,
     )
     .addOption(
       new Option(
@@ -29,7 +34,7 @@ const testStrategy = ProductStrategyFactory.create(
 
 logIn(options.password);
 if (options.prepareAdvancedStorage === "dasd") testStrategy.prepareDasdStorage();
-testStrategy.selectMoreDevices();
+testStrategy.configureVolumeGroup(options.lvmAdditionalDisks);
 if (options.connectionsOnlyForInstallation) testStrategy.setOnlyInstallationNetwork();
 if (options.install) {
   testStrategy.performInstallation();
