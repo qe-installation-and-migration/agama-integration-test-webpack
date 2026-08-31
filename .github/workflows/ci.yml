@@ -48,6 +48,6 @@ jobs:
         with:
           # for a fork PR is the fork itself: owner/fork-name
           repository: ${{ github.repository }}
-          tag_name: ${{ github.ref_name }}
+          tag_name: tag-${{ github.ref_name }}
           name: "Build of branch ${{ github.ref_name }}"
           files: ${{ github.sha }}.tar.gz
