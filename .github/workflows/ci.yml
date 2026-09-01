@@ -40,7 +40,9 @@ jobs:
 
       - name: Create archive
         if: github.event_name == 'push'
-        run: tar -czf ${{ github.sha }}.tar.gz dist
+        run: |
+          echo "${{ github.sha }}" > dist/BUILD_SHA
+          tar -czf agama-integration-tests.tar.gz dist
 
       - name: Release on push to branch
         if: github.event_name == 'push'
@@ -50,4 +52,5 @@ jobs:
           repository: ${{ github.repository }}
           tag_name: tag-${{ github.ref_name }}
           name: "Build of branch ${{ github.ref_name }}"
-          files: ${{ github.sha }}.tar.gz
+          files: agama-integration-tests.tar.gz
+          overwrite_files: true
