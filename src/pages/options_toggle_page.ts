@@ -6,6 +6,9 @@ export class OptionsTogglePage {
   private readonly moreOptionsButton = () =>
     this.page.locator('::-p-aria(More options[role="button"])');
 
+  private readonly showConfigurationButton = () =>
+    this.page.locator('::-p-aria(Show configuration[role="button"])');
+
   private readonly optionsToggle = () => this.page.locator("::-p-aria(Options toggle)");
   private readonly downloadLogsMenuItem = () => this.page.locator("::-p-aria(Download logs)");
   public readonly successAlertHeading = () =>
@@ -22,5 +25,10 @@ export class OptionsTogglePage {
     ]);
     await toggle.click();
     await this.downloadLogsMenuItem().click();
+  }
+
+  async showConfiguration() {
+    const showConfig = await Promise.any([this.showConfigurationButton().waitHandle()]);
+    await showConfig.click();
   }
 }
