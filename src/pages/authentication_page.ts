@@ -16,18 +16,22 @@ class AuthenticationAdministratorAccountPage {
   private readonly usernameCombobox = () =>
     this.page.locator("::-p-aria(Username[role='combobox'])");
 
-  private readonly userPasswordInput = () => this.page.locator("input#userPassword");
+  private readonly userPasswordInput = () =>
+    this.page.locator("input::-p-aria(Administrator account Password)");
+
   private readonly userPasswordConfirmationInput = () =>
-    this.page.locator("input#userPasswordConfirmation");
+    this.page.locator("input::-p-aria(Administrator account Password confirmation)");
 
   protected readonly acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
 
-  public readonly alertPasswordLess8Characters = () =>
-    this.page.locator("::-p-text(The password is shorter than 8 characters)");
+  public readonly alertPasswordLess8CharactersHeading = () =>
+    this.page.locator("::-p-aria(The password is shorter than 8 characters)");
 
-  public readonly alertPasswordIsWeak = () => this.page.locator("::-p-text(The password is weak)");
-  public readonly alertPasswordFailDictionaryCheck = () =>
-    this.page.locator("::-p-text(it is too simplistic/systematic)");
+  public readonly alertPasswordIsWeakHeading = () =>
+    this.page.locator("::-p-aria(The password is weak)");
+
+  public readonly alertPasswordFailDictionaryCheckHeading = () =>
+    this.page.locator("::-p-aria(it is too simplistic/systematic)");
 
   constructor(page: Page) {
     this.page = page;
@@ -69,10 +73,11 @@ function RootLoginMethodPasswordDefinable<
     private readonly rootPasswordOption = () =>
       this.page.locator("::-p-aria(Password Log in using a password[role='option'])");
 
-    private readonly rootPasswordInput = () => this.page.locator("input#rootPassword");
+    private readonly rootPasswordInput = () =>
+      this.page.locator("input::-p-aria(Root account Password)");
 
     private readonly rootPasswordConfirmationInput = () =>
-      this.page.locator("input#rootPasswordConfirmation");
+      this.page.locator("input::-p-aria(Root account Password confirmation)");
 
     async selectPasswordAsRootLoginMethod() {
       await this.rootPasswordOption().click();

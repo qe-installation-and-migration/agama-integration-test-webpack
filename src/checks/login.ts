@@ -27,7 +27,7 @@ export function logInWithIncorrectPassword() {
     await loginAsRoot.fillPassword(invalidpassword);
     await loginAsRoot.logIn();
     assert.deepEqual(
-      await getTextContent(loginAsRoot.couldNotLoginText()),
+      await getTextContent(loginAsRoot.couldNotLoginHeading()),
       "Danger alert:Could not log in",
     );
     await loginAsRoot.togglePasswordVisibility();
@@ -43,7 +43,7 @@ export function logInWithIncorrectPasswordWithSidebar() {
 
     await loginAsRoot.fillPassword(invalidpassword);
     await loginAsRoot.logIn();
-    const alertText = await getTextContent(loginAsRoot.couldNotLoginText());
+    const alertText = await getTextContent(loginAsRoot.couldNotLoginHeading());
     assert.deepEqual(
       alertText,
       "Danger alert:Could not log in. Please, make sure that the password is correct.",

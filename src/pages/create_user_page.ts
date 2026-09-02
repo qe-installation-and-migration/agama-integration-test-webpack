@@ -2,24 +2,27 @@ import { type Page } from "puppeteer-core";
 
 export class CreateFirstUserPage {
   private readonly page: Page;
-  private readonly fullNameInput = () => this.page.locator("input#userFullName");
-  private readonly usernameInput = () => this.page.locator("input#userName");
-  private readonly passwordInput = () => this.page.locator("input#password");
-  private readonly passwordConfirmationInput = () =>
-    this.page.locator("input#passwordConfirmation");
+  private readonly fullNameTextbox = () =>
+    this.page.locator("::-p-aria(Full name[role='textbox'])");
 
-  private readonly acceptButton = () => this.page.locator("button[form='firstUserForm']");
+  private readonly usernameTextbox = () => this.page.locator("::-p-aria(Username[role='textbox'])");
+  private readonly passwordInput = () => this.page.locator("input::-p-aria(Password)");
+
+  private readonly passwordConfirmationInput = () =>
+    this.page.locator("input::-p-aria(Password confirmation)");
+
+  private readonly acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
 
   constructor(page: Page) {
     this.page = page;
   }
 
   async fillFullName(fullName: string) {
-    await this.fullNameInput().fill(fullName);
+    await this.fullNameTextbox().fill(fullName);
   }
 
   async fillUserName(userName: string) {
-    await this.usernameInput().fill(userName);
+    await this.usernameTextbox().fill(userName);
   }
 
   async fillPassword(password: string) {
