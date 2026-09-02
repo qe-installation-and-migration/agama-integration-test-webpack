@@ -80,6 +80,10 @@ async function startBrowser(
       width: 1280,
       height: 800,
     },
+    extraPrefsFirefox: {
+      "browser.download.useDownloadDir": true,
+      "browser.helperApps.neverAsk.saveToDisk": "application/json,text/plain,application/octet-stream",
+    },
     ...browserSettings(agamaBrowser),
   });
 
@@ -266,4 +270,26 @@ export async function waitOnFile(filePath: string): Promise<void> {
   } catch (error) {
     throw new Error("waitOnFile failed!", { cause: error });
   }
+}
+
+// wait for a downloaded file whose name is only known at runtime, it returns its full path
+export async function waitOnNewFile(
+  action: () => Promise<void>,
+  folder: string,
+  prefix: string
+): Promise<string> {
+  fs.mkdirSync(folder, { recursive: true });
+  const previousFiles = fs.readdirSync(folder);
+
+  await action();
+
+  for (let attempt = 0; attempt < 15; attempt++) {
+    await sleep(1000);
+    const newFile = fs
+      .readdirSync(folder)
+      .find((file) => file.startsWith(prefix) && !previousFiles.includes(file));
+    if (newFile) return path.join(folder, newFile);
+  }
+
+  throw new Error(`No new "${prefix}" file found in ${folder}`);
 };
