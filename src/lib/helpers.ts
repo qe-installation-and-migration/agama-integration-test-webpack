@@ -80,6 +80,20 @@ async function startBrowser(
       width: 1280,
       height: 800,
     },
+    // Firefox download configuration
+    extraPrefsFirefox: {
+      // 1. Force Firefox to ALWAYS ask where to save a file (prompt = false behavior)
+      'browser.download.useDownloadDir': true,
+      // 2. Set default download behavior (0: Desktop, 1: Downloads, 2: Custom folder)
+      'browser.download.folderList': 1,
+      // 3. Prevent Firefox from automatically saving specific MIME types without prompting
+      'browser.helperApps.neverAsk.saveToDisk': 'application/json,text/plain,application/octet-stream',
+    },
+    args: [
+      '--pref=browser.download.useDownloadDir=true',
+      '--pref=browser.download.folderList=1',
+      '--pref=browser.helperApps.neverAsk.saveToDisk=application/json,text/plain,application/octet-stream'
+    ],
     ...browserSettings(agamaBrowser),
   });
 

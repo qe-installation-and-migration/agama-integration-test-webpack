@@ -35,6 +35,7 @@ import { verifyStorageOutOfSyncWithSidebar } from "../checks/storage_out_of_sync
 import { downloadLogsWithSidebar } from "../checks/download_logs";
 import { setupWholeDiskForHomeWithSidebar } from "../checks/storage_disk_without_partitions";
 import { configureBootDeviceWithSidebar } from "../checks/storage_boot_options";
+import { showConfiguration, downloadJsonConfiguration } from "../checks/show_configuration";
 
 export class MaintenanceReleaseStrategy implements IProductTestStrategy {
   setStaticHostname(hostname: string) {
@@ -145,5 +146,13 @@ export class MaintenanceReleaseStrategy implements IProductTestStrategy {
 
   configureBootDevice() {
     configureBootDeviceWithSidebar();
+  }
+
+  showConfiguration() {
+    showConfiguration();
+  }
+
+  downloadJsonConfiguration() {
+    downloadJsonConfiguration();
   }
 }

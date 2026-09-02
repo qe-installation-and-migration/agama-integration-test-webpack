@@ -32,6 +32,8 @@ export interface IProductTestStrategy {
   verifyStorageOutOfSync?(): void;
   ensureLandingOnOverview(): void;
   downloadLogs(): void;
+  showConfiguration(): void;
+  downloadJsonConfiguration(): void;
   verifySoftwareSelectionNotAvailable?(): void;
   setupWholeDiskForHome(): void;
   configureBootDevice(): void;
