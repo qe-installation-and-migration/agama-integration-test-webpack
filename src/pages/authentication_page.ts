@@ -25,13 +25,15 @@ class AuthenticationAdministratorAccountPage {
   protected readonly acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
 
   public readonly alertPasswordLess8CharactersHeading = () =>
-    this.page.locator("::-p-aria(The password is shorter than 8 characters)");
+    this.page.locator(
+      "div[aria-live='polite'] ::-p-text(The password is shorter than 8 characters)",
+    );
 
   public readonly alertPasswordIsWeakHeading = () =>
-    this.page.locator("::-p-aria(The password is weak)");
+    this.page.locator("div[aria-live='polite'] ::-p-text(The password is weak)");
 
   public readonly alertPasswordFailDictionaryCheckHeading = () =>
-    this.page.locator("::-p-aria(it is too simplistic/systematic)");
+    this.page.locator("div[aria-live='polite'] ::-p-text(it is too simplistic/systematic)");
 
   constructor(page: Page) {
     this.page = page;
