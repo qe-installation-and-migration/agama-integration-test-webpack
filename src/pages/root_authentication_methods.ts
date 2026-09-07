@@ -7,21 +7,22 @@ export class SetARootPasswordPage {
   private readonly passwordConfirmationInput = () =>
     this.page.locator("input::-p-aria(Password confirmation)");
 
-  public readonly alertPasswordLess8CharactersHeading = () =>
+  // investigate: aria cannot be used
+  public readonly alertPasswordLess8CharactersText = () =>
+    this.page.locator("::-p-text(Warning alert: The password is shorter than 8 characters)");
+
+  // investigate: aria cannot be used
+  public readonly alertPasswordIsWeakText = () =>
+    this.page.locator("::-p-text(Warning alert: The password is weak)");
+
+  // investigate: aria cannot be used
+  public readonly alertPasswordFailDictionaryCheckText = () =>
     this.page.locator(
-      "::-p-aria(Warning alert: The password is shorter than 8 characters[role='heading'])",
+      "::-p-text(Warning alert: The password fails the dictionary check - it is too simplistic/systematic)",
     );
 
-  public readonly alertPasswordIsWeakHeading = () =>
-    this.page.locator("::-p-aria(Warning alert: The password is weak[role='heading'])");
-
-  public readonly alertPasswordFailDictionaryCheckHeading = () =>
-    this.page.locator(
-      "::-p-aria(Warning alert: The password fails the dictionary check - it is too simplistic/systematic[role='heading'])",
-    );
-
-  private readonly usePasswordCheckbox = () =>
-    this.page.locator("::-p-aria(Use password[role='checkbox'])");
+  // investigate: aria cannot be used
+  private readonly usePasswordText = () => this.page.locator("::-p-text(Use password)");
 
   constructor(page: Page) {
     this.page = page;
@@ -40,6 +41,6 @@ export class SetARootPasswordPage {
   }
 
   async usePassword() {
-    await this.usePasswordCheckbox().click();
+    await this.usePasswordText().click();
   }
 }
