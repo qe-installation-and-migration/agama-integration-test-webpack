@@ -1,4 +1,4 @@
-import { it, page } from "../lib/helpers";
+import { it, page, waitUntilOverlaySettled } from "../lib/helpers";
 import {
   ProductSelectionPage,
   ProductSelectionWithLicensePage,
@@ -37,6 +37,8 @@ export function productSelectionWithLicenseAndMode(productId: string, productMod
     await productSelection.acceptProductLicense();
   });
   it(`should allow to accept selected product`, async function () {
-    await productSelection.select();
+    await waitUntilOverlaySettled(async () => {
+      await productSelection.select();
+    });
   });
 }
