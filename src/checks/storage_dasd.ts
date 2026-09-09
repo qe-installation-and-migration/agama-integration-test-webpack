@@ -21,9 +21,6 @@ export function prepareDasdStorage() {
       await dasd.selectDeviceToFormat();
       page.setDefaultTimeout(6 * 60 * 1000);
       await waitUntilOverlaySettled(() => dasd.formatNowDevice());
-
-      await header.goToStorage();
-      await storage.waitForElement("::-p-text(Installation devices)", 60000);
       await header.goToInstallation();
     },
     7 * 60 * 1000,
