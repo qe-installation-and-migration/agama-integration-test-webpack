@@ -5,6 +5,7 @@ export class StorageResultPage {
 
   private readonly destructiveActionsListWithSidebar = () => this.page.locator("::-p-text(Check)");
   private readonly destructiveActionsList = () => this.page.locator("::-p-text(Actions)");
+
   public readonly destructiveActionText = (name: string) =>
     this.page.locator(`::-p-text(Delete ${name})`);
 

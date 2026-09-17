@@ -2,7 +2,9 @@ import { type Page } from "puppeteer-core";
 
 export class StorageSettingsChangeDiskPage {
   private readonly page: Page;
-  private readonly changeToButton = () => this.page.locator("button::-p-text(Change to)");
+  private readonly changeToButton = () =>
+    this.page.locator("button::-p-aria(Change to[role='button'])");
+
   public readonly diskTableSelector: string;
 
   constructor(page: Page) {
