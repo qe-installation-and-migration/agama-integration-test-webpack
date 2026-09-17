@@ -13,7 +13,11 @@ export function productSelection(productId: string) {
   });
 }
 
-export function productSelectionWithLicenseAndMode(productId: string, productMode: string) {
+export function productSelectionWithLicenseAndMode(
+  productId: string,
+  productMode: string,
+  productVersion: string,
+) {
   let productSelection: ProductSelectionWithLicensePage | ProductSelectionWithLicenseAndModePage;
 
   it(`should allow to choose product ${productId}`, async function () {
@@ -37,6 +41,6 @@ export function productSelectionWithLicenseAndMode(productId: string, productMod
     await productSelection.acceptProductLicense();
   });
   it(`should allow to accept selected product`, async function () {
-    await productSelection.select();
+    await productSelection.select(productMode, productVersion);
   });
 }

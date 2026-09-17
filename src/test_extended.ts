@@ -41,7 +41,11 @@ const testStrategy = ProductStrategyFactory.create(
 logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense)
-    productSelectionWithLicenseAndMode(options.productId, options.productMode);
+    productSelectionWithLicenseAndMode(
+      options.productId,
+      options.productMode,
+      options.productVersion,
+    );
   else productSelection(options.productId);
 testStrategy.ensureLandingOnOverview();
 testStrategy.verifySoftwareSelectionNotAvailable?.();

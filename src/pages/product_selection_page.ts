@@ -8,6 +8,10 @@ export class ProductSelectionPage {
     this.page.locator("input#" + id.replaceAll(".", "\\."));
 
   protected readonly selectButton = () => this.page.locator("button[form='productSelectionForm']");
+  protected readonly selectButtonWithProductAndVersion = (mode: string, version: string) =>
+    this.page.locator(
+      `::-p-aria(Select ${mode} SUSE Linux Enterprise Server ${version} Beta[role='button'])`,
+    );
 
   constructor(page: Page) {
     this.page = page;
@@ -18,8 +22,12 @@ export class ProductSelectionPage {
     await this.productId(id).click();
   }
 
-  async select() {
-    await this.selectButton().click();
+  async select(mode: string = "", version: string = "") {
+    const button = await Promise.any([
+      this.selectButton().waitHandle(),
+      this.selectButtonWithProductAndVersion(mode, version).waitHandle(),
+    ]);
+    await button.click();
   }
 
   async selectByName(name: string) {
