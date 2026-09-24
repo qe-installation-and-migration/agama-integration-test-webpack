@@ -2,32 +2,36 @@ import { type Page } from "puppeteer-core";
 
 export class StoragePage {
   private readonly page: Page;
-  private readonly changeDiskButton = () =>
-    this.page.locator('::-p-aria([name="Change"][role="button"])');
+  private readonly changeDiskButton = () => this.page.locator('::-p-aria(Change[role="button"])');
 
   private readonly selectADiskToInstallTheSystemButton = () =>
-    this.page.locator("::-p-text(Select a disk to install the system)");
+    this.page.locator("::-p-aria(Select a disk to install the system[role='button'])");
 
-  private readonly otherOptionsButton = () => this.page.locator("::-p-text(Other options)");
+  private readonly otherOptionsButton = () =>
+    this.page.locator("::-p-aria(Other options[role='button'])");
 
-  public readonly storageAllocationWarningText = () =>
-    this.page.locator("::-p-text(It is not possible to allocate space for the boot partition)");
+  public readonly storageAllocationWarningHeading = () =>
+    this.page.locator(
+      "::-p-aria(It is not possible to allocate space for the boot partition[role='heading'])",
+    );
 
-  private readonly resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
+  private readonly resetToDefaultsMenuitem = () =>
+    this.page.locator("::-p-aria(Reset to defaults[role='menuitem'])");
 
   private readonly expandPartitionsButton = () =>
-    this.page.locator("::-p-text(New partitions will be created)");
+    this.page.locator("::-p-aria(New partitions will be created[role='button'])");
 
-  private readonly editRootPartitionMenu = () =>
-    this.page.locator("button[aria-label='Edit /'][role='menuitem']");
+  private readonly editRootPartitionMenuitem = () =>
+    this.page.locator("::-p-aria(Edit /'][role='menuitem'])");
 
-  private readonly selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
+  private readonly selectMoreDevicesButton = () =>
+    this.page.locator("::-p-aria(More devices[role='button'])");
 
   private readonly addDeviceMenuitem = () =>
     this.page.locator("::-p-aria(Add device menu[role='menuitem'])");
 
   private readonly notConfiguredYetButton = () =>
-    this.page.locator("button::-p-text(Not configured yet)");
+    this.page.locator("button::-p-aria(Not configured yet)");
 
   private readonly useTheDiskWithoutPartitionsMenuitem = () =>
     this.page.locator(
@@ -56,7 +60,7 @@ export class StoragePage {
   }
 
   async resetToDefault() {
-    await this.resetToDefaultsButton().click();
+    await this.resetToDefaultsMenuitem().click();
   }
 
   async expandPartitions() {
@@ -64,7 +68,7 @@ export class StoragePage {
   }
 
   async editRootPartition() {
-    await this.editRootPartitionMenu().click();
+    await this.editRootPartitionMenuitem().click();
   }
 
   async changeBootOptions() {
