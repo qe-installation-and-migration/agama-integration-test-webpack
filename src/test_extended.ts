@@ -50,6 +50,8 @@ if (options.productId !== "none")
 testStrategy.ensureLandingOnOverview();
 testStrategy.verifySoftwareSelectionNotAvailable?.();
 testStrategy.verifyAppearanceChanges?.();
+testStrategy.showConfiguration();
+testStrategy.downloadJsonConfiguration();
 if (options.staticHostname) testStrategy.setStaticHostname(options.staticHostname);
 if (options.ntpServerAddresses)
   testStrategy.configureTimeSynchronizationServers(options.ntpServerAddresses);
