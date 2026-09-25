@@ -10,7 +10,7 @@ export class ProductSelectionPage {
   protected readonly selectButton = () => this.page.locator("button[form='productSelectionForm']");
   protected readonly selectButtonWithProductAndVersion = (mode: string, version: string) =>
     this.page.locator(
-      `::-p-aria(Select ${mode} SUSE Linux Enterprise Server ${version} Beta[role='button'])`,
+      `::-p-aria(Select ${mode} SUSE Linux Enterprise Server ${version}[role='button'])`,
     );
 
   constructor(page: Page) {
