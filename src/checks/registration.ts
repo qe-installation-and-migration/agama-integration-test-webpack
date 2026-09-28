@@ -1,4 +1,4 @@
-import { it, page, getTextContent } from "../lib/helpers";
+import { it, page, getTextContent, waitUntilOverlaySettled } from "../lib/helpers";
 import { OverviewPage } from "../pages/overview_page";
 import { RegistrationSCCPage, RegistrationCustomPage } from "../pages/registration_page";
 import { ExtensionRegistrationPHubPage } from "../pages/extension_registration_phub_page";
@@ -29,27 +29,31 @@ export function enterProductRegistration({
   provide_code,
   url,
 }: RegistrationOptions): void {
-  it("should allow setting registration", async function () {
-    const overview = new OverviewPage(page);
-    let productRegistration: RegistrationCustomPage | RegistrationSCCPage;
+  it(
+    "should allow setting registration",
+    async function () {
+      const overview = new OverviewPage(page);
+      let productRegistration: RegistrationCustomPage | RegistrationSCCPage;
 
-    await overview.goToRegistration();
+      await overview.goToRegistration();
 
-    if (use_custom) {
-      productRegistration = new RegistrationCustomPage(page);
-      if (url) {
-        await productRegistration.selectCustomRegistrationServer();
-        await productRegistration.fillServerUrl(url);
-      }
-      if (provide_code) {
+      if (use_custom) {
+        productRegistration = new RegistrationCustomPage(page);
+        if (url) {
+          await productRegistration.selectCustomRegistrationServer();
+          await productRegistration.fillServerUrl(url);
+        }
+        if (provide_code) {
+          await productRegistration.fillCode(code);
+        }
+      } else {
+        productRegistration = new RegistrationSCCPage(page);
         await productRegistration.fillCode(code);
       }
-    } else {
-      productRegistration = new RegistrationSCCPage(page);
-      await productRegistration.fillCode(code);
-    }
-    await productRegistration.register();
-  });
+      await waitUntilOverlaySettled(() => productRegistration.register());
+    },
+    3 * 60 * 1000,
+  );
 
   if (url?.startsWith("https")) {
     it("should handle HTTPS certificate trust for custom registration server", async function () {
