@@ -2,24 +2,29 @@ import { type Page } from "puppeteer-core";
 
 export class StorageSettingsPage {
   private readonly page: Page;
-  private readonly selectMoreDevicesButton = () => this.page.locator("::-p-text(More devices)");
-  private readonly useDiskButton = () => this.page.locator("::-p-text(Use disk)");
 
-  private readonly settingsText = () => this.page.locator("::-p-text(Settings)");
+  private readonly selectMoreDevicesButton = () =>
+    this.page.locator("::-p-aria(More devices[role='button'])");
+
+  private readonly useDiskButton = () => this.page.locator("::-p-aria(Use disk[role='button'])");
+
+  private readonly settingsText = () => this.page.locator("::-p-aria(Settings[role='heading'])");
 
   private readonly selectDeviceToInstallButton = () =>
-    this.page.locator("::-p-text(Change the device to install the system)");
+    this.page.locator("::-p-aria(Change the device to install the system[role='button'])");
 
   private readonly selectDiskToInstallButton = () =>
-    this.page.locator("::-p-text(Change the disk to install the system)");
+    this.page.locator("::-p-aria(Change the disk to install the system[role='button'])");
 
   private readonly editEncryptionButton = () =>
     this.page.locator("a[href='#/storage/encryption/edit']");
 
   private readonly installationDevicesTab = () =>
-    this.page.locator("::-p-text(Installation devices)");
+    this.page.locator("::-p-aria(Installation devices[role='tab'])");
 
-  private readonly encryptionTab = () => this.page.locator("::-p-text(Encryption)");
+  private readonly encryptionTab = () =>
+    this.page.locator("::-p-aria(Encryption[role='tab']), ::-p-aria(Encryption[role='heading'])");
+
   private readonly changeEncryptionLink = () =>
     this.page.locator('::-p-aria([name="Change"][role="link"])');
 
@@ -32,12 +37,16 @@ export class StorageSettingsPage {
   private readonly manageDasdLink = () => this.page.locator("::-p-text(Manage DASD devices)");
 
   private readonly ActivateZfcpLink = () => this.page.locator("::-p-text(Activate zFCP disks)");
-  private readonly addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
+
+  private readonly addLvmVolumeLink = () =>
+    this.page.locator("::-p-aria(Add LVM volume group[role='button'])");
 
   private readonly expandPartitionsButton = () =>
-    this.page.locator("::-p-text(New partitions will be created)");
+    this.page.locator("::-p-aria(New partitions will be created[role='button'])");
 
-  private readonly optionForRoot = () => this.page.locator("::-p-aria(Options for partition /)");
+  private readonly optionForRoot = () =>
+    this.page.locator("::-p-aria(Options for partition /[role='listitem'])");
+
   private readonly editRootPartitionMenu = () =>
     this.page.locator("::-p-aria(Edit /[role='menuitem'])");
 
@@ -45,9 +54,12 @@ export class StorageSettingsPage {
     this.page.locator("button:has(svg.agm-three-dots-icon):not([aria-label])");
 
   public readonly storageAllocationWarningText = () =>
-    this.page.locator("::-p-text(It is not possible to allocate space for the boot partition)");
+    this.page.locator(
+      "::-p-aria(It is not possible to allocate space for the boot partition[role='alert'])",
+    );
 
-  private readonly resetToDefaultsButton = () => this.page.locator("::-p-text(Reset to defaults)");
+  private readonly resetToDefaultsButton = () =>
+    this.page.locator("::-p-aria(Reset to defaults[role='menuitem'])");
 
   private readonly notConfiguredYetButton = () =>
     this.page.locator("::-p-aria(Not configured yet[role='button'])");
