@@ -60,6 +60,17 @@ function CustomSelectable<TBase extends GConstructor<RegistrationBasePage>>(Base
     private readonly registrationServerCustomOption = () =>
       this.page.locator("::-p-aria(Custom Register using a custom registration server)");
 
+    private readonly registrationCodeOptionalText = () =>
+      this.page.locator("::-p-text(Registration code (optional))");
+
+    async ensureCustomPageReady() {
+      const start = Date.now();
+      console.log("wait registrationCodeOptionalText ...");
+      await this.registrationCodeOptionalText().setTimeout(30000).wait();
+      const duration = Date.now() - start;
+      console.log(`Custom/Proxy SCC Page ready after ${duration}ms`);
+    }
+
     async fillCode(code: string) {
       await this.codeInput().fill(code);
     }
