@@ -1,4 +1,4 @@
-import { it, page } from "../lib/helpers";
+import { it, page, waitUntilSystemToIdle } from "../lib/helpers";
 import {
   ProductSelectionPage,
   ProductSelectionWithLicensePage,
@@ -9,7 +9,7 @@ export function productSelection(productId: string) {
   it(`should allow to select product ${productId}`, async function () {
     const productSelectionPage = new ProductSelectionPage(page);
     await productSelectionPage.choose(productId);
-    await productSelectionPage.select();
+    await waitUntilSystemToIdle(() => productSelectionPage.select());
   });
 }
 
@@ -41,6 +41,6 @@ export function productSelectionWithLicenseAndMode(
     await productSelection.acceptProductLicense();
   });
   it(`should allow to accept selected product`, async function () {
-    await productSelection.select(productMode, productVersion);
+    await waitUntilSystemToIdle(async () => productSelection.select(productMode, productVersion));
   });
 }
