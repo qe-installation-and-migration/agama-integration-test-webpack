@@ -52,7 +52,7 @@ testStrategy.verifySoftwareSelectionNotAvailable?.();
 testStrategy.verifyAppearanceChanges?.();
 if (options.staticHostname) testStrategy.setStaticHostname(options.staticHostname);
 if (options.ntpServerAddresses)
-  testStrategy.configureTimeSynchronizationServers(options.ntpServerAddresses);
+  testStrategy.configureTimeSynchronizationServers?.(options.ntpServerAddresses);
 testStrategy.enableEncryption(options.password);
 if (options.registrationCode)
   testStrategy.enterProductRegistration({
