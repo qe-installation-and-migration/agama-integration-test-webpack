@@ -127,8 +127,8 @@ export class ProductionReleaseStrategy implements IProductTestStrategy {
     setOnlyInstallationNetwork();
   }
 
-  verifyDecryptDestructiveActions(destructiveActions: string[]) {
-    verifyDecryptDestructiveActions(destructiveActions);
+  verifyDecryptDestructiveActions() {
+    verifyDecryptDestructiveActions();
   }
 
   verifyStorageOutOfSync() {
