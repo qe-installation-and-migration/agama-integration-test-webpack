@@ -33,6 +33,7 @@ import { downloadLogs } from "../checks/download_logs";
 import { setupWholeDiskForHome } from "../checks/storage_disk_without_partitions";
 import { configureBootDevice } from "../checks/storage_boot_options";
 import { verifyAppearanceChanges } from "../checks/appearance";
+import { showConfiguration, downloadJsonConfiguration } from "../checks/show_configuration";
 
 export class ProductionReleaseStrategy implements IProductTestStrategy {
   setStaticHostname(hostname: string) {
@@ -161,5 +162,13 @@ export class ProductionReleaseStrategy implements IProductTestStrategy {
 
   verifyAppearanceChanges() {
     verifyAppearanceChanges();
+  }
+
+  showConfiguration() {
+    showConfiguration();
+  }
+
+  downloadJsonConfiguration() {
+    downloadJsonConfiguration();
   }
 }
