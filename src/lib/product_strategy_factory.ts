@@ -28,7 +28,7 @@ export interface IProductTestStrategy {
   changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize(): void;
   configureVolumeGroup(disks?: string[]): void;
   setOnlyInstallationNetwork(): void;
-  verifyDecryptDestructiveActions(destructiveActions: string[]): void;
+  verifyDecryptDestructiveActions(): void;
   verifyStorageOutOfSync?(): void;
   ensureLandingOnOverview(): void;
   downloadLogs(): void;
