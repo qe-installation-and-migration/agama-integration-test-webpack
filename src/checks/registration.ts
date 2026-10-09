@@ -1,4 +1,10 @@
-import { it, page, getTextContent, sleep } from "../lib/helpers";
+import {
+  it,
+  page,
+  getTextContent,
+  waitUntilSystemToIdle,
+  waitUntilOverlaySettled,
+} from "../lib/helpers";
 import { OverviewPage } from "../pages/overview_page";
 import { RegistrationSCCPage, RegistrationCustomPage } from "../pages/registration_page";
 import { ExtensionRegistrationPHubPage } from "../pages/extension_registration_phub_page";
@@ -33,11 +39,11 @@ export function enterProductRegistration({
     const overview = new OverviewPage(page);
     let productRegistration: RegistrationCustomPage | RegistrationSCCPage;
 
-    await overview.goToRegistration();
-    await sleep(15000);
-
+    await waitUntilSystemToIdle(() => overview.goToRegistration());
     if (use_custom) {
       productRegistration = new RegistrationCustomPage(page);
+      await productRegistration.ensureCustomPageReady();
+
       if (url) {
         await productRegistration.selectCustomRegistrationServer();
         await productRegistration.fillServerUrl(url);
@@ -49,7 +55,8 @@ export function enterProductRegistration({
       productRegistration = new RegistrationSCCPage(page);
       await productRegistration.fillCode(code);
     }
-    await productRegistration.register();
+    await waitUntilSystemToIdle(() => productRegistration.register());
+    await waitUntilOverlaySettled();
   });
 
   if (url?.startsWith("https")) {
