@@ -123,8 +123,8 @@ export class MaintenanceReleaseStrategy implements IProductTestStrategy {
     setOnlyInstallationNetworkWithSidebar();
   }
 
-  verifyDecryptDestructiveActions(destructiveActions: string[]) {
-    verifyDecryptDestructiveActionsWithSidebar(destructiveActions);
+  verifyDecryptDestructiveActions() {
+    verifyDecryptDestructiveActionsWithSidebar();
   }
 
   verifyStorageOutOfSync() {

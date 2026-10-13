@@ -1,4 +1,4 @@
-import { parse, commaSeparatedList } from "./lib/cmdline";
+import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
 import { decryptDevice } from "./checks/decryption";
@@ -23,12 +23,7 @@ const options = parse((cmd) =>
     .option("--use-custom-registration-server", "Enable custom registration server")
     .option("--provide-registration-code", "Provide registration code for customer registration")
     .option("--registration-code <code>", "Registration code")
-    .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition")
-    .option(
-      "--destructive-actions <actions>...",
-      "Comma-separated list of actions (excluding 'Delete ')",
-      commaSeparatedList,
-    ),
+    .option("--decrypt-password <password>", "Password to decrypt an existing encrypted partition"),
 );
 
 test_init(options);
@@ -49,7 +44,7 @@ if (options.productId !== "none")
   else productSelection(options.productId);
 decryptDevice(options.decryptPassword);
 testStrategy.ensureLandingOnOverview();
-testStrategy.verifyDecryptDestructiveActions(options.destructiveActions);
+testStrategy.verifyDecryptDestructiveActions();
 if (options.registrationCode)
   testStrategy.enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
