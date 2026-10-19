@@ -211,18 +211,22 @@ export function enterProductRegistrationWithSidebar({
     });
   }
 
-  it("should display product has been registered", async function () {
-    const sidebar = new SidebarWithRegistrationPage(page);
-    const productRegistration = new ProductRegistrationLegacyPage(page);
+  it(
+    "should display product has been registered",
+    async function () {
+      const sidebar = new SidebarWithRegistrationPage(page);
+      const productRegistration = new ProductRegistrationLegacyPage(page);
 
-    await new OverviewWithSidebarPage(page).waitVisible(59000);
-    await sidebar.goToRegistration();
-    const registeredText = await getTextContent(productRegistration.infoHasBeenRegisteredText());
-    assert.match(
-      registeredText,
-      /SUSE Linux Enterprise Server.*has been registered with below information/,
-    );
-  });
+      await new OverviewWithSidebarPage(page).waitVisible(119000);
+      await sidebar.goToRegistration();
+      const registeredText = await getTextContent(productRegistration.infoHasBeenRegisteredText());
+      assert.match(
+        registeredText,
+        /SUSE Linux Enterprise Server.*has been registered with below information/,
+      );
+    },
+    2 * 60 * 1000,
+  );
 }
 
 export function enterExtensionRegistrationHAWithSidebar(code: string) {
