@@ -27,6 +27,7 @@ export interface IProductTestStrategy {
   selectDesktop?(desktop: string): void;
   changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize(): void;
   configureVolumeGroup(disks?: string[]): void;
+  configureRecreateLVMGroup?(action: string): void;
   setOnlyInstallationNetwork(): void;
   verifyDecryptDestructiveActions(): void;
   verifyStorageOutOfSync?(): void;

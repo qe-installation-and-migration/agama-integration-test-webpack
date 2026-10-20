@@ -5,6 +5,7 @@ export class StorageSettingsChangeDiskPage {
   private readonly changeToButton = () => this.page.locator("::-p-aria(Change to[role='button'])");
 
   public readonly diskTableSelector: string;
+  private readonly lvmTab = () => this.page.locator("::-p-aria(LVM)[role='tab']");
 
   constructor(page: Page) {
     this.page = page;
@@ -14,5 +15,9 @@ export class StorageSettingsChangeDiskPage {
 
   async changeTo() {
     await this.changeToButton().click();
+  }
+
+  async selectLVMTab() {
+    await this.lvmTab().click();
   }
 }

@@ -15,7 +15,10 @@ import {
 } from "../checks/authentication";
 import { checkInstallation, finishInstallation, performInstallation } from "../checks/installation";
 import { logInWithIncorrectPassword } from "../checks/login";
-import { changeDeviceToInstallTheSystem } from "../checks/storage_change_device_to_install";
+import {
+  changeDeviceToInstallTheSystem,
+  changeDeviceToInstallWithExistedLVM,
+} from "../checks/storage_change_device_to_install";
 import { prepareDasdStorage } from "../checks/storage_dasd";
 import {
   changePatterns,
@@ -125,6 +128,10 @@ export class ProductionReleaseStrategy implements IProductTestStrategy {
 
   configureVolumeGroup(disks?: string[]) {
     addLVMVolumeGroup(disks);
+  }
+
+  configureRecreateLVMGroup?(action: string) {
+    changeDeviceToInstallWithExistedLVM(action);
   }
 
   setOnlyInstallationNetwork() {
