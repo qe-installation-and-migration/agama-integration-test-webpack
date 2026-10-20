@@ -1,4 +1,10 @@
-import { getTextContent, it, page, waitUntilOverlaySettled } from "../lib/helpers";
+import {
+  getTextContent,
+  it,
+  page,
+  waitUntilOverlaySettled,
+  waitUntilSystemToIdle,
+} from "../lib/helpers";
 import { HeaderPage } from "../pages/header_page";
 import { OverviewPage } from "../pages/overview_page";
 import { SidebarPage } from "../pages/sidebar_page";
@@ -60,7 +66,7 @@ export function verifySoftwareSelectionNotAvailable(): void {
     const software = new SoftwareSelectionIsNotAvailablePage(page);
     const header = new HeaderPage(page);
 
-    await overview.goToSoftware();
+    await waitUntilSystemToIdle(() => overview.goToSoftware());
     const softwareSelectionNotAvailableText = await getTextContent(
       software.softwareSelectionNotAvailableText(),
     );

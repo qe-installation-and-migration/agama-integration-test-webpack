@@ -1,5 +1,5 @@
 import { type Page } from "puppeteer-core";
-import { type GConstructor } from "../lib/helpers";
+import { type GConstructor, waitUntilOverlaySettled } from "../lib/helpers";
 
 class RegistrationBasePage {
   page: Page;
@@ -73,8 +73,21 @@ function CustomSelectable<TBase extends GConstructor<RegistrationBasePage>>(Base
     async fillServerUrl(url: string) {
       await this.serverUrlTextbox().fill(url);
     }
+
+    async ensureCustomPageReady(timeout: number = 15 * 1000) {
+      try {
+        await this.serverUrlTextbox().setTimeout(2000).wait();
+      } catch {
+        await waitUntilOverlaySettled(async () => {
+          await this.page.reload();
+        });
+
+        await this.serverUrlTextbox()
+          .setTimeout(Math.max(timeout - 2000, 1000))
+          .wait();
+      }
+    }
   };
 }
-
 export class RegistrationSCCPage extends SCCSelectable(RegistrationBasePage) {}
 export class RegistrationCustomPage extends CustomSelectable(RegistrationBasePage) {}
