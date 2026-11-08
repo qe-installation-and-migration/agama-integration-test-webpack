@@ -1,12 +1,12 @@
 # Webpack Experiment
 
-This is experimental repository for compiling the
+This is an experimental repository for compiling the
 [Agama](https://github.com/agama-project/agama) integration tests and bundling
 all dependencies into a single file.
 
 ## Advantages
 
-- Puppeteer and it's dependencies are not needed on the Live ISO
+- Puppeteer and its dependencies are not needed on the Live ISO
 - The tests can use additional libraries if needed, they do not need to depend
   on the Live ISO content
 - The used Puppeteer version is not bound to the Live ISO (it only needs to be
@@ -51,7 +51,7 @@ running Agama instance, to use a remote one see the options below):
 
     ./dist/test_root_password.js
 
-If you copy the test to different machine do not forget to also copy the
+If you copy the test to a different machine do not forget to also copy the
 `vendor.js` file and `*.map` files if you want to get backtrace locations in the
 original source code. To use the map files use the `--enable-source-maps` node
 option:
@@ -60,7 +60,7 @@ option:
 
 To use the TAP output format, use the `--test-reporter` Node.js option:
 
-    node --test-reporter=tap ./dist/test_root_password.cjs
+    node --test-reporter=tap ./dist/test_root_password.js
 
 Alternatively it is possible to implement [own test reporter](
 https://www.nearform.com/insights/writing-a-node-js-test-reporter/).
