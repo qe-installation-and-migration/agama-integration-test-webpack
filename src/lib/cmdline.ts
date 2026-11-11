@@ -30,7 +30,7 @@ export function parse(callback?: (cmd: commander.Command) => void) {
     .option("-u, --url <url>", "Agama server URL", "http://localhost")
     .option("-p, --password <password>", "Agama login password", "linux")
     .option("-a, --agama-image-version <version>", "Agama image version")
-    .option("-w, --agama-web-ui-package-version <version>", "Agama Web UI package version")
+    .option("-w, --agama-web-ui-package-version <version>", "Agama Web UI package version (ignored, kept for CLI compatibility)")
     .option("-v, --product-version <version>", "Product version")
     .addOption(
       new Option("-b, --browser <browser>", "Browser used for running the test")
