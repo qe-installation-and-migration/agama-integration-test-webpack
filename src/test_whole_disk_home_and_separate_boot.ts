@@ -1,8 +1,10 @@
 import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
-import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { logIn } from "./checks/login";
+import { finishInstallationCongratulation, performInstallation } from "./checks/installation";
+import { configureBootDevice } from "./checks/storage_boot_options";
+import { setupWholeDiskForHome } from "./checks/storage_disk_without_partitions";
 
 const options = parse((cmd) =>
   cmd.option("--install", "Proceed to install the system (the default is not to install it)"),
@@ -10,15 +12,10 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(
-  options.productVersion,
-  options.agamaWebUiPackageVersion,
-);
-
 logIn(options.password);
-testStrategy.setupWholeDiskForHome();
-testStrategy.configureBootDevice();
+setupWholeDiskForHome();
+configureBootDevice();
 if (options.install) {
-  testStrategy.performInstallation();
-  testStrategy.finishInstallation();
+  performInstallation();
+  finishInstallationCongratulation();
 }

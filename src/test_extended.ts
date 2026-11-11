@@ -1,9 +1,20 @@
-import { parse, commaSeparatedList } from "./lib/cmdline";
+import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { Option } from "commander";
-import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { logIn } from "./checks/login";
+import { createFirstUser, editRootUser } from "./checks/authentication";
+import { downloadLogs } from "./checks/download_logs";
+import { disableEncryption, enableEncryption, verifyEncryptionEnabled } from "./checks/encryption";
+import {
+  checkInstallation,
+  finishInstallationCongratulation,
+  performInstallation,
+} from "./checks/installation";
+import { ensureLandingOnOverview } from "./checks/overview";
+import { enterProductRegistration } from "./checks/registration";
+import { prepareZfcpStorage } from "./checks/storage_zfcp";
+import { setPermanentHostname } from "./checks/system";
 import { productSelection, productSelectionWithLicenseAndMode } from "./checks/product_selection";
 
 const options = parse((cmd) =>
@@ -23,20 +34,10 @@ const options = parse((cmd) =>
     .option("--registration-server-url <url>", "Custom registration url")
     .option("--provide-registration-code", "Provide registration code for customer registration")
     .option("--staticHostname <hostname>", "Static Hostname")
-    .option(
-      "--ntpServerAddresses <ntpServers>...",
-      "Comma-separated list of NTP servers",
-      commaSeparatedList,
-    )
     .option("--install", "Proceed to install the system (the default is not to install it)"),
 );
 
 test_init(options);
-
-const testStrategy = ProductStrategyFactory.create(
-  options.productVersion,
-  options.agamaWebUiPackageVersion,
-);
 
 logIn(options.password);
 if (options.productId !== "none")
@@ -47,30 +48,24 @@ if (options.productId !== "none")
       options.productVersion,
     );
   else productSelection(options.productId);
-testStrategy.ensureLandingOnOverview();
-testStrategy.verifySoftwareSelectionNotAvailable?.();
-testStrategy.verifyAppearanceChanges?.();
-testStrategy.showConfiguration?.();
-testStrategy.downloadJsonConfiguration?.();
-if (options.staticHostname) testStrategy.setStaticHostname(options.staticHostname);
-if (options.ntpServerAddresses)
-  testStrategy.configureTimeSynchronizationServers?.(options.ntpServerAddresses);
-testStrategy.enableEncryption(options.password);
+ensureLandingOnOverview();
+if (options.staticHostname) setPermanentHostname(options.staticHostname);
+enableEncryption(options.password);
 if (options.registrationCode)
-  testStrategy.enterProductRegistration({
+  enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
     url: options.registrationServerUrl,
   });
-testStrategy.verifyEncryptionEnabled();
-testStrategy.disableEncryption();
-testStrategy.createFirstUser(options.password);
-testStrategy.editRootUser(options.rootPassword);
-if (options.prepareAdvancedStorage === "zfcp") testStrategy.prepareZfcpStorage();
-testStrategy.downloadLogs();
+verifyEncryptionEnabled();
+disableEncryption();
+createFirstUser(options.password);
+editRootUser(options.rootPassword);
+if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
+downloadLogs();
 if (options.install) {
-  testStrategy.performInstallation();
-  testStrategy.checkInstallation();
-  testStrategy.finishInstallation();
+  performInstallation();
+  checkInstallation();
+  finishInstallationCongratulation();
 }
