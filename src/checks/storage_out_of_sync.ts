@@ -15,7 +15,7 @@ export function verifyStorageOutOfSyncWithSidebar() {
     await execPromise("agama probe");
 
     assert.deepEqual(
-      await getTextContent(storageWarningOutOfSyncPage.configurationOutOfSyncWarningAlert()),
+      await getTextContent(storageWarningOutOfSyncPage.configurationOutOfSyncWarningHeading()),
       "Configuration out of sync",
     );
 
