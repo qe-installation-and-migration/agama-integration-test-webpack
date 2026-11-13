@@ -60,7 +60,7 @@ export function verifySoftwareSelectionNotAvailable(): void {
     const software = new SoftwareSelectionIsNotAvailablePage(page);
     const header = new HeaderPage(page);
 
-    await overview.goToSoftware();
+    await waitUntilOverlaySettled(() => overview.goToSoftware());
     const softwareSelectionNotAvailableText = await getTextContent(
       software.softwareSelectionNotAvailableText(),
     );

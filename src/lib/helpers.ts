@@ -254,6 +254,44 @@ export async function waitUntilOverlaySettled(
   }
 }
 
+export async function waitUntilSystemToIdle(
+  action?: () => void | Promise<void>,
+  disappearanceTimeout = 2 * 60 * 1000
+) {
+  const idleSelector = "::-p-aria(Status: Idle)";
+  const busySelector = 'button[aria-label*="task active"], button.pf-m-in-progress';
+  const decryptPromptSelector = "input#luks-password";
+  const start = Date.now();
+
+  const busyPromise = page
+    .waitForSelector(busySelector, { visible: true, timeout: 5000 })
+    .catch(() => null);
+
+  if (action) {
+    await action();
+  }
+
+  const isBusy = await busyPromise;
+
+  if (isBusy) {
+    debugLog("Pending task detected in top bar. Waiting for system to settle...");
+
+    await Promise.race([
+      page.waitForSelector(idleSelector, {
+        visible: true,
+        timeout: disappearanceTimeout,
+      }),
+      page.waitForSelector(decryptPromptSelector, {
+        visible: true,
+        timeout: disappearanceTimeout,
+      }),
+    ]);
+
+    const duration = Date.now() - start;
+    debugLog(`System reached stable state after ${duration}ms`);
+  }
+}
+
 // eslint-disable-next-line
 export type GConstructor<T = {}> = new (...args: any[]) => T;
 
