@@ -2,7 +2,9 @@ import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
-import { ProductStrategyFactory } from "./lib/product_strategy_factory";
+import { addLVMVolumeGroup } from "./checks/storage_select_installation_device";
+import { enableEncryption } from "./checks/encryption";
+import { finishInstallation, performInstallation } from "./checks/installation";
 
 const options = parse((cmd) =>
   cmd.option("--install", "Proceed to install the system (the default is not to install it)"),
@@ -10,15 +12,10 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(
-  options.productVersion,
-  options.agamaWebUiPackageVersion,
-);
-
 logIn(options.password);
-testStrategy.configureVolumeGroup();
-testStrategy.enableEncryption(options.password);
+addLVMVolumeGroup();
+enableEncryption(options.password);
 if (options.install) {
-  testStrategy.performInstallation();
-  testStrategy.finishInstallation();
+  performInstallation();
+  finishInstallation();
 }

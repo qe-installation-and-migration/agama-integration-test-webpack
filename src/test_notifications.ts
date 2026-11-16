@@ -1,10 +1,18 @@
 import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { Option } from "commander";
-import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
-import { logIn } from "./checks/login";
+import { logIn, logInWithIncorrectPassword } from "./checks/login";
 import { productSelection, productSelectionWithLicenseAndMode } from "./checks/product_selection";
+import { ensureLandingOnOverview } from "./checks/overview";
+import { enterProductRegistration, verifyRegistrationWarniningAlerts } from "./checks/registration";
+import { changeDeviceToInstallTheSystem } from "./checks/storage_change_device_to_install";
+import {
+  createAdministratorAccount,
+  editRootUserLoginMethod,
+  verifyPasswordStrength,
+} from "./checks/authentication";
+import { checkInstallation, finishInstallation, performInstallation } from "./checks/installation";
 
 const options = parse((cmd) =>
   cmd
@@ -27,12 +35,7 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(
-  options.productVersion,
-  options.agamaWebUiPackageVersion,
-);
-
-testStrategy.logInWithIncorrectPassword();
+logInWithIncorrectPassword();
 logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense)
@@ -42,24 +45,21 @@ if (options.productId !== "none")
       options.productVersion,
     );
   else productSelection(options.productId);
-testStrategy.ensureLandingOnOverview();
-testStrategy.verifyRegistrationWarniningAlerts(
-  options.useCustomRegistrationServer,
-  options.registrationServerUrl,
-);
+ensureLandingOnOverview();
+verifyRegistrationWarniningAlerts();
 if (options.registrationCode)
-  testStrategy.enterProductRegistration({
+  enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
     url: options.registrationServerUrl,
   });
-testStrategy.changeDeviceToInstallTheSystem();
-testStrategy.createFirstUser(options.password);
-testStrategy.editRootUser(options.rootPassword);
-testStrategy.verifyPasswordStrength();
+changeDeviceToInstallTheSystem();
+createAdministratorAccount(options.password);
+editRootUserLoginMethod(options.rootPassword);
+verifyPasswordStrength();
 if (options.install) {
-  testStrategy.performInstallation();
-  testStrategy.checkInstallation();
-  testStrategy.finishInstallation();
+  performInstallation();
+  checkInstallation();
+  finishInstallation();
 }
