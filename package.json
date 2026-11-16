@@ -33,7 +33,6 @@
     "bufferutil": "^4.1.0",
     "commander": "^14.0.3",
     "puppeteer-core": "24.40.0",
-    "utf-8-validate": "^6.0.6",
-    "wait-on": "^9.0.4"
+    "utf-8-validate": "^6.0.6"
   }
 }

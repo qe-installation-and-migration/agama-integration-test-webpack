@@ -8,15 +8,11 @@ description: >
 # Running against a live instance
 
 ```bash
-./dist/test_<name>.js -u <url> --product-version <v> --agama-web-ui-package-version <v>
+./dist/test_<name>.js -u <url>
 ```
 
-Run this once per targeted release, each against an instance of that release — ask for the URLs
-you are missing. A release you could not run against is not validated; say so.
-
-Both version flags are **mandatory**. Omitting `--agama-web-ui-package-version` on 16.1 throws;
-a value without `+` silently selects `ProductionReleaseStrategy`, which may not be the one you
-meant to test. Supported: `16.0`, or `16.1` with a web UI version.
+Run it against a 16.2 instance — ask for the URL if you are missing it. If you could not run
+against one, the change is not validated; say so.
 
 Firefox and headless are the defaults — pass no browser or mode flags, and only a Firefox run
 counts as validation. `-h` (headed) and `-d <ms>` (slow-mo) are for humans watching; `-c`
