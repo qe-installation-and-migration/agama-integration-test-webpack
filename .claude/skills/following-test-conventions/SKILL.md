@@ -40,3 +40,7 @@ Page objects, checks, helpers, `*WithSidebar` naming and ts-prune follow CLAUDE.
   `.map().wait()`, as `AppearancePage` does; expose a `public readonly` locator only when the check
   must wait on the element itself. Selector-less reads such as the clipboard are helpers.
 - **Reuse before adding** — read `src/lib/helpers.ts` and `src/lib/table.ts` first.
+
+- **Keep `debugLog()` in `src/lib/helpers.ts` even though no check calls it.** It is the debugging
+  aid for failures (`DEBUG_AGAMA=1`); it stays exported under `// ts-prune-ignore-next` so
+  `npm run prune` passes. Do not remove it as dead code.
