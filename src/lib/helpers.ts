@@ -16,22 +16,6 @@ let url: string;
 // directory for storing the dumped data after a failure
 const dir = "log";
 
-/**
- * Debug logging utility for development and troubleshooting.
- *
- * Set DEBUG_AGAMA=1 or DEBUG_AGAMA=true to enable debug output.
- *
- * Example:
- *   DEBUG_AGAMA=1 ./dist/test_default_installation.js
- *
- * @param message - The debug message to log
- */
-function debugLog(message: string): void {
-  if (process.env.DEBUG_AGAMA === "1" || process.env.DEBUG_AGAMA === "true") {
-    console.log(`[Debug]: ${message}`);
-  }
-}
-
 interface BrowserSettings {
   browser: puppeteer.SupportedBrowser;
   executablePath: string;
@@ -222,38 +206,6 @@ export function getValue(locator): Promise<string> {
   return locator.map((element) => element.value).wait();
 }
 
-export async function waitUntilOverlaySettled(
-  action: () => Promise<void>,
-  expectQuestionInterruption = false
-) {
-  const selector = '[role="alert"].agm-main-content-overlay';
-
-  const start = Date.now();
-
-  // Start watching for overlay BEFORE executing the action
-  const appearancePromise = page.waitForSelector(selector, { visible: true, timeout: 10000 })
-    .catch(() => {
-      debugLog("Overlay did not appear within 10000ms after action. Moving on...");
-      return null;
-    });
-
-  // Execute the action (e.g., clicking accept button)
-  await action();
-
-  // Wait for the overlay we started watching for
-  const appeared = await appearancePromise;
-
-  if (appeared && !expectQuestionInterruption) {
-    debugLog("Overlay detected. Waiting for it to disappear...");
-    await page.waitForSelector(selector, { hidden: true });
-
-    const duration = Date.now() - start;
-    debugLog(`Overlay cleared after ${duration}ms`);
-  } else if (appeared && expectQuestionInterruption) {
-    debugLog("Overlay expected and not waiting for it to disappear.");
-  }
-}
-
 // eslint-disable-next-line
 export type GConstructor<T = {}> = new (...args: any[]) => T;
 
@@ -271,25 +223,3 @@ export async function waitOnFile(filePath: string): Promise<void> {
     throw new Error("waitOnFile failed!", { cause: error });
   }
 }
-
-// wait for a downloaded file whose name is only known at runtime, it returns its full path
-export async function waitOnNewFile(
-  action: () => Promise<void>,
-  folder: string,
-  prefix: string
-): Promise<string> {
-  fs.mkdirSync(folder, { recursive: true });
-  const previousFiles = fs.readdirSync(folder);
-
-  await action();
-
-  for (let attempt = 0; attempt < 15; attempt++) {
-    await sleep(1000);
-    const newFile = fs
-      .readdirSync(folder)
-      .find((file) => file.startsWith(prefix) && !previousFiles.includes(file));
-    if (newFile) return path.join(folder, newFile);
-  }
-
-  throw new Error(`No new "${prefix}" file found in ${folder}`);
-};

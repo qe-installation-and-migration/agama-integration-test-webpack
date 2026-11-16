@@ -45,7 +45,7 @@ Webpack). There is no "run all tests" command — you run one bundle at a time:
 ```bash
 ./dist/test_default_installation.js --help
 ./dist/test_default_installation.js -u https://agama.local -b chrome -h -d 200 \
-  --product-version 16.1 --agama-web-ui-package-version 21+155 --product-id SLES
+  --product-version 16.0 --product-id SLES
 node --enable-source-maps --test-reporter=tap ./dist/test_default_installation.js
 ```
 
@@ -53,20 +53,17 @@ Useful flags: `-h` headed, `-d <ms>` slow-mo, `-c` continue after failure (defau
 of the suite), `-b firefox|chrome|chromium`. Browser paths are hardcoded in
 `browserSettings()` in `src/lib/helpers.ts`.
 
-`DEBUG_AGAMA=1` enables `debugLog()` output.
-
 On failure the wrapped `it()` dumps a screenshot, the page HTML, and `index.css` into `log/`.
 
 ## Architecture
 
-Four layers, and changes usually touch several of them:
+Three layers, and changes usually touch several of them:
 
 ```
-src/test_*.ts    entry points — parse CLI options, pick a strategy, sequence checks
-src/variants/    release strategies — map the generic API onto version-specific checks
+src/test_*.ts    entry points — parse CLI options, sequence checks
 src/checks/      test steps — declare it() blocks and assertions
 src/pages/       page objects — Puppeteer locators and interactions
-src/lib/         helpers, CLI parsing, strategy factory, table utilities
+src/lib/         helpers, CLI parsing, table utilities
 ```
 
 **Entry points** are top-level scripts, not test suites: they call `test_init(options)` (registers
@@ -74,23 +71,9 @@ src/lib/         helpers, CLI parsing, strategy factory, table utilities
 blocks with the Node runner. Everything is synchronous registration; the runner executes later.
 Webpack auto-discovers every `src/test_*.ts` as an entry — adding a file is all that's needed.
 
-**The strategy layer is the core abstraction.** Agama's web UI changes between releases, so the
-same logical step ("create the first user") has different flows per version.
-`ProductStrategyFactory.create(productVersion, agamaWebUiPackageVersion)` selects:
-
-- `MaintenanceReleaseStrategy` — product version `16.0` (older sidebar-based UI)
-- `DevelopmentReleaseStrategy` — `16.1` with web UI `>= 21+155`
-- `ProductionReleaseStrategy` — `16.1` otherwise; the development strategy extends it and overrides
-  only the steps that diverge
-
-All three implement `IProductTestStrategy` (defined in `src/lib/product_strategy_factory.ts`).
-Tests must go through the strategy, never call a version-specific check directly. When the UI
-changes for a new release, add the new check function and override the method in the appropriate
-strategy rather than branching inside a check.
-
-**Naming convention:** the `*WithSidebar` suffix on checks and pages (e.g.
-`enterProductRegistrationWithSidebar`, `OverviewWithSidebarPage`) marks the 16.0 sidebar UI variant.
-`MaintenanceReleaseStrategy` is where they are wired up.
+**This is the `product-increment-16.0` branch: it only targets product 16.0** (the sidebar-based
+UI). There is no release strategy or version decision tree — entry points call the check
+functions directly, in order. Support for 16.1/16.2 lives in other branches.
 
 **Page objects** expose locators as arrow-function properties (`private readonly fooButton = () =>
 this.page.locator(...)`) so they are evaluated lazily. Optional UI capabilities are composed with
@@ -121,13 +104,12 @@ failure dumps and the abort-on-first-failure behavior. Default per-test timeout 
 third argument for slow steps.
 
 Shared helpers worth knowing before writing new code: `getTextContent`, `getValue`,
-`waitUntilOverlaySettled` (wraps an action and waits for the Agama overlay to clear),
 `waitOnFile`, `sleep`, and the table readers in `src/lib/table.ts`.
 
 ## Conventions
 
 - 2-space indent, double quotes, `printWidth: 100` (Prettier runs through ESLint).
 - CLI options are defined per test via the `parse((cmd) => ...)` callback in
-  `src/lib/cmdline.ts`; the base options (`--url`, `--password`, `--product-version`,
-  `--agama-web-ui-package-version`, browser flags) are shared.
+  `src/lib/cmdline.ts`; the base options (`--url`, `--password`, `--product-version`, browser flags;
+  `--agama-web-ui-package-version` is accepted but ignored) are shared.
 - Commits: no `Co-Authored-By` trailers.
