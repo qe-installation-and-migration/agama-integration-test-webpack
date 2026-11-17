@@ -59,6 +59,10 @@ export class ProductStrategyFactory {
         : new ProductionReleaseStrategy();
     }
 
+    if (productVersion === "16.2") {
+      return new DevelopmentReleaseStrategy();
+    }
+
     throw new Error(`Unsupported product version: ${productVersion}`);
   }
 }
