@@ -40,8 +40,8 @@ export class StorageSettingsPage {
   private readonly ActivateZfcpLink = () =>
     this.page.locator("::-p-aria(Activate zFCP disks[role='link'])");
 
-  private readonly addLvmVolumeLink = () =>
-    this.page.locator("::-p-aria(Add LVM volume group[role='button'])");
+  # investigate: aria cannot be used
+  private readonly addLvmVolumeLink = () => this.page.locator("::-p-text(Add LVM volume group)");
 
   private readonly expandPartitionsButton = () =>
     this.page.locator("::-p-aria(New partitions will be created[role='button'])");
