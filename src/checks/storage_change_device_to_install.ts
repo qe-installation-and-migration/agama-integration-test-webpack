@@ -7,6 +7,7 @@ import { StorageChangeDiskPage } from "../pages/storage_change_disk_page";
 import { StoragePage } from "../pages/storage_page";
 import { StorageSettingsChangeDiskPage } from "../pages/storage_settings_change_disk_page";
 import { StorageSettingsPage } from "../pages/storage_settings_page";
+import { StorageResultPage } from "../pages/storage_result_page";
 import assert from "node:assert/strict";
 
 export function changeDeviceToInstallTheSystem() {
@@ -73,5 +74,63 @@ export function changeDeviceToInstallTheSystemWithSidebar() {
 
     await storage.otherOptions();
     await storage.resetToDefault();
+  });
+}
+
+export function changeDeviceToInstallWithExistedLVM(action: string = "recreate") {
+  const testLabelMap: Record<string, string> = {
+    recreate: "should install on an existing lvm setup to recreate lvm with clean allocation",
+    resize: "should configure lvm with shrink existing LVs to fit new allocation",
+    reuse: "should configure lvm reuse existing LVs for specific mount points",
+  };
+  it(testLabelMap[action], async function () {
+    const storageSetting = new StorageSettingsPage(page);
+    const storageResult = new StorageResultPage(page);
+    const storageSettingsChangeDisk = new StorageSettingsChangeDiskPage(page);
+    const overview = new OverviewPage(page);
+    const header = new HeaderPage(page);
+
+    await overview.goToStorage();
+
+    await storageSetting.selectInstallationDevices();
+    await storageSetting.selectUsedDisk();
+
+    await storageSettingsChangeDisk.selectLVMTab();
+    await storageSettingsChangeDisk.changeTo();
+
+    const lvmMenuTitleMap: Record<string, string> = {
+      resize: "Shrink existing logical volumes",
+      reuse: "Use available space",
+    };
+
+    if (action !== "recreate" && lvmMenuTitleMap[action]) {
+      await storageSetting.openLvmDropdown();
+      await storageSetting.selectRecreateLVMAction(lvmMenuTitleMap[action]);
+    }
+
+    let lvmDestructions: string[] = [];
+    if (action === "recreate") {
+      lvmDestructions = [
+        "Delete btrfs on /dev/system/root",
+        "Delete logical volume root",
+        "Delete swap on /dev/system/swap",
+        "Delete logical volume swap",
+      ];
+    } else if (action === "resize") {
+      lvmDestructions = [
+        "Shrink btrfs on /dev/system/root",
+        "Shrink logical volume root on volume group system",
+        "Create LVM logical volume /dev/system/root0",
+      ];
+    }
+    if (lvmDestructions.length > 0) {
+      await storageResult.scrollToDestructiveActionsList();
+    }
+
+    for (const destructionItem of lvmDestructions) {
+      await storageResult.destructiveActionText(destructionItem).wait();
+    }
+
+    await header.goToInstallation();
   });
 }
