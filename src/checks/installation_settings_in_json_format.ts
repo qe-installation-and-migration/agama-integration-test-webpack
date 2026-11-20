@@ -22,14 +22,12 @@ export function showConfiguration() {
 export function downloadConfiguration() {
   it("should download the installation configuration", async function () {
     const installation = new InstallationSettingsInJsonFormatPage(page);
-    await installation.downloadConfiguration();
 
     const downloadedFile = await waitOnNewFile(
       () => installation.downloadConfiguration(),
       path.join(os.homedir(), "Downloads"),
       "agama-config-",
     );
-    console.log("File found in download directory:", downloadedFile);
     assert(downloadedFile.length > 0, "No json file has been found in the download directory.");
 
     const downloadedConfiguration = fs.readFileSync(downloadedFile, "utf8");
