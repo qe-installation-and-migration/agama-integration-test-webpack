@@ -99,3 +99,4 @@ browser in headed mode and connecting to a remote Agama instance:
 - It uses the Node.js built-in testing framework and the runner instead of Mocha.js
   (or any similar framework) which needs a special test runner that cannot be
   bundled into the generated file by Webpack.
+pi-agent PR flow test
