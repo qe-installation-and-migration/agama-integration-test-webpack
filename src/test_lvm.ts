@@ -3,7 +3,10 @@ import { test_init } from "./lib/helpers";
 import { Option } from "commander";
 
 import { logIn } from "./checks/login";
-import { ProductStrategyFactory } from "./lib/product_strategy_factory";
+import { prepareDasdStorage } from "./checks/storage_dasd";
+import { addLVMVolumeGroup } from "./checks/storage_select_installation_device";
+import { setOnlyInstallationNetwork } from "./checks/network";
+import { finishInstallation, performInstallation } from "./checks/installation";
 
 const options = parse((cmd) =>
   cmd
@@ -27,16 +30,11 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(
-  options.productVersion,
-  options.agamaWebUiPackageVersion,
-);
-
 logIn(options.password);
-if (options.prepareAdvancedStorage === "dasd") testStrategy.prepareDasdStorage();
-testStrategy.configureVolumeGroup(options.lvmAdditionalDisks);
-if (options.connectionsOnlyForInstallation) testStrategy.setOnlyInstallationNetwork();
+if (options.prepareAdvancedStorage === "dasd") prepareDasdStorage();
+addLVMVolumeGroup(options.lvmAdditionalDisks);
+if (options.connectionsOnlyForInstallation) setOnlyInstallationNetwork();
 if (options.install) {
-  testStrategy.performInstallation();
-  testStrategy.finishInstallation();
+  performInstallation();
+  finishInstallation();
 }

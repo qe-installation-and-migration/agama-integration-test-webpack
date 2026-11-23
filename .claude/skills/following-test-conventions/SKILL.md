@@ -25,7 +25,7 @@ Selectors follow CLAUDE.md's ARIA name-and-role convention and its fallback orde
 engine-neutral: `::-webkit-*` and other vendor-prefixed pseudo-elements silently fail in Firefox,
 while Puppeteer's `::-p-text()` / `::-p-aria()` are fine.
 
-Page objects, checks, helpers, `*WithSidebar` naming and ts-prune follow CLAUDE.md, plus:
+Page objects, checks, helpers, and ts-prune follow CLAUDE.md, plus:
 
 - Copy the shape of `src/pages/system_page.ts` with `setStaticHostname` in `src/checks/system.ts`:
   one named ARIA locator per element, one action method per interaction, a check that reads top to

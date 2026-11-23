@@ -3,7 +3,10 @@ import { test_init } from "./lib/helpers";
 import { Option } from "commander";
 
 import { logIn } from "./checks/login";
-import { ProductStrategyFactory } from "./lib/product_strategy_factory";
+import { changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize } from "./checks/storage_change_root_partition";
+import { changePatterns, selectADesktop } from "./checks/software";
+import { prepareDasdStorage } from "./checks/storage_dasd";
+import { finishInstallation, performInstallation } from "./checks/installation";
 
 const options = parse((cmd) =>
   cmd
@@ -21,18 +24,12 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(
-  options.productVersion,
-  options.agamaWebUiPackageVersion,
-);
-
 logIn(options.password);
-if (options.btrfsWithoutSnapshots)
-  testStrategy.changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize();
-if (options.desktop) testStrategy.selectDesktop(options.desktop);
-if (options.patterns) testStrategy.changePatterns(options.patterns);
-if (options.prepareAdvancedStorage === "dasd") testStrategy.prepareDasdStorage();
+if (options.btrfsWithoutSnapshots) changeFileSystemToBtrfsWithoutSnapshotsAndAdjustToMinSize();
+if (options.desktop) selectADesktop(options.desktop);
+if (options.patterns) changePatterns(options.patterns);
+if (options.prepareAdvancedStorage === "dasd") prepareDasdStorage();
 if (options.install) {
-  testStrategy.performInstallation();
-  testStrategy.finishInstallation();
+  performInstallation();
+  finishInstallation();
 }

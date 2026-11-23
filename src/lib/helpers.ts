@@ -3,7 +3,6 @@ import path from "path";
 import http from "http";
 import https from "https";
 import zlib from "zlib";
-import waitOn from "wait-on";
 
 import * as puppeteer from "puppeteer-core";
 // see https://nodejs.org/docs/latest-v20.x/api/test.html
@@ -256,21 +255,6 @@ export async function waitUntilOverlaySettled(
 
 // eslint-disable-next-line
 export type GConstructor<T = {}> = new (...args: any[]) => T;
-
-export async function waitOnFile(filePath: string): Promise<void> {
-  const opts = {
-    resources: [filePath],
-    delay: 3000,
-    timeout: 30000,
-    window: 4000,
-  };
-
-  try {
-    await waitOn(opts);
-  } catch (error) {
-    throw new Error("waitOnFile failed!", { cause: error });
-  }
-}
 
 // wait for a downloaded file whose name is only known at runtime, it returns its full path
 export async function waitOnNewFile(
