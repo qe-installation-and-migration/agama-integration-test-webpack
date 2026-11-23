@@ -2,7 +2,8 @@ import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 
 import { logIn } from "./checks/login";
-import { ProductStrategyFactory } from "./lib/product_strategy_factory";
+import { enterProductRegistration } from "./checks/registration";
+import { finishInstallation, performInstallation } from "./checks/installation";
 
 const options = parse((cmd) =>
   cmd
@@ -14,18 +15,13 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(
-  options.productVersion,
-  options.agamaWebUiPackageVersion,
-);
-
 logIn(options.password);
-testStrategy.enterProductRegistration({
+enterProductRegistration({
   use_custom: options.useCustomRegistrationServer,
   url: options.registrationServerUrl,
   code: options.registrationCode,
 });
 if (options.install) {
-  testStrategy.performInstallation();
-  testStrategy.finishInstallation();
+  performInstallation();
+  finishInstallation();
 }

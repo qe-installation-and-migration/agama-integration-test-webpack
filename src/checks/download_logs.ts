@@ -1,4 +1,4 @@
-import { it, page, waitOnFile } from "../lib/helpers";
+import { it, page } from "../lib/helpers";
 import fs from "fs";
 import path from "path";
 import assert from "node:assert/strict";
@@ -17,18 +17,6 @@ export async function downloadLogs() {
 
     const exactFilePath = path.join(downloadFolder, downloadedFiles[0]);
     const fileSize = fs.statSync(exactFilePath).size;
-    assert(fileSize > 0, "Agama Logfile is empty.");
-  });
-}
-
-export async function downloadLogsWithSidebar() {
-  it("should download logs", async function () {
-    const filePathWithSidebar = "/root/Downloads/agama-logs.tar.gz";
-
-    await new ToolbarPage(page).downloadLogs();
-    await waitOnFile(filePathWithSidebar);
-
-    const fileSize = fs.statSync(filePathWithSidebar).size;
     assert(fileSize > 0, "Agama Logfile is empty.");
   });
 }

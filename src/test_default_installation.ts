@@ -1,10 +1,15 @@
 import { parse, commaSeparatedList } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { Option } from "commander";
-import { ProductStrategyFactory } from "./lib/product_strategy_factory";
 
 import { logIn } from "./checks/login";
 import { productSelection, productSelectionWithLicenseAndMode } from "./checks/product_selection";
+import { ensureLandingOnOverview } from "./checks/overview";
+import { enterExtensionRegistrationHA, enterProductRegistration } from "./checks/registration";
+import { changePatterns } from "./checks/software";
+import { createAdministratorAccount, editRootUserLoginMethod } from "./checks/authentication";
+import { prepareZfcpStorage } from "./checks/storage_zfcp";
+import { finishInstallation, performInstallation } from "./checks/installation";
 
 const options = parse((cmd) =>
   cmd
@@ -35,11 +40,6 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(
-  options.productVersion,
-  options.agamaWebUiPackageVersion,
-);
-
 logIn(options.password);
 if (options.productId !== "none")
   if (options.acceptLicense)
@@ -49,20 +49,19 @@ if (options.productId !== "none")
       options.productVersion,
     );
   else productSelection(options.productId);
-testStrategy.ensureLandingOnOverview();
+ensureLandingOnOverview();
 if (options.registrationCode)
-  testStrategy.enterProductRegistration({
+  enterProductRegistration({
     use_custom: options.useCustomRegistrationServer,
     code: options.registrationCode,
     provide_code: options.provideRegistrationCode,
   });
-if (options.registrationCodeHa)
-  testStrategy.enterExtensionRegistrationHA(options.registrationCodeHa);
-if (options.patterns) testStrategy.changePatterns(options.patterns);
-testStrategy.createFirstUser(options.password);
-testStrategy.editRootUser(options.rootPassword);
-if (options.prepareAdvancedStorage === "zfcp") testStrategy.prepareZfcpStorage();
+if (options.registrationCodeHa) enterExtensionRegistrationHA(options.registrationCodeHa);
+if (options.patterns) changePatterns(options.patterns);
+createAdministratorAccount(options.password);
+editRootUserLoginMethod(options.rootPassword);
+if (options.prepareAdvancedStorage === "zfcp") prepareZfcpStorage();
 if (options.install) {
-  testStrategy.performInstallation();
-  testStrategy.finishInstallation();
+  performInstallation();
+  finishInstallation();
 }
