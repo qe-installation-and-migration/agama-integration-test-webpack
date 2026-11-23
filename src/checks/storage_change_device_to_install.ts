@@ -29,7 +29,7 @@ export function changeDeviceToInstallTheSystem() {
     await storageSettingsChangeDisk.changeTo();
     await storage.ensureStorageSettingsPresent();
     assert.deepEqual(
-      await getTextContent(storage.storageAllocationWarningTextAlert()),
+      await getTextContent(storage.storageAllocationWarningText()),
       'It is not possible to allocate space for the boot partition and for "/" (at least 12.5 GiB) and "swap" (1 GiB - 2 GiB).',
     );
 

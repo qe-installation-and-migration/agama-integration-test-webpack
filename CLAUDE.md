@@ -7,8 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Puppeteer-based integration tests for [Agama](https://github.com/agama-project/agama) (the SUSE
 installer), bundled by Webpack into self-contained executables. The point of the bundling is that
 the Live ISO does not need Puppeteer or any Node dependency installed — only `dist/vendor.js` plus
-the test bundle are copied to the target machine (see `Rakefile`, which installs them into
-`/usr/share/agama/system-tests`).
+the test bundle are copied to the target machine (into `/usr/share/agama/system-tests`).
 
 Tests use the **Node.js built-in test runner** (`node:test`), not Mocha/Jest — external runners
 cannot be bundled by Webpack.
