@@ -1,12 +1,9 @@
-import { it, page, getTextContent, sleep } from "../lib/helpers";
-import { OverviewPage } from "../pages/overview_page";
-import { RegistrationSCCPage, RegistrationCustomPage } from "../pages/registration_page";
+import { it, page, getTextContent } from "../lib/helpers";
 import { ExtensionRegistrationPHubPage } from "../pages/extension_registration_phub_page";
 import { ExtensionRegistrationHAPage } from "../pages/extension_registration_ha_page";
 import assert from "node:assert/strict";
 
 import { TrustRegistrationCertificatePage } from "../pages/trust_registration_certificate_page";
-import { HeaderPage } from "../pages/header_page";
 
 import {
   ProductRegistrationLegacyPage,
@@ -16,7 +13,7 @@ import {
 import { SidebarWithRegistrationPage } from "../pages/sidebar_page";
 import { OverviewWithSidebarPage } from "../pages/overview_with_sidebar_page";
 
-export interface RegistrationOptions {
+interface RegistrationOptions {
   use_custom?: string;
   code?: string;
   provide_code?: string;
@@ -24,147 +21,6 @@ export interface RegistrationOptions {
 }
 
 export function enterProductRegistration({
-  use_custom,
-  code,
-  provide_code,
-  url,
-}: RegistrationOptions): void {
-  it("should allow setting registration", async function () {
-    const overview = new OverviewPage(page);
-    let productRegistration: RegistrationCustomPage | RegistrationSCCPage;
-
-    await overview.goToRegistration();
-    await sleep(15000);
-
-    if (use_custom) {
-      productRegistration = new RegistrationCustomPage(page);
-      if (url) {
-        await productRegistration.selectCustomRegistrationServer();
-        await productRegistration.fillServerUrl(url);
-      }
-      if (provide_code) {
-        await productRegistration.fillCode(code);
-      }
-    } else {
-      productRegistration = new RegistrationSCCPage(page);
-      await productRegistration.fillCode(code);
-    }
-    await productRegistration.register();
-  });
-
-  if (url?.startsWith("https")) {
-    it("should handle HTTPS certificate trust for custom registration server", async function () {
-      const trustRegistration = new TrustRegistrationCertificatePage(page);
-      assert.deepEqual(
-        await getTextContent(trustRegistration.titleText()),
-        "Registration certificate",
-      );
-      assert.match(
-        await getTextContent(trustRegistration.questionText()),
-        /Trying to import a self.signed certificate\. Do you want to trust it and register the product\?/,
-      );
-      assert.deepEqual(
-        await getTextContent(trustRegistration.issuerText()),
-        "RMT Certificate Authority",
-      );
-      await trustRegistration.trustCertificate();
-    });
-  }
-
-  it("should display product has been registered", async function () {
-    const header = new HeaderPage(page);
-    const productRegistrationSCC = new RegistrationSCCPage(page);
-
-    const registeredText = await getTextContent(productRegistrationSCC.infoHasBeenRegisteredText());
-    assert.match(
-      registeredText,
-      /SUSE Linux Enterprise Server.*has been registered with below information/,
-    );
-    await header.goToInstallation();
-  });
-}
-
-export function enterExtensionRegistrationHA(code: string) {
-  it("should allow registering HA extension", async function () {
-    const overview = new OverviewPage(page);
-    const header = new HeaderPage(page);
-    const extensionRegistrationHA = new ExtensionRegistrationHAPage(page);
-
-    await overview.goToRegistration();
-    await extensionRegistrationHA.fillCode(code);
-    await extensionRegistrationHA.register();
-    assert.match(
-      await getTextContent(extensionRegistrationHA.extensionRegisteredText()),
-      /The extension has been registered/,
-    );
-    await header.goToInstallation();
-  });
-}
-
-export function enterExtensionRegistrationPHub() {
-  it("should allow registering Package Hub extension", async function () {
-    const overview = new OverviewPage(page);
-    const header = new HeaderPage(page);
-    const extensionRegistrationPHub = new ExtensionRegistrationPHubPage(page);
-
-    await overview.goToRegistration();
-    await extensionRegistrationPHub.register();
-    assert.match(
-      await getTextContent(extensionRegistrationPHub.trustKeyText()),
-      /is unknown. Do you want to trust this key?/,
-    );
-    await extensionRegistrationPHub.trustKey();
-    assert.deepEqual(
-      await getTextContent(extensionRegistrationPHub.registeredText()),
-      "The extension was registered without any registration code.",
-    );
-    await header.goToInstallation();
-  });
-}
-
-export function verifyRegistrationWarniningAlerts(): void {
-  it("should show warning alert for missing registration code", async function () {
-    const overview = new OverviewPage(page);
-    const productRegistrationCustom = new RegistrationCustomPage(page);
-
-    await overview.goToRegistration();
-    await productRegistrationCustom.register();
-
-    const warningText = await getTextContent(
-      productRegistrationCustom.alertWarningEnterARegistrationCodeText(),
-    );
-    assert.deepEqual(warningText, "Please provide Registration Code.");
-  });
-
-  it("should show warning alert for invalid registration code", async function () {
-    const productRegistrationCustom = new RegistrationCustomPage(page);
-
-    await productRegistrationCustom.fillCode("1234invalid4321");
-    await productRegistrationCustom.register();
-
-    const warningText = await getTextContent(
-      productRegistrationCustom.alertWarningUnknownRegistrationCodeText(),
-    );
-    assert.deepEqual(warningText, "Unknown Registration Code.");
-  });
-
-  it("should show warning alert for invalid custom registration server", async function () {
-    const productRegistrationCustom = new RegistrationCustomPage(page);
-    const header = new HeaderPage(page);
-
-    await productRegistrationCustom.fillServerUrl("http://scc.example.net");
-    await productRegistrationCustom.register();
-
-    const warningText = await getTextContent(
-      productRegistrationCustom.alertWarningNetworkErrorText(),
-    );
-    assert.match(warningText, /Network error: dial tcp: lookup .+ on .+: no such host/);
-
-    await header.goToInstallation();
-  }, 90000);
-}
-
-export function enterProductRegistrationWithSidebar({
   use_custom,
   code,
   provide_code,
@@ -229,7 +85,7 @@ export function enterProductRegistrationWithSidebar({
   );
 }
 
-export function enterExtensionRegistrationHAWithSidebar(code: string) {
+export function enterExtensionRegistrationHA(code: string) {
   it("should allow registering HA extension", async function () {
     const sidebar = new SidebarWithRegistrationPage(page);
     const extensionRegistrationHA = new ExtensionRegistrationHAPage(page);
@@ -244,7 +100,7 @@ export function enterExtensionRegistrationHAWithSidebar(code: string) {
   });
 }
 
-export function enterExtensionRegistrationPHubWithSidebar() {
+export function enterExtensionRegistrationPHub() {
   it("should allow registering Package Hub extension", async function () {
     const sidebar = new SidebarWithRegistrationPage(page);
     const extensionRegistrationPHub = new ExtensionRegistrationPHubPage(page);
@@ -263,10 +119,7 @@ export function enterExtensionRegistrationPHubWithSidebar() {
   });
 }
 
-export function verifyRegistrationWarniningAlertsWithSidebar(
-  use_custom?: string,
-  url?: string,
-): void {
+export function verifyRegistrationWarniningAlerts(use_custom?: string, url?: string): void {
   it("should show warning alert for missing registration code", async function () {
     const sidebar = new SidebarWithRegistrationPage(page);
     const customRegistration = new CustomRegistrationLegacyPage(page);

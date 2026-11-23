@@ -1,9 +1,11 @@
-import { parse, commaSeparatedList } from "./lib/cmdline";
+import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
 import { Option } from "commander";
 
 import { logIn } from "./checks/login";
-import { ProductStrategyFactory } from "./lib/product_strategy_factory";
+import { finishInstallationCongratulation, performInstallation } from "./checks/installation";
+import { setOnlyInstallationNetwork } from "./checks/network";
+import { addLVMVolumeGroup } from "./checks/storage_select_installation_device";
 
 const options = parse((cmd) =>
   cmd
@@ -11,11 +13,6 @@ const options = parse((cmd) =>
     .option(
       "--connections-only-for-installation",
       "The connections will be used only during installation",
-    )
-    .option(
-      "--lvm-additional-disks <disk-name>",
-      "Specify a list of additional disks to configure the volume group, without /dev/ prefix (e.g., vdb)",
-      commaSeparatedList,
     )
     .addOption(
       new Option(
@@ -27,16 +24,10 @@ const options = parse((cmd) =>
 
 test_init(options);
 
-const testStrategy = ProductStrategyFactory.create(
-  options.productVersion,
-  options.agamaWebUiPackageVersion,
-);
-
 logIn(options.password);
-if (options.prepareAdvancedStorage === "dasd") testStrategy.prepareDasdStorage();
-testStrategy.configureVolumeGroup(options.lvmAdditionalDisks);
-if (options.connectionsOnlyForInstallation) testStrategy.setOnlyInstallationNetwork();
+addLVMVolumeGroup();
+if (options.connectionsOnlyForInstallation) setOnlyInstallationNetwork();
 if (options.install) {
-  testStrategy.performInstallation();
-  testStrategy.finishInstallation();
+  performInstallation();
+  finishInstallationCongratulation();
 }
