@@ -1,13 +1,12 @@
 import { type Page } from "puppeteer-core";
 import { type GConstructor } from "../lib/helpers";
 
-export class ProductSelectionPage {
+class ProductSelectionPage {
   protected readonly page: Page;
   protected readonly productText = (name: string) => this.page.locator(`::-p-text(${name})`);
   protected readonly productId = (id: string) =>
     this.page.locator("input#" + id.replaceAll(".", "\\."));
 
-  protected readonly selectButton = () => this.page.locator("button[form='productSelectionForm']");
   protected readonly selectButtonWithProductAndVersion = (mode: string, version: string) =>
     this.page.locator(
       `::-p-aria(Select ${mode} SUSE Linux Enterprise Server ${version}[role='button'])`,
@@ -22,17 +21,8 @@ export class ProductSelectionPage {
     await this.productId(id).click();
   }
 
-  async select(mode: string = "", version: string = "") {
-    const button = await Promise.any([
-      this.selectButton().waitHandle(),
-      this.selectButtonWithProductAndVersion(mode, version).waitHandle(),
-    ]);
-    await button.click();
-  }
-
-  async selectByName(name: string) {
-    await this.choose(name);
-    await this.selectButton().click();
+  async select(mode: string, version: string) {
+    await this.selectButtonWithProductAndVersion(mode, version).click();
   }
 }
 
@@ -78,7 +68,6 @@ function ModeSelectable<TBase extends GConstructor<ProductSelectionPage>>(Base: 
   };
 }
 
-export class ProductSelectionWithLicensePage extends LicenseAcceptable(ProductSelectionPage) {}
 export class ProductSelectionWithLicenseAndModePage extends ModeSelectable(
   LicenseAcceptable(ProductSelectionPage),
 ) {}

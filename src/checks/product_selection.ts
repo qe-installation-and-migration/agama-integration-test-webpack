@@ -1,46 +1,27 @@
 import { it, page } from "../lib/helpers";
-import {
-  ProductSelectionPage,
-  ProductSelectionWithLicensePage,
-  ProductSelectionWithLicenseAndModePage,
-} from "../pages/product_selection_page";
-
-export function productSelection(productId: string) {
-  it(`should allow to select product ${productId}`, async function () {
-    const productSelectionPage = new ProductSelectionPage(page);
-    await productSelectionPage.choose(productId);
-    await productSelectionPage.select();
-  });
-}
+import { ProductSelectionWithLicenseAndModePage } from "../pages/product_selection_page";
 
 export function productSelectionWithLicenseAndMode(
   productId: string,
   productMode: string,
   productVersion: string,
 ) {
-  let productSelection: ProductSelectionWithLicensePage | ProductSelectionWithLicenseAndModePage;
-
   it(`should allow to choose product ${productId}`, async function () {
-    productSelection =
-      productMode !== "none"
-        ? new ProductSelectionWithLicenseAndModePage(page)
-        : new ProductSelectionWithLicensePage(page);
-    await productSelection.choose(productId);
+    await new ProductSelectionWithLicenseAndModePage(page).choose(productId);
   });
-  if (productMode !== "none") {
-    it(`should allow to select mode ${productMode}`, async function () {
-      await (productSelection as ProductSelectionWithLicenseAndModePage).selectMode(productMode);
-    });
-  }
+  it(`should allow to select mode ${productMode}`, async function () {
+    await new ProductSelectionWithLicenseAndModePage(page).selectMode(productMode);
+  });
   it(`should allow to review its license`, async function () {
+    const productSelection = new ProductSelectionWithLicenseAndModePage(page);
     await productSelection.openLicense();
     await productSelection.verifyLicense();
     await productSelection.closeLicense();
   });
   it(`should allow to accept its license`, async function () {
-    await productSelection.acceptProductLicense();
+    await new ProductSelectionWithLicenseAndModePage(page).acceptProductLicense();
   });
   it(`should allow to accept selected product`, async function () {
-    await productSelection.select(productMode, productVersion);
+    await new ProductSelectionWithLicenseAndModePage(page).select(productMode, productVersion);
   });
 }
