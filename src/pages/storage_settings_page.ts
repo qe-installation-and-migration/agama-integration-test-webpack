@@ -6,15 +6,13 @@ export class StorageSettingsPage {
   private readonly selectMoreDevicesButton = () =>
     this.page.locator("::-p-aria(More devices[role='button'])");
 
-  private readonly useDiskButton = () => this.page.locator("::-p-aria(Use disk[role='button'])");
+  // investigate: aria cannot be used
+  private readonly useDiskButton = () => this.page.locator("button::-p-text(Use disk)");
 
   private readonly settingsHeading = () => this.page.locator("::-p-aria(Settings[role='heading'])");
 
-  private readonly selectDeviceToInstallButton = () =>
-    this.page.locator("::-p-aria(Change the device to install the system[role='button'])");
-
-  private readonly selectDiskToInstallButton = () =>
-    this.page.locator("::-p-aria(Change the disk to install the system[role='button'])");
+  private readonly changeDeviceMenuitem = () =>
+    this.page.locator("::-p-aria(Change device menu[role='menuitem'])");
 
   private readonly editEncryptionButton = () =>
     this.page.locator("a[href='#/storage/encryption/edit']");
@@ -40,14 +38,17 @@ export class StorageSettingsPage {
   private readonly ActivateZfcpLink = () =>
     this.page.locator("::-p-aria(Activate zFCP disks[role='link'])");
 
-  private readonly addLvmVolumeLink = () =>
-    this.page.locator("::-p-aria(Add LVM volume group[role='button'])");
+  private readonly addLvmVolumeMenuitem = () =>
+    this.page.locator(
+      "::-p-aria(Add LVM volume group Define a new LVM on top of one or several disks[role='menuitem'])",
+    );
 
+  // investigate: aria cannot be used
   private readonly expandPartitionsButton = () =>
-    this.page.locator("::-p-aria(New partitions will be created[role='button'])");
+    this.page.locator("button::-p-text(New partitions will be created)");
 
-  private readonly optionsForPartitionRootListitem = () =>
-    this.page.locator("::-p-aria(Options for partition /[role='listitem'])");
+  private readonly optionsForPartitionRootButton = () =>
+    this.page.locator("::-p-aria(Options for partition /[role='button'])");
 
   private readonly editRootPartitionMenuitem = () =>
     this.page.locator("::-p-aria(Edit /[role='menuitem'])");
@@ -55,13 +56,14 @@ export class StorageSettingsPage {
   private readonly threeDotsButton = () =>
     this.page.locator('::-p-aria([role="button"]):not([aria-label]):has(svg.agm-three-dots-icon)');
 
-  public readonly storageAllocationWarningTextAlert = () =>
-    this.page.locator(
-      "::-p-aria(It is not possible to allocate space for the boot partition[role='alert'])",
-    );
+  // investigate: aria cannot be used
+  public readonly storageAllocationWarningText = () =>
+    this.page.locator("::-p-text(It is not possible to allocate space for the boot partition)");
 
   private readonly resetToDefaultsMenuitem = () =>
-    this.page.locator("::-p-aria(Reset to defaults[role='menuitem'])");
+    this.page.locator(
+      "::-p-aria(Reset to defaults Start from scratch with the default configuration[role='menuitem'])",
+    );
 
   private readonly notConfiguredYetButton = () =>
     this.page.locator("::-p-aria(Not configured yet[role='button'])");
@@ -91,11 +93,7 @@ export class StorageSettingsPage {
   }
 
   async changeTheDeviceToInstallTheSystem() {
-    const element = await Promise.any([
-      this.selectDeviceToInstallButton().waitHandle(),
-      this.selectDiskToInstallButton().waitHandle(),
-    ]);
-    await element.click();
+    await this.changeDeviceMenuitem().click();
   }
 
   async selectMoreDevices() {
@@ -127,7 +125,7 @@ export class StorageSettingsPage {
   }
 
   async addLvmVolumeGroup() {
-    await this.addLvmVolumeLink().click();
+    await this.addLvmVolumeMenuitem().click();
   }
 
   async waitForElement(element, timeout) {
@@ -139,7 +137,7 @@ export class StorageSettingsPage {
   }
 
   async clickOptionForRoot() {
-    await this.optionsForPartitionRootListitem().click();
+    await this.optionsForPartitionRootButton().click();
   }
 
   async editRootPartition() {

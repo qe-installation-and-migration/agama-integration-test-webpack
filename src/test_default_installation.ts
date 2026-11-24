@@ -3,7 +3,7 @@ import { test_init } from "./lib/helpers";
 import { Option } from "commander";
 
 import { logIn } from "./checks/login";
-import { productSelection, productSelectionWithLicenseAndMode } from "./checks/product_selection";
+import { productSelectionWithLicenseAndMode } from "./checks/product_selection";
 import { ensureLandingOnOverview } from "./checks/overview";
 import { enterExtensionRegistrationHA, enterProductRegistration } from "./checks/registration";
 import { changePatterns } from "./checks/software";
@@ -17,7 +17,7 @@ const options = parse((cmd) =>
     .addOption(
       new Option("--product-mode <mode>", "Select product mode")
         .choices(["Standard", "Immutable"])
-        .default("none", "Default value set to 'none' (No mode selected)"),
+        .default("Standard"),
     )
     .option(
       "--accept-license",
@@ -48,7 +48,6 @@ if (options.productId !== "none")
       options.productMode,
       options.productVersion,
     );
-  else productSelection(options.productId);
 ensureLandingOnOverview();
 if (options.registrationCode)
   enterProductRegistration({
