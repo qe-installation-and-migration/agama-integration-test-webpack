@@ -1,46 +1,20 @@
 import { it, page } from "../lib/helpers";
-import {
-  ProductSelectionPage,
-  ProductSelectionWithLicensePage,
-  ProductSelectionWithLicenseAndModePage,
-} from "../pages/product_selection_page";
+import { ProductSelectionWithLicensePage } from "../pages/product_selection_page";
 
-export function productSelection(productId: string) {
-  it(`should allow to select product ${productId}`, async function () {
-    const productSelectionPage = new ProductSelectionPage(page);
-    await productSelectionPage.choose(productId);
-    await productSelectionPage.select();
-  });
-}
-
-export function productSelectionWithLicenseAndMode(
-  productId: string,
-  productMode: string,
-  productVersion: string,
-) {
-  let productSelection: ProductSelectionWithLicensePage | ProductSelectionWithLicenseAndModePage;
-
+export function productSelectionWithLicense(productId: string) {
   it(`should allow to choose product ${productId}`, async function () {
-    productSelection =
-      productMode !== "none"
-        ? new ProductSelectionWithLicenseAndModePage(page)
-        : new ProductSelectionWithLicensePage(page);
-    await productSelection.choose(productId);
+    await new ProductSelectionWithLicensePage(page).choose(productId);
   });
-  if (productMode !== "none") {
-    it(`should allow to select mode ${productMode}`, async function () {
-      await (productSelection as ProductSelectionWithLicenseAndModePage).selectMode(productMode);
-    });
-  }
   it(`should allow to review its license`, async function () {
+    const productSelection = new ProductSelectionWithLicensePage(page);
     await productSelection.openLicense();
     await productSelection.verifyLicense();
     await productSelection.closeLicense();
   });
   it(`should allow to accept its license`, async function () {
-    await productSelection.acceptProductLicense();
+    await new ProductSelectionWithLicensePage(page).acceptProductLicense();
   });
   it(`should allow to accept selected product`, async function () {
-    await productSelection.select(productMode, productVersion);
+    await new ProductSelectionWithLicensePage(page).select();
   });
 }

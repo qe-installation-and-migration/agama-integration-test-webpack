@@ -1,6 +1,5 @@
 import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
-import { Option } from "commander";
 
 import { logIn } from "./checks/login";
 import { createFirstUser, editRootUser } from "./checks/authentication";
@@ -15,16 +14,11 @@ import { ensureLandingOnOverview } from "./checks/overview";
 import { enterProductRegistration } from "./checks/registration";
 import { prepareZfcpStorage } from "./checks/storage_zfcp";
 import { setPermanentHostname } from "./checks/system";
-import { productSelection, productSelectionWithLicenseAndMode } from "./checks/product_selection";
+import { productSelectionWithLicense } from "./checks/product_selection";
 
 const options = parse((cmd) =>
   cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
-    .addOption(
-      new Option("--product-mode <mode>", "Select product mode")
-        .choices(["Standard", "Immutable"])
-        .default("none", "Default value set to 'none' (No mode selected)"),
-    )
     .option(
       "--accept-license",
       "Accept license for a product with license (the default is a product without license)",
@@ -41,13 +35,7 @@ test_init(options);
 
 logIn(options.password);
 if (options.productId !== "none")
-  if (options.acceptLicense)
-    productSelectionWithLicenseAndMode(
-      options.productId,
-      options.productMode,
-      options.productVersion,
-    );
-  else productSelection(options.productId);
+  if (options.acceptLicense) productSelectionWithLicense(options.productId);
 ensureLandingOnOverview();
 if (options.staticHostname) setPermanentHostname(options.staticHostname);
 enableEncryption(options.password);

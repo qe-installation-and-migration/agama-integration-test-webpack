@@ -1,6 +1,5 @@
 import { parse } from "./lib/cmdline";
 import { test_init } from "./lib/helpers";
-import { Option } from "commander";
 
 import { logIn, logInWithIncorrectPassword } from "./checks/login";
 import { createFirstUser, editRootUser, verifyPasswordStrength } from "./checks/authentication";
@@ -12,16 +11,11 @@ import {
 import { ensureLandingOnOverview } from "./checks/overview";
 import { enterProductRegistration, verifyRegistrationWarniningAlerts } from "./checks/registration";
 import { changeDeviceToInstallTheSystem } from "./checks/storage_change_device_to_install";
-import { productSelection, productSelectionWithLicenseAndMode } from "./checks/product_selection";
+import { productSelectionWithLicense } from "./checks/product_selection";
 
 const options = parse((cmd) =>
   cmd
     .option("--product-id <id>", "Product id to select a product to install", "none")
-    .addOption(
-      new Option("--product-mode <mode>", "Select product mode")
-        .choices(["Standard", "Immutable"])
-        .default("none", "Default value set to 'none' (No mode selected)"),
-    )
     .option(
       "--accept-license",
       "Accept license for a product with license (the default is a product without license)",
@@ -38,13 +32,7 @@ test_init(options);
 logInWithIncorrectPassword();
 logIn(options.password);
 if (options.productId !== "none")
-  if (options.acceptLicense)
-    productSelectionWithLicenseAndMode(
-      options.productId,
-      options.productMode,
-      options.productVersion,
-    );
-  else productSelection(options.productId);
+  if (options.acceptLicense) productSelectionWithLicense(options.productId);
 ensureLandingOnOverview();
 verifyRegistrationWarniningAlerts(
   options.useCustomRegistrationServer,
