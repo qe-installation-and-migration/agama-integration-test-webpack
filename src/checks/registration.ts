@@ -1,4 +1,4 @@
-import { it, page, getTextContent } from "../lib/helpers";
+import { it, page, getTextContent, waitUntilOverlaySettled } from "../lib/helpers";
 import { OverviewPage } from "../pages/overview_page";
 import { RegistrationSCCPage, RegistrationCustomPage } from "../pages/registration_page";
 import { ExtensionRegistrationPHubPage } from "../pages/extension_registration_phub_page";
@@ -40,7 +40,7 @@ export function enterProductRegistration({
       productRegistration = new RegistrationSCCPage(page);
       await productRegistration.fillCode(code);
     }
-    await productRegistration.register();
+    await waitUntilOverlaySettled(() => productRegistration.register());
   });
 
   if (url?.startsWith("https")) {
