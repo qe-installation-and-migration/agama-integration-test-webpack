@@ -245,7 +245,7 @@ export async function waitUntilOverlaySettled(
 
   if (appeared && !expectQuestionInterruption) {
     debugLog("Overlay detected. Waiting for it to disappear...");
-    await page.waitForSelector(selector, { hidden: true });
+    await page.waitForSelector(selector, { hidden: true, timeout: 180000 });
 
     const duration = Date.now() - start;
     debugLog(`Overlay cleared after ${duration}ms`);
