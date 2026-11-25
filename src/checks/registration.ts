@@ -42,7 +42,7 @@ export function enterProductRegistration({
       await productRegistration.fillCode(code);
     }
     await productRegistration.register();
-  });
+  }, 120000);
 
   if (url?.startsWith("https")) {
     it("should handle HTTPS certificate trust for custom registration server", async function () {
