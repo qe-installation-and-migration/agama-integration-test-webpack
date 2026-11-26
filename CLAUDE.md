@@ -107,7 +107,7 @@ third argument for slow steps.
 
 Shared helpers worth knowing before writing new code: `getTextContent`, `getValue`,
 `waitUntilOverlaySettled` (wraps an action and waits for the Agama overlay to clear),
-`waitOnFile`, `sleep`, and the table readers in `src/lib/table.ts`.
+`waitOnNewFile` and the table readers in `src/lib/table.ts`.
 
 ## Conventions
 

@@ -206,7 +206,7 @@ export async function it(label: string, test: () => Promise<void>, timeout?: num
   );
 }
 
-export function sleep(ms: number) {
+function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
