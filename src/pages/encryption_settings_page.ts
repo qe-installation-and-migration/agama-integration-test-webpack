@@ -4,14 +4,18 @@ export class EncryptionSettingsPage {
   private readonly page: Page;
 
   private readonly encryptTheSystemCheckedCheckbox = () =>
-    this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:checked");
+    this.page.locator("::-p-aria(Encrypt the system[role='checkbox']):checked");
 
   private readonly encryptTheSystemNotCheckedCheckbox = () =>
-    this.page.locator("::-p-aria(Encrypt the system)[type=checkbox]:not(:checked)");
+    this.page.locator("::-p-aria(Encrypt the system[role='checkbox']):not(:checked)");
 
-  private readonly passwordInput = () => this.page.locator("#password");
-  private readonly passwordConfirmationInput = () => this.page.locator("#passwordConfirmation");
-  private readonly acceptButton = () => this.page.locator("button::-p-text(Accept)");
+  private readonly passwordInput = () =>
+    this.page.locator("::-p-aria(Encryption password[role='textbox'])");
+
+  private readonly passwordConfirmationInput = () =>
+    this.page.locator("::-p-aria(Confirm encryption password[role='textbox'])");
+
+  private readonly acceptButton = () => this.page.locator("::-p-aria(Accept[role='button'])");
 
   constructor(page: Page) {
     this.page = page;

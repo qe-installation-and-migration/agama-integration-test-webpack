@@ -4,18 +4,21 @@ export class DasdPage {
   private readonly page: Page;
 
   private readonly selectRow = (index) =>
-    this.page.locator(`::-p-aria(Select row ${index}[role=\\"checkbox\\"])`);
+    this.page.locator(`::-p-aria(Select row ${index}[role='checkbox'])`);
 
+  // investigate: aria cannot be used - dynamic aria-label with device identifier
   private readonly actionsForDisk = () =>
     this.page.locator("xpath/descendant-or-self::button[starts-with(@aria-label, 'Actions for')]");
 
   private readonly activateDisk = () =>
     this.page
-      .locator('button[role="menuitem"]')
+      .locator("::-p-aria(Activate[role='menuitem'])")
       .filter((item) => item.getAttribute("tabindex") === "0");
 
   private readonly formatDiskButton = () => this.page.locator("::-p-aria(Format[role='button'])");
-  private readonly formatNowDiskButton = () => this.page.locator("::-p-text(Format now)");
+
+  private readonly formatNowDiskButton = () =>
+    this.page.locator("::-p-aria(Format now[role='button'])");
 
   constructor(page: Page) {
     this.page = page;

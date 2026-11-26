@@ -2,8 +2,10 @@ import { type Page } from "puppeteer-core";
 
 export class EncryptedDevice {
   private readonly page: Page;
-  private readonly encryptionPasswordInput = () => this.page.locator("input#luks-password");
-  private readonly decryptButton = () => this.page.locator("button::-p-text(Decrypt)");
+  private readonly encryptionPasswordInput = () =>
+    this.page.locator("::-p-aria(LUKS password[role='textbox'])");
+
+  private readonly decryptButton = () => this.page.locator("::-p-aria(Decrypt[role='button'])");
 
   constructor(page: Page) {
     this.page = page;
