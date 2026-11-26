@@ -41,6 +41,6 @@ export function productSelectionWithLicenseAndMode(
     await productSelection.acceptProductLicense();
   });
   it(`should allow to accept selected product`, async function () {
-    await productSelection.select(productMode, productVersion);
+    await productSelection.select(productMode, productVersion, productId);
   });
 }
