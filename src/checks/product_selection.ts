@@ -22,6 +22,10 @@ export function productSelectionWithLicenseAndMode(
     await new ProductSelectionWithLicenseAndModePage(page).acceptProductLicense();
   });
   it(`should allow to accept selected product`, async function () {
-    await new ProductSelectionWithLicenseAndModePage(page).select(productMode, productVersion);
+    await new ProductSelectionWithLicenseAndModePage(page).select(
+      productMode,
+      productVersion,
+      productId,
+    );
   });
 }

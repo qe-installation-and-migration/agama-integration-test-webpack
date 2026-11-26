@@ -7,10 +7,16 @@ class ProductSelectionPage {
   protected readonly productId = (id: string) =>
     this.page.locator("input#" + id.replaceAll(".", "\\."));
 
-  protected readonly selectButtonWithProductAndVersion = (mode: string, version: string) =>
-    this.page.locator(
-      `::-p-aria(Select ${mode} SUSE Linux Enterprise Server ${version} Alpha[role='button'])`,
+  protected readonly selectButtonWithProductAndVersion = (
+    mode: string,
+    version: string,
+    productId?: string,
+  ) => {
+    const sap = productId === "SLES_SAP" ? " for SAP applications" : "";
+    return this.page.locator(
+      `::-p-aria(Select ${mode} SUSE Linux Enterprise Server${sap} ${version} Alpha[role='button'])`,
     );
+  };
 
   constructor(page: Page) {
     this.page = page;
@@ -21,8 +27,8 @@ class ProductSelectionPage {
     await this.productId(id).click();
   }
 
-  async select(mode: string, version: string) {
-    await this.selectButtonWithProductAndVersion(mode, version).click();
+  async select(mode: string, version: string, productId?: string) {
+    await this.selectButtonWithProductAndVersion(mode, version, productId).click();
   }
 }
 
