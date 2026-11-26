@@ -12,10 +12,13 @@ export class ProductSelectionPage {
     mode: string,
     version: string,
     suffix: string = "",
-  ) =>
-    this.page.locator(
-      `::-p-aria(Select ${mode} SUSE Linux Enterprise Server ${version}${suffix}[role='button'])`,
+    productId?: string,
+  ) => {
+    const sap = productId === "SLES_SAP" ? " for SAP applications" : "";
+    return this.page.locator(
+      `::-p-aria(Select ${mode} SUSE Linux Enterprise Server${sap} ${version}${suffix}[role='button'])`,
     );
+  };
 
   constructor(page: Page) {
     this.page = page;
@@ -26,12 +29,18 @@ export class ProductSelectionPage {
     await this.productId(id).click();
   }
 
-  async select(mode: string = "", version: string = "") {
-    const button = await Promise.any([
+  async select(mode: string = "", version: string = "", productId?: string) {
+    const candidates = [
       this.selectButton().waitHandle(),
       this.selectButtonWithProductAndVersion(mode, version).waitHandle(),
       this.selectButtonWithProductAndVersion(mode, version, " Alpha").waitHandle(),
-    ]);
+    ];
+    if (productId) {
+      candidates.push(
+        this.selectButtonWithProductAndVersion(mode, version, "", productId).waitHandle(),
+      );
+    }
+    const button = await Promise.any(candidates);
     await button.click();
   }
 
